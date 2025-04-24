@@ -1,5 +1,5 @@
 //
-//  CreateView.swift
+//  ChoreCreateView.swift
 //  DueMate
 //
 //  Created by Kacey Kim on 4/21/25.
@@ -7,14 +7,11 @@
 
 import SwiftUI
 
-enum CreateMode {
-    case chore
-    case bill
-}
 
-struct CreateView: View {
+
+struct ChoreCreateView: View {
     @Environment(\.dismiss) private var dismiss
-    let mode: CreateMode
+    
     
     @State private var title: String = ""
     @State private var cycle: String = ""
@@ -29,7 +26,7 @@ struct CreateView: View {
         VStack{
             HStack{
                 Spacer()
-                Text(mode == .chore ? "New Chore" : "New Bill")
+                Text("Add New Chore")
                     .font(.system(size: 20))
                 
                 Spacer()
@@ -103,5 +100,5 @@ struct CreateView: View {
 }
 
 #Preview {
-    CreateView(mode: .chore)
+    CreateView()
 }
