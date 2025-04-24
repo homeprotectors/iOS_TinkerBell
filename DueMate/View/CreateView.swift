@@ -67,7 +67,7 @@ struct CreateView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-                .foregroundColor(.black)
+                .tint(.gray)
                 
                 Button(action:{
                     showPicker = true
@@ -76,11 +76,21 @@ struct CreateView: View {
                 }.sheet(isPresented: $showPicker){
                     AlertSheet(alert: $alert)
                 }
-                
-                
-                
+                .tint(.gray)
                 
             }
+            Spacer()
+            Button(action:{}){
+                Text("생성")
+                    .font(.system(size: 20))
+                
+            }
+            .frame(width: 100)
+            .padding()
+            .foregroundColor(.white)
+            .background(.black)
+            .cornerRadius(35)
+            
             
             
             
