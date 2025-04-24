@@ -10,8 +10,6 @@ import SwiftUI
 
 
 struct ChoreCreateView: View {
-    @Environment(\.dismiss) private var dismiss
-    
     
     @State private var title: String = ""
     @State private var cycle: String = ""
@@ -20,75 +18,88 @@ struct ChoreCreateView: View {
     
     let alertOptions = ["없음", "당일 (9am)","하루 전(9am)","이틀 전(9am)"]
     
-    @FocusState private var isTitleFocused: Bool
     
     var body: some View {
-        VStack{
-            HStack{
-                Spacer()
-                Text("Add New Chore")
-                    .font(.system(size: 20))
+        VStack(alignment: .leading, spacing: 24) {
+            
+            // Title
+            Text("New Chore")
+                .font(.system(size: 28, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .center)
+            
+            // Title Field
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Title")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 
-                Spacer()
-                
+                TextField("New Chore Title", text: $title)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
             }
             
-            TextField("New Chore Title", text: $title)
-                .font(.system(size: 30))
-            
-            
-            HStack{
-                Text("주기").font(.system(size: 20))
-                Spacer()
-                TextField("1-365", text: $cycle)
-                    .font(.system(size: 20))
-                    .fixedSize()
-                    .frame(width: 100, height: 40)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(30)
-                Text("일")
+            // Cycle Input
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Cycle")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 
-            }
-            HStack{
-                Text("알람").font(.system(size: 20))
-                Spacer()
-                Picker("Select", selection: $alert){
-                    ForEach(alertOptions, id:\.self){
-                        Text($0)
-                    }
+                HStack {
+                    TextField("1-365", text: $cycle)
+                        .keyboardType(.numberPad)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    
+                    Text("일")
+                        .foregroundColor(.gray)
                 }
-                .pickerStyle(MenuPickerStyle())
-                .tint(.gray)
+            }
+            
+            // Alarm Picker
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Alarm")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 
-                Button(action:{
+                Button(action: {
                     showPicker = true
-                }){
-                    Text("\(alert)")
-                }.sheet(isPresented: $showPicker){
+                }) {
+                    HStack {
+                        Text(alert)
+                            .foregroundColor(alert == "없음" ? .gray : .primary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+                }
+                .sheet(isPresented: $showPicker) {
                     AlertSheet(alert: $alert)
                 }
-                .tint(.gray)
-                
             }
-            Spacer()
-            Button(action:{}){
+            
+            // Submit Button
+            Button(action: {
+                // Do something
+            }) {
                 Text("생성")
-                    .font(.system(size: 20))
-                
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.black)
+                    .foregroundColor(.white)
+                    .cornerRadius(16)
             }
-            .frame(width: 100)
-            .padding()
-            .foregroundColor(.white)
-            .background(.black)
-            .cornerRadius(35)
-            
-            
-            
-            
+            .padding(.top, 12)
             
             Spacer()
         }
-        .padding(30)
+        .padding(24)
+        .background(Color(.systemBackground))
     }
     
 }
