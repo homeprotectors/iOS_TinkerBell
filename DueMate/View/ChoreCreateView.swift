@@ -30,13 +30,7 @@ struct ChoreCreateView: View {
                     .font(.system(size: 20))
                 
                 Spacer()
-                Button(action:{
-                    dismiss()
-                }){
-                    Image(systemName: "xmark")
-                        .font(.system(size: 20,weight: .bold))
-                        .foregroundColor(.black)
-                }
+                
             }
             
             TextField("New Chore Title", text: $title)
@@ -100,5 +94,5 @@ struct ChoreCreateView: View {
 }
 
 #Preview {
-    CreateView()
+    ChoreCreateView()
 }

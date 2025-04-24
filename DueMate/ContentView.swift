@@ -11,22 +11,31 @@ struct ContentView: View {
     @State private var isSheetPresented = false
     
     var body: some View {
-        VStack {
-            Button(action: {
-                isSheetPresented = true
-            }){
-                Image(systemName: "globe")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.black)
+        NavigationStack{
+            VStack {
+                
+                NavigationLink(destination: ChoreCreateView()){
+                    Image(systemName: "globe")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.black)
+                }
+                Button(action: {
+                    isSheetPresented = true
+                }){
+                    Image(systemName: "globe")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.black)
+                }
+                .sheet(isPresented: $isSheetPresented){
+                    ChoreCreateView()
+                        .presentationDetents([.medium, .large])
+                }
+                
+                
             }
-            .sheet(isPresented: $isSheetPresented){
-                CreateView(mode: .chore)
-                    .presentationDetents([.medium, .large])
-            }
-            
-            
+            .padding()
         }
-        .padding()
+        
     }
 }
 
