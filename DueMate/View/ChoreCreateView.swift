@@ -18,6 +18,12 @@ struct ChoreCreateView: View {
     
     let alertOptions = ["없음", "당일 (9am)","하루 전(9am)","이틀 전(9am)"]
     
+    // Form Validation
+    var isFormValid: Bool {
+        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !cycle.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -57,9 +63,9 @@ struct ChoreCreateView: View {
                 }
             }
             
-            // Alarm Picker
+            // Alert Picker
             VStack(alignment: .leading, spacing: 8) {
-                Text("Alarm")
+                Text("Reminder")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
@@ -84,16 +90,17 @@ struct ChoreCreateView: View {
             
             // Submit Button
             Button(action: {
-                // Do something
+                
             }) {
                 Text("생성")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.black)
-                    .foregroundColor(.white)
+                    .background(isFormValid ? Color.black : Color.gray.opacity(0.4))
+                    .foregroundColor(isFormValid ? .white : .gray)
                     .cornerRadius(16)
             }
+            .disabled(!isFormValid)
             .padding(.top, 12)
             
             Spacer()

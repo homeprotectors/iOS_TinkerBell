@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isSheetPresented = false
+    
     
     var body: some View {
         NavigationStack{
@@ -19,17 +19,7 @@ struct ContentView: View {
                         .font(.system(size: 40))
                         .foregroundStyle(.black)
                 }
-                Button(action: {
-                    isSheetPresented = true
-                }){
-                    Image(systemName: "globe")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.black)
-                }
-                .sheet(isPresented: $isSheetPresented){
-                    ChoreCreateView()
-                        .presentationDetents([.medium, .large])
-                }
+                
                 
                 
             }
