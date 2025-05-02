@@ -7,10 +7,19 @@
 
 import SwiftUI
 
+enum alertOptions: String, CaseIterable{
+    case none = "없음"
+    case theDay = "당일 (9am)"
+    case oneDayBefore = "하루 전(9am)"
+    case twoDaysBefore = "이틀 전(9am)"
+    
+}
+
+
 struct AlertSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @Binding var alert:String
-    let alertOptions = ["없음", "당일 (9am)","하루 전(9am)","이틀 전(9am)"]
+    @Binding var alert:alertOptions
+    
     var body: some View {
         VStack{
             HStack{
@@ -24,8 +33,8 @@ struct AlertSheet: View {
                 }
             }
             Picker("Select", selection: $alert){
-                ForEach(alertOptions, id:\.self){
-                    Text($0)
+                ForEach(alertOptions.allCases, id:\.self){
+                    Text($0.rawValue)
                 }
             }
             .pickerStyle(WheelPickerStyle())
@@ -37,5 +46,5 @@ struct AlertSheet: View {
 }
 
 #Preview {
-    AlertSheet(alert: .constant("없음"))
+    AlertSheet(alert: .constant(.none))
 }

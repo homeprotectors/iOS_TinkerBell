@@ -10,36 +10,33 @@ import SwiftUI
 
 
 struct ChoreCreateView: View {
-    
-    @State private var title: String = ""
-    @State private var cycle: String = ""
-    @State private var alert = "없음"
+    @State private var viewModel = ViewModel()
     @State private var showPicker = false
     
     let alertOptions = ["없음", "당일 (9am)","하루 전(9am)","이틀 전(9am)"]
     
     // Form Validation
     var isFormValid: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !cycle.trimmingCharacters(in: .whitespaces).isEmpty
+        !viewModel.title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !viewModel.cycle.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             
-            // Title
+            
             Text("New Chore")
                 .font(.system(size: 28, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .center)
             
-            // Title Field
+            // Title
             VStack(alignment: .leading, spacing: 8) {
                 Text("Title")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
-                TextField("New Chore Title", text: $title)
+                TextField("New Chore Title", text: $viewModel.title)
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
@@ -52,7 +49,7 @@ struct ChoreCreateView: View {
                     .foregroundColor(.gray)
                 
                 HStack {
-                    TextField("1-365", text: $cycle)
+                    TextField("1-365", text: $viewModel.cycle)
                         .keyboardType(.numberPad)
                         .padding()
                         .background(Color(.systemGray6))
@@ -61,6 +58,22 @@ struct ChoreCreateView: View {
                     Text("일")
                         .foregroundColor(.gray)
                 }
+            }
+            
+            //Start Day
+            HStack(spacing: 8) {
+                Text("Start Day")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Spacer()
+                
+                Text("\(DateFormatter.yyyyMMdd.string(from: viewModel.startDate))")
+                
+                DatePicker("",selection: $viewModel.startDate, displayedComponents: .date)
+                    .labelsHidden()
+                    .padding()
+                    
+                    
             }
             
             // Alert Picker
@@ -73,8 +86,8 @@ struct ChoreCreateView: View {
                     showPicker = true
                 }) {
                     HStack {
-                        Text(alert)
-                            .foregroundColor(alert == "없음" ? .gray : .primary)
+                        Text(viewModel.selectedAlert.rawValue)
+                            .foregroundColor(viewModel.selectedAlert == .none ? .gray : .primary)
                         Spacer()
                         Image(systemName: "chevron.down")
                             .foregroundColor(.gray)
@@ -84,13 +97,13 @@ struct ChoreCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertSheet(alert: $alert)
+                    AlertSheet(alert: $viewModel.selectedAlert)
                 }
             }
             
             // Submit Button
             Button(action: {
-                
+                viewModel.createChore()
             }) {
                 Text("생성")
                     .font(.headline)
