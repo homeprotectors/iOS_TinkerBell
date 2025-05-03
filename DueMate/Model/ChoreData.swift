@@ -16,7 +16,7 @@ struct CreateChoreRequest: Codable {
     let reminderDays: Int
 }
 
-//Create Respons
+//Create Response
 struct ChoreCreateResponse: Decodable {
     let success: Bool
     let message: String
@@ -33,5 +33,15 @@ struct ChoreCreateResponseData: Codable {
 
 
 struct ChoreListItemResponse: Codable {
-   
+    let success: Bool
+    let message: String
+    let data: [ChoreListItem]
+}
+
+struct ChoreListItem: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let cycleDays: Int
+    let nextDueDate: String
+    let reminderEnabled: Bool
 }
