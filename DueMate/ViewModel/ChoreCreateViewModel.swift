@@ -44,13 +44,10 @@ extension ChoreCreateView{
                     reminderEnabled: reminderEnabled,
                     reminderDays: reminderDays
                 )
-            let url = APIConstants.baseURL + Endpoint.chores
-            print(body)
+            
+            print("✨New Chore----------\n",body)
             AF.request(
-                url,
-                method: .post,
-                parameters: body,
-                encoder: JSONParameterEncoder.default)
+                Router.createChoreItem(body: body))
             .responseData { response in
                 debugPrint("RAW response:")
                 debugPrint(response)
@@ -60,7 +57,7 @@ extension ChoreCreateView{
                     print(String(data: data, encoding: .utf8) ?? "nil")
                 }
             }
-            .responseDecodable(of: ChoreCreateResponse.self){
+            .responseDecodable(of: Response<ChoreCreateResponseData>.self){
                 response in
                 switch response.result {
                 case .success(let result):

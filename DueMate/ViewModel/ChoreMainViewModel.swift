@@ -34,27 +34,15 @@ extension ChoreMainView {
         
         
         func fetchChores() {
-            let url = APIConstants.baseURL + Endpoint.chores
+            print("Fetch Start ===========\n")
             
-            AF.request(
-                url,
-                method: .get
-            )
-            .responseData { response in
-                debugPrint("RAW response:")
-                debugPrint(response)
-                
-                if let data = response.data {
-                    print("🔵 Response string:")
-                    print(String(data: data, encoding: .utf8) ?? "nil")
-                }
-            }
-            .responseDecodable(of:ChoreListItemResponse.self){
+            AF.request(Router.getChoreItems)
+                .responseDecodable(of:Response<[ChoreListItem]>.self){
                 response in
                 switch response.result {
                 case .success(let result):
                     print("성공!✅ \(result.message)")
-                    self.items = result.data
+                    self.items = result.data ?? []
                 case .failure(let error):
                     print("에러🚩 \(error.localizedDescription)")
                 }
