@@ -18,7 +18,10 @@ struct ChoreItemView: View {
                 HStack{
                     Text(item.title)
                         .font(.system(size: 25, weight: .bold))
-                    Image(systemName: "bell.fill")
+                    if item.reminderEnabled{
+                        Image(systemName: "bell.fill")
+                    }
+                    
                 }
                 
                 Text("\(item.cycleDays)일에 한 번")
