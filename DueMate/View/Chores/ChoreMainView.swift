@@ -17,31 +17,36 @@ struct ChoreMainView: View {
                     .font(.system(size: 40))
                 Spacer()
             }
+            .padding()
+            
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    ForEach(viewModel.samples) { item in
+                    ForEach(viewModel.items) { item in
                         NavigationLink {
                             //ChoreItemView(item: item)
                             ChoreCreateView()
                         }label: {
-                            ChoreItemView(item: item)
+                            ChoreItemView(item: item, onCheckToggled: {
+                                //vm server networking
+                            })
                         }
                         
                     }
                 }
                 
                 NavigationLink(destination: ChoreCreateView()){
-                    Image(systemName: "globe")
+                    Image(systemName: "plus")
                         .font(.system(size: 40))
                         .foregroundStyle(.black)
                 }
-                
-                
+                .padding()
                 
             }
             .padding()
         }
-       
+        .onAppear {
+            viewModel.fetchChores()
+        }
         
     }
 }

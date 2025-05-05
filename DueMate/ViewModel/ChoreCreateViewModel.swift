@@ -44,10 +44,10 @@ extension ChoreCreateView{
                     reminderEnabled: reminderEnabled,
                     reminderDays: reminderDays
                 )
-            
+            let url = APIConstants.baseURL + Endpoint.chores
             print(body)
             AF.request(
-                "\(ServerURL.baseURL)+\(Endpoint.chores)",
+                url,
                 method: .post,
                 parameters: body,
                 encoder: JSONParameterEncoder.default)

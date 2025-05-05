@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct ChoreItemView: View {
-    var item: ChoreListItem
+    
+    let item: ChoreListItem
+    let onCheckToggled: () -> Void
+
     var body: some View {
         HStack{
             VStack(alignment:.leading){
@@ -21,6 +24,14 @@ struct ChoreItemView: View {
                 Text("\(item.cycleDays)일에 한 번")
             }
             Spacer()
+            Text("D-")
+            Button(action:onCheckToggled){
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
+            }
+            
             
         }
         .frame(maxWidth: .infinity)
@@ -36,7 +47,7 @@ struct ChoreItemView: View {
         id: 1,
         title: "Take out trash",
         cycleDays: 3,
-        nextDueDate: "2025-05-03",
+        nextDue: "2025-05-03",
         reminderEnabled: true
-    ))
+    ), onCheckToggled: {})
 }

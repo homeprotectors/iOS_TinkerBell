@@ -7,10 +7,10 @@
 
 import Foundation
 
-enum ServerURL{
+enum APIConstants{
     static let baseURL = "https://duemate.onrender.com/"
 }
 
 enum Endpoint {
-    static let chores = "/api/chores"
+    static let chores = "api/chores"
 }
