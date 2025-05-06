@@ -24,7 +24,10 @@ struct ChoreMainView: View {
                     ForEach(viewModel.items) { item in
                         NavigationLink {
                             //ChoreItemView(item: item)
-                            ChoreCreateView()
+                            ChoreCreateView(onComplete:{
+                                print("MainView: complete!!")
+                                viewModel.fetchChores()
+                            })
                         }label: {
                             ChoreItemView(item: item, onCheckToggled: {
                                 //vm server networking
@@ -34,7 +37,12 @@ struct ChoreMainView: View {
                     }
                 }
                 
-                NavigationLink(destination: ChoreCreateView()){
+                NavigationLink {
+                    ChoreCreateView(onComplete:{
+                        print("MainView: complete!!")
+                        viewModel.fetchChores()
+                    })
+                }label: {
                     Image(systemName: "plus")
                         .font(.system(size: 40))
                         .foregroundStyle(.black)
