@@ -10,10 +10,11 @@ import SwiftUI
 
 
 struct ChoreCreateView: View {
-    @State private var viewModel = ViewModel()
+    var onComplete: (() -> Void)? = nil
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel = ChoreCreateViewModel()
     @State private var showPicker = false
     
-    let alertOptions = ["없음", "당일 (9am)","하루 전(9am)","이틀 전(9am)"]
     
     // Form Validation
     var isFormValid: Bool {
@@ -24,7 +25,6 @@ struct ChoreCreateView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            
             
             Text("New Chore")
                 .font(.system(size: 28, weight: .bold))
@@ -115,6 +115,13 @@ struct ChoreCreateView: View {
             }
             .disabled(!isFormValid)
             .padding(.top, 12)
+            .onChange(of:viewModel.isChoreCreated){
+                if viewModel.isChoreCreated {
+                    print("CreateView: isChoreCreated")
+                    onComplete?()
+                    dismiss()
+                }
+            }
             
             Spacer()
         }
