@@ -29,9 +29,10 @@ struct ChoreMainView: View {
                                 viewModel.fetchChores()
                             })
                         }label: {
-                            ChoreItemView(item: item, onCheckToggled: {
+                            ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
                                 //vm server networking
-                            })
+                                print("checkToggeld!")
+                            } )
                         }
                         
                     }

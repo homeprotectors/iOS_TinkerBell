@@ -10,7 +10,9 @@ import SwiftUI
 struct ChoreItemView: View {
     
     let item: ChoreListItem
+    let color: Color
     let onCheckToggled: () -> Void
+   
 
     var body: some View {
         HStack{
@@ -39,7 +41,7 @@ struct ChoreItemView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(.yellow)
+        .background(color)
         .cornerRadius(20)
         
     }
@@ -52,5 +54,5 @@ struct ChoreItemView: View {
         cycleDays: 3,
         nextDue: "2025-05-03",
         reminderEnabled: true
-    ), onCheckToggled: {})
+    ), color: ListColor.normal, onCheckToggled: {})
 }

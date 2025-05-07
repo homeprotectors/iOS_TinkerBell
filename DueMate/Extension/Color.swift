@@ -12,3 +12,4 @@ enum ListColor {
     static let warning = Color("Warning")
     static let normal = Color("Default")
 }
+
