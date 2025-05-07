@@ -34,6 +34,7 @@ struct ChoreMainView: View {
                                 print("checkToggeld!")
                             } )
                         }
+                        .buttonStyle(.plain)
                         
                     }
                 }
