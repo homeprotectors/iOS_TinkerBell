@@ -12,7 +12,9 @@ struct ChoreItemView: View {
     let item: ChoreListItem
     let color: Color
     let onCheckToggled: () -> Void
-   
+    var daysRemaining: Int? {
+        item.nextDue.daysFromToday()
+    }
 
     var body: some View {
         HStack{
@@ -29,7 +31,18 @@ struct ChoreItemView: View {
                 Text("\(item.cycleDays)일에 한 번")
             }
             Spacer()
-            Text("D-")
+            if let daysRemaining = daysRemaining {
+                if daysRemaining == 0 {
+                    Text("D-Day")
+                } else if daysRemaining < 0 {
+                    Text("D+\(-daysRemaining)")
+                } else {
+                    Text("D-\(daysRemaining)")
+                }
+            } else {
+                Text("D-?")
+            }
+            
             Button(action:onCheckToggled){
                 Image(systemName: "checkmark.circle.fill")
                     .resizable()
