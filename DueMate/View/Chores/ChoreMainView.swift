@@ -23,7 +23,7 @@ struct ChoreMainView: View {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.items) { item in
                         NavigationLink {
-                            //ChoreItemView(item: item)
+                            ChoreDetailView(item: item)
                             ChoreCreateView(onComplete:{
                                 print("MainView: complete!!")
                                 viewModel.fetchChores()

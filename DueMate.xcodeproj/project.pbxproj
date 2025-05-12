@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4739DC2FB8BBD4B80BD36FA6 /* Pods_DueMate_DueMateUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDBA2717A12CA7867FF67582 /* Pods_DueMate_DueMateUITests.framework */; };
-		E5B8E0A8C6F92B05DFEEEB19 /* Pods_DueMateTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F075ABAF47AEC2CA47109D4B /* Pods_DueMateTests.framework */; };
-		E90FAD024B94D3ACC5E6E20D /* Pods_DueMate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F6674A0806681E80B3A2C3 /* Pods_DueMate.framework */; };
+		81B3499B2DD27E77009A888B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 81B3499A2DD27E77009A888B /* Alamofire */; };
+		81B3499D2DD27E77009A888B /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 81B3499C2DD27E77009A888B /* AlamofireDynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,18 +29,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		14D3F0212CEA6073D77BA2F9 /* Pods-DueMate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMate.debug.xcconfig"; path = "Target Support Files/Pods-DueMate/Pods-DueMate.debug.xcconfig"; sourceTree = "<group>"; };
-		4C83FEC634B22CDD80FE1998 /* Pods-DueMateTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMateTests.debug.xcconfig"; path = "Target Support Files/Pods-DueMateTests/Pods-DueMateTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81B347A22DB70EAD009A888B /* DueMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DueMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81B347B22DB70EAF009A888B /* DueMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DueMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		81B347BC2DB70EAF009A888B /* DueMateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DueMateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B4F6674A0806681E80B3A2C3 /* Pods_DueMate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DueMate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7745B823A926F68774C25B8 /* Pods-DueMate-DueMateUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMate-DueMateUITests.debug.xcconfig"; path = "Target Support Files/Pods-DueMate-DueMateUITests/Pods-DueMate-DueMateUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		D35DFCFE98DFFAC9A0A845D4 /* Pods-DueMate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMate.release.xcconfig"; path = "Target Support Files/Pods-DueMate/Pods-DueMate.release.xcconfig"; sourceTree = "<group>"; };
-		D710D235D0ADD046040168CA /* Pods-DueMateTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMateTests.release.xcconfig"; path = "Target Support Files/Pods-DueMateTests/Pods-DueMateTests.release.xcconfig"; sourceTree = "<group>"; };
-		EB1B83F37E7B2E3C79F46139 /* Pods-DueMate-DueMateUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DueMate-DueMateUITests.release.xcconfig"; path = "Target Support Files/Pods-DueMate-DueMateUITests/Pods-DueMate-DueMateUITests.release.xcconfig"; sourceTree = "<group>"; };
-		F075ABAF47AEC2CA47109D4B /* Pods_DueMateTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DueMateTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDBA2717A12CA7867FF67582 /* Pods_DueMate_DueMateUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DueMate_DueMateUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -67,7 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E90FAD024B94D3ACC5E6E20D /* Pods_DueMate.framework in Frameworks */,
+				81B3499B2DD27E77009A888B /* Alamofire in Frameworks */,
+				81B3499D2DD27E77009A888B /* AlamofireDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +66,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E5B8E0A8C6F92B05DFEEEB19 /* Pods_DueMateTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,23 +73,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4739DC2FB8BBD4B80BD36FA6 /* Pods_DueMate_DueMateUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7EB4832D01B2F596985167E6 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				B4F6674A0806681E80B3A2C3 /* Pods_DueMate.framework */,
-				FDBA2717A12CA7867FF67582 /* Pods_DueMate_DueMateUITests.framework */,
-				F075ABAF47AEC2CA47109D4B /* Pods_DueMateTests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		81B347992DB70EAD009A888B = {
 			isa = PBXGroup;
 			children = (
@@ -108,7 +87,6 @@
 				81B347BF2DB70EAF009A888B /* DueMateUITests */,
 				81B347A32DB70EAD009A888B /* Products */,
 				89B018840507305083195FA6 /* Pods */,
-				7EB4832D01B2F596985167E6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,12 +103,6 @@
 		89B018840507305083195FA6 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				14D3F0212CEA6073D77BA2F9 /* Pods-DueMate.debug.xcconfig */,
-				D35DFCFE98DFFAC9A0A845D4 /* Pods-DueMate.release.xcconfig */,
-				C7745B823A926F68774C25B8 /* Pods-DueMate-DueMateUITests.debug.xcconfig */,
-				EB1B83F37E7B2E3C79F46139 /* Pods-DueMate-DueMateUITests.release.xcconfig */,
-				4C83FEC634B22CDD80FE1998 /* Pods-DueMateTests.debug.xcconfig */,
-				D710D235D0ADD046040168CA /* Pods-DueMateTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -142,11 +114,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 81B347C62DB70EAF009A888B /* Build configuration list for PBXNativeTarget "DueMate" */;
 			buildPhases = (
-				4E70E1FA082A1DCABFB2976D /* [CP] Check Pods Manifest.lock */,
 				81B3479E2DB70EAD009A888B /* Sources */,
 				81B3479F2DB70EAD009A888B /* Frameworks */,
 				81B347A02DB70EAD009A888B /* Resources */,
-				03349984FD131357F48EEF8A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -164,7 +134,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 81B347C92DB70EAF009A888B /* Build configuration list for PBXNativeTarget "DueMateTests" */;
 			buildPhases = (
-				10EB0F53275386B6702A87E3 /* [CP] Check Pods Manifest.lock */,
 				81B347AE2DB70EAF009A888B /* Sources */,
 				81B347AF2DB70EAF009A888B /* Frameworks */,
 				81B347B02DB70EAF009A888B /* Resources */,
@@ -186,11 +155,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 81B347CC2DB70EAF009A888B /* Build configuration list for PBXNativeTarget "DueMateUITests" */;
 			buildPhases = (
-				537A7BE04A4CD04E70D74DF0 /* [CP] Check Pods Manifest.lock */,
 				81B347B82DB70EAF009A888B /* Sources */,
 				81B347B92DB70EAF009A888B /* Frameworks */,
 				81B347BA2DB70EAF009A888B /* Resources */,
-				7B5F7F567E4A05524BF3BBBC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -237,6 +204,9 @@
 			);
 			mainGroup = 81B347992DB70EAD009A888B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 81B347A32DB70EAD009A888B /* Products */;
 			projectDirPath = "";
@@ -272,109 +242,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		03349984FD131357F48EEF8A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DueMate/Pods-DueMate-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DueMate/Pods-DueMate-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DueMate/Pods-DueMate-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		10EB0F53275386B6702A87E3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DueMateTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4E70E1FA082A1DCABFB2976D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DueMate-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		537A7BE04A4CD04E70D74DF0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DueMate-DueMateUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7B5F7F567E4A05524BF3BBBC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DueMate-DueMateUITests/Pods-DueMate-DueMateUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DueMate-DueMateUITests/Pods-DueMate-DueMateUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DueMate-DueMateUITests/Pods-DueMate-DueMateUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		81B3479E2DB70EAD009A888B /* Sources */ = {
@@ -535,7 +402,6 @@
 		};
 		81B347C72DB70EAF009A888B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14D3F0212CEA6073D77BA2F9 /* Pods-DueMate.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -566,7 +432,6 @@
 		};
 		81B347C82DB70EAF009A888B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D35DFCFE98DFFAC9A0A845D4 /* Pods-DueMate.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -597,7 +462,6 @@
 		};
 		81B347CA2DB70EAF009A888B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4C83FEC634B22CDD80FE1998 /* Pods-DueMateTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -617,7 +481,6 @@
 		};
 		81B347CB2DB70EAF009A888B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D710D235D0ADD046040168CA /* Pods-DueMateTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -637,7 +500,6 @@
 		};
 		81B347CD2DB70EAF009A888B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C7745B823A926F68774C25B8 /* Pods-DueMate-DueMateUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -655,7 +517,6 @@
 		};
 		81B347CE2DB70EAF009A888B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EB1B83F37E7B2E3C79F46139 /* Pods-DueMate-DueMateUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -711,6 +572,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		81B3499A2DD27E77009A888B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		81B3499C2DD27E77009A888B /* AlamofireDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = AlamofireDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 81B3479A2DB70EAD009A888B /* Project object */;
 }
