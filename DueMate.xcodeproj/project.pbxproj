@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		81B3499B2DD27E77009A888B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 81B3499A2DD27E77009A888B /* Alamofire */; };
-		81B3499D2DD27E77009A888B /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 81B3499C2DD27E77009A888B /* AlamofireDynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +57,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				81B3499B2DD27E77009A888B /* Alamofire in Frameworks */,
-				81B3499D2DD27E77009A888B /* AlamofireDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +84,6 @@
 				81B347B52DB70EAF009A888B /* DueMateTests */,
 				81B347BF2DB70EAF009A888B /* DueMateUITests */,
 				81B347A32DB70EAD009A888B /* Products */,
-				89B018840507305083195FA6 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -98,13 +95,6 @@
 				81B347BC2DB70EAF009A888B /* DueMateUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		89B018840507305083195FA6 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -589,11 +579,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		81B3499C2DD27E77009A888B /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

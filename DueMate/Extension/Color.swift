@@ -13,3 +13,8 @@ enum ListColor {
     static let normal = Color("Default")
 }
 
+enum CalendarColor {
+    static let history = Color("History")
+    static let oldHistory = Color("OldHistory")
+    static let nextDue = Color("Warning")
+}
