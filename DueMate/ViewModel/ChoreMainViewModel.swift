@@ -12,7 +12,7 @@ import Alamofire
 
 class ChoreMainViewModel: ObservableObject {
     @Published var shouldRefresh: Bool = false
-    var items: [ChoreItem] = []
+    @Published var items: [ChoreItem] = []
 
     
     

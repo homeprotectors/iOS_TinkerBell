@@ -46,28 +46,19 @@ class ChoreCreateViewModel: ObservableObject {
         )
         
         print("✨New Chore----------\n",body)
-        AF.request(
-            Router.createChoreItem(body: body))
-        .responseData { response in
-            debugPrint("RAW response:")
-            debugPrint(response)
-            
-            if let data = response.data {
-                print("🔵 Response string:")
-                print(String(data: data, encoding: .utf8) ?? "nil")
+        AF.request(Router.createChoreItem(body: body))
+            .validate()
+            .responseDecodable(of: Response<ChoreCreateResponseData>.self){
+                response in
+                switch response.result {
+                case .success(let result):
+                    print("성공!✅ \(result.message)")
+                    self.isChoreCreated = true
+                    
+                case .failure(let error):
+                    print("에러🚩 \(error.localizedDescription)")
+                }
             }
-        }
-        .responseDecodable(of: Response<ChoreCreateResponseData>.self){
-            response in
-            switch response.result {
-            case .success(let result):
-                print("성공!✅ \(result.message)")
-                self.isChoreCreated = true
-                
-            case .failure(let error):
-                print("에러🚩 \(error.localizedDescription)")
-            }
-        }
     }
     
 }

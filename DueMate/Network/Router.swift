@@ -12,6 +12,7 @@ enum Router: URLRequestConvertible {
     
     case getChoreItems
     case createChoreItem(body: CreateChoreRequest)
+    case deleteChoreItem(id: Int)
     
     //baseURL
     var baseURL: URL {
@@ -23,6 +24,8 @@ enum Router: URLRequestConvertible {
         switch self {
         case .getChoreItems, .createChoreItem:
             return "/chores"
+        case .deleteChoreItem(let id):
+            return "/chores/\(id)"
             
         }
     }
@@ -32,6 +35,7 @@ enum Router: URLRequestConvertible {
         switch self {
         case .getChoreItems: return .get
         case .createChoreItem: return .post
+        case .deleteChoreItem: return .delete
         }
     }
     

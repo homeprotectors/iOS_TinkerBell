@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ChoreDetailView: View {
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChoreDetailViewModel()
     var item: ChoreItem
     
@@ -61,8 +62,9 @@ struct ChoreDetailView: View {
                 Button(role: .destructive) {
                     Task {
                         do {
-                            try await viewModel.deleteChore(for: item.id)
+                            try await viewModel.deleteChore(id: item.id)
                             mainViewModel.shouldRefresh = true
+                            dismiss()
                         } catch {
                             print("Failed to delete chore: \(error.localizedDescription)")
                         }

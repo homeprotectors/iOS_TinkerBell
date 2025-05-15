@@ -52,7 +52,15 @@ struct ChoreMainView: View {
             .padding()
         }
         .onAppear {
+            print("main onAppear")
             viewModel.fetchChores()
+        }
+        .onChange(of: viewModel.shouldRefresh) {
+            if viewModel.shouldRefresh {
+                print("main refresh")
+                viewModel.fetchChores()
+                viewModel.shouldRefresh = false
+            }
         }
         
     }

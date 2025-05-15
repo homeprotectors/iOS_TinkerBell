@@ -24,7 +24,23 @@ class ChoreDetailViewModel: ObservableObject {
         //서버 저장
     }
     
-    func deleteChore(for id:Int){
+    func deleteChore(id:Int) async throws {
+        //for async
+        try await withCheckedThrowingContinuation { continuation in
+            AF.request(Router.deleteChoreItem(id: id))
+                .validate()
+                .response { response in
+                    switch response.result {
+                    case .success(_):
+                        print("delete completed")
+                        continuation.resume(returning: ())
+                    case .failure(let error):
+                        print("delete failed")
+                        continuation.resume(throwing: error)
+                    }
+                }
+            
+        }
         
     }
 }
