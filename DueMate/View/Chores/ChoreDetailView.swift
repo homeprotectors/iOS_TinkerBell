@@ -12,11 +12,12 @@ struct ChoreDetailView: View {
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
     @StateObject private var viewModel = ChoreDetailViewModel()
     @State private var showDeleteAlert = false
+    @State private var showPicker = false
     var item: ChoreItem
     
     var body: some View {
         ScrollView{
-            
+            //title
             VStack(spacing: 15){
                 HStack(spacing: 8) {
                     TextField("", text: $viewModel.title)
@@ -29,18 +30,53 @@ struct ChoreDetailView: View {
                         .foregroundStyle(.black)
                     Spacer()
                 }
-                .padding([.top,.horizontal],30)
+                .padding(20)
                 
-                
+                //history calendar
                 CalendarView(history: $viewModel.historyDates)
                 
-                VStack(alignment: .leading) {
-                    Text("Cycle (days)")
-                        .font(.caption)
-                        .foregroundStyle(.gray)
-                    TextField("\(item.cycleDays)", text: $viewModel.cycleDays)
-                        .keyboardType(.numberPad)
-                        .textFieldStyle(.roundedBorder)
+                // cycle days
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Cycle")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    HStack {
+                        TextField("", text: $viewModel.cycleDays)
+                            .keyboardType(.numberPad)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                        
+                        Text("일")
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                
+                //alert
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Reminder")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Button(action: {
+                        showPicker = true
+                    }) {
+                        HStack {
+                            Text(viewModel.selectedAlert.rawValue)
+                                .foregroundColor(viewModel.selectedAlert == .none ? .gray : .primary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.gray)
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    }
+                    .sheet(isPresented: $showPicker) {
+                        AlertSheet(alert: $viewModel.selectedAlert)
+                    }
                 }
                 
                 Button(action: {
@@ -88,6 +124,12 @@ struct ChoreDetailView: View {
         .padding()
         .onAppear{
             viewModel.title = item.title
+            viewModel.cycleDays = String(item.cycleDays)
+            if item.reminderEnabled {
+                viewModel.selectedAlert = .theDay
+            }else {
+                viewModel.selectedAlert = .none
+            }
         }
         .task {
             do {

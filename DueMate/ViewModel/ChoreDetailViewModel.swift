@@ -12,6 +12,7 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var historyDates: [String] = []
     @Published var title: String = ""
     @Published var cycleDays: String = ""
+    @Published var selectedAlert: alertOptions = .none
     
     
     func fetchHistory(for id: Int){
