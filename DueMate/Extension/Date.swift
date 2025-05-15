@@ -45,5 +45,10 @@ extension Date {
     func toMonthTitle() -> String {
         return DateFormatter.monthTitle.string(from: self)
     }
+    
+    func normalizedDate() -> Date {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        return Calendar.current.date(from: components)!
+    }
 }
 

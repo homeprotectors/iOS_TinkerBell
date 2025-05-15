@@ -35,7 +35,8 @@ struct CalendarView: View {
                         .font(.title)
                         .foregroundColor(.black)
                 })
-                //.disabled()
+                .disabled(!viewModel.isNextMonthAvaliable)
+                
             }
             
             
@@ -54,7 +55,9 @@ struct CalendarView: View {
                 ForEach(viewModel.cells) { cell in
                     CalendarCellView(theCell: cell)
                         .onTapGesture {
+                            guard cell.isSelectable else { return }
                             viewModel.selectedDate = cell.date
+                            viewModel.generateCalendar()
                         }
                 }
             }
@@ -64,7 +67,7 @@ struct CalendarView: View {
         .onAppear {
             viewModel.loadHistory([
                 // 여기에 서버에서 받은 날짜 리스트 넣기
-                "2025-03-19", "2025-04-03", "2025-05-11"
+                "2025-03-19", "2025-04-03", "2025-05-11","2025-05-13"
             ])
         }
     }

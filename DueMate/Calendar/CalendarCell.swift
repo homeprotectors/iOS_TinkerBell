@@ -15,12 +15,15 @@ struct CalendarCell: Identifiable {
     let isInHistory: Bool
     let isNextDue: Bool
     let isSelected: Bool
+    let isSelectable: Bool
     
     func getBackgroundColor() -> Color {
         if isSelected {
             return Color.black
-        } else if isInHistory {
+        } else if isInHistory && isSelectable {
             return CalendarColor.history
+        } else if isInHistory && !isSelectable {
+            return CalendarColor.oldHistory
         } else if isNextDue {
             return CalendarColor.nextDue
         } else {
@@ -29,9 +32,14 @@ struct CalendarCell: Identifiable {
     }
     
     func getTextColor() -> Color {
-        if !isInCurrentMonth {
+        if !isSelectable  {
+            if isInHistory {
+                return .white
+            }
             return .gray
-        } else if isSelected || isNextDue || isInHistory {
+        } else if !isInCurrentMonth {
+            return .gray
+        }else if isSelected || isNextDue || isInHistory  {
             return .white
         } else {
             return .black
@@ -47,6 +55,7 @@ struct CalendarCellView: View {
     var body: some View {
         VStack {
             Text("\(theCell.day)")
+                .fontWeight(theCell.isSelectable ? .bold : .regular)
                 .frame(width: 30, height: 30)
                 .background(
                     Circle()
@@ -54,6 +63,6 @@ struct CalendarCellView: View {
                 )
                 .foregroundColor(theCell.getTextColor())
         }
-        .frame(height: 50)
+        .frame(width: 40, height: 40)
     }
 }
