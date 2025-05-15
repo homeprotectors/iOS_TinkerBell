@@ -24,10 +24,6 @@ struct ChoreMainView: View {
                     ForEach(viewModel.items) { item in
                         NavigationLink {
                             ChoreDetailView(item: item)
-                            ChoreCreateView(onComplete:{
-                                print("MainView: complete!!")
-                                viewModel.fetchChores()
-                            })
                         }label: {
                             ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
                                 //vm server networking

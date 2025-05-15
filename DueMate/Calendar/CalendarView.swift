@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CalendarView: View {
+    @Binding var history: [String]
     @StateObject private var viewModel = CalendarViewModel()
     @State private var selectedDate: Date?
     
@@ -38,8 +39,6 @@ struct CalendarView: View {
                 .disabled(!viewModel.isNextMonthAvaliable)
                 
             }
-            
-            
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                 ForEach(viewModel.weekdaySymbols.indices) { index in
                     Text(viewModel.weekdaySymbols[index])
@@ -64,12 +63,13 @@ struct CalendarView: View {
             
         }
         .padding()
-        .onAppear {
-            viewModel.loadHistory([
-                // 여기에 서버에서 받은 날짜 리스트 넣기
-                "2025-03-19", "2025-04-03", "2025-05-11","2025-05-13"
-            ])
+        .onChange(of: history) { history in
+            viewModel.loadHistory(history)
         }
+        .onAppear {
+            viewModel.loadHistory(history)
+        }
+        
     }
     
 }
@@ -78,5 +78,6 @@ struct CalendarView: View {
 
 
 #Preview {
-    CalendarView()
+    CalendarView(history: .constant(["2025-05-01",
+                                     "2025-05-10"]))
 }
