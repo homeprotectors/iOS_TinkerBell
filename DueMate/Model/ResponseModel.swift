@@ -25,7 +25,7 @@ struct ChoreCreateResponseData: Codable {
 }
 
 //Get chore list item
-struct ChoreListItem: Codable, Identifiable {
+struct ChoreItem: Codable, Identifiable {
     let id: Int
     let title: String
     let cycleDays: Int

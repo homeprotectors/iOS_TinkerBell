@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ChoreMainView: View {
-    @State private var viewModel = ViewModel()
+    @StateObject private var viewModel = ChoreMainViewModel()
     
     var body: some View {
         NavigationStack{
@@ -24,6 +24,7 @@ struct ChoreMainView: View {
                     ForEach(viewModel.items) { item in
                         NavigationLink {
                             ChoreDetailView(item: item)
+                                .environmentObject(viewModel)
                         }label: {
                             ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
                                 //vm server networking

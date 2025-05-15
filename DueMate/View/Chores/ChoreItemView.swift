@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChoreItemView: View {
     
-    let item: ChoreListItem
+    let item: ChoreItem
     let color: Color
     let onCheckToggled: () -> Void
     var daysRemaining: Int? {
@@ -61,7 +61,7 @@ struct ChoreItemView: View {
 }
 
 #Preview {
-    ChoreItemView(item: ChoreListItem(
+    ChoreItemView(item: ChoreItem(
         id: 1,
         title: "Take out trash",
         cycleDays: 3,
