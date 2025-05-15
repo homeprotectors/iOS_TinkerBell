@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ChoreDetailView: View {
-    @EnvironmentObject var mainViewModel: ChoreMainViewModel
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var mainViewModel: ChoreMainViewModel
     @StateObject private var viewModel = ChoreDetailViewModel()
+    @State private var showDeleteAlert = false
     var item: ChoreItem
     
     var body: some View {
@@ -60,19 +61,26 @@ struct ChoreDetailView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 Button(role: .destructive) {
-                    Task {
-                        do {
-                            try await viewModel.deleteChore(id: item.id)
-                            mainViewModel.shouldRefresh = true
-                            dismiss()
-                        } catch {
-                            print("Failed to delete chore: \(error.localizedDescription)")
-                        }
-                    }
+                    showDeleteAlert = true
+                    
                 } label: {
                     Text("Delete Chore")
                         .frame(maxWidth: .infinity)
                         .padding()
+                }
+                .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
+                    Button("삭제", role: .destructive){
+                        Task {
+                            do {
+                                try await viewModel.deleteChore(id: item.id)
+                                mainViewModel.shouldRefresh = true
+                                dismiss()
+                            } catch {
+                                print("Failed to delete chore: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                    Button("취소",role: .cancel) {}
                 }
                 
             }

@@ -13,11 +13,23 @@ struct ChoreMainView: View {
     var body: some View {
         NavigationStack{
             HStack{
-                Text("Chore List")
-                    .font(.system(size: 40))
+                Text("HOUSEHOLD\nLIST")
+                    .font(.system(size: 40, weight: .bold))
                 Spacer()
+                NavigationLink {
+                    ChoreCreateView(onComplete:{
+                        print("MainView: complete!!")
+                        viewModel.fetchChores()
+                    })
+                }label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.black)
+                }
+                .padding()
             }
             .padding()
+            .padding(.top, 30)
             
             ScrollView {
                 LazyVStack(spacing: 16) {
@@ -36,17 +48,7 @@ struct ChoreMainView: View {
                     }
                 }
                 
-                NavigationLink {
-                    ChoreCreateView(onComplete:{
-                        print("MainView: complete!!")
-                        viewModel.fetchChores()
-                    })
-                }label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.black)
-                }
-                .padding()
+                
                 
             }
             .padding()
