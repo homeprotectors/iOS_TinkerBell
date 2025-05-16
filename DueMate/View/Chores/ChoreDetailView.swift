@@ -10,10 +10,12 @@ import SwiftUI
 struct ChoreDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
-    @StateObject private var viewModel = ChoreDetailViewModel()
+    @StateObject private var viewModel =  ChoreDetailViewModel()
     @State private var showDeleteAlert = false
     @State private var showPicker = false
     var item: ChoreItem
+    
+    
     
     var body: some View {
         ScrollView{
@@ -84,6 +86,7 @@ struct ChoreDetailView: View {
                         do {
                             try await viewModel.updateChore(for: item.id)
                             mainViewModel.shouldRefresh = true
+                            dismiss()
                         } catch {
                             print("Failed to save chore: \(error.localizedDescription)")
                         }
@@ -125,11 +128,7 @@ struct ChoreDetailView: View {
         .onAppear{
             viewModel.title = item.title
             viewModel.cycleDays = String(item.cycleDays)
-            if item.reminderEnabled {
-                viewModel.selectedAlert = .theDay
-            }else {
-                viewModel.selectedAlert = .none
-            }
+            viewModel.selectedAlert = item.reminderEnabled ? .theDay : .none
         }
         .task {
             do {

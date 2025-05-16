@@ -24,6 +24,16 @@ struct ChoreCreateResponseData: Codable {
     let reminderDays: Int
 }
 
+struct ChoreUpdateResponseData: Codable {
+    let id: Int
+    let title: String
+    let startDate: String
+    let cycleDays: Int
+    let reminderEnabled: Bool
+    let reminderDays: Int
+}
+
+
 //Get chore list item
 struct ChoreItem: Codable, Identifiable {
     let id: Int
