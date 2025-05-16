@@ -66,6 +66,7 @@ struct ChoreItemView: View {
         title: "Take out trash",
         cycleDays: 3,
         nextDue: "2025-05-03",
-        reminderEnabled: true
+        reminderEnabled: true,
+        reminderDays: 1
     ), color: ListColor.normal, onCheckToggled: {})
 }

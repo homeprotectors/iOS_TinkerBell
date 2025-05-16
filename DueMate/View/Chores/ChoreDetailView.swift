@@ -20,12 +20,12 @@ struct ChoreDetailView: View {
     //to detect changes
     @State private var originalTitle: String = ""
     @State private var originalCycleDays: String = ""
-    @State private var originalAlert: alertOptions = .none
+    @State private var originalReminderOption: alertOptions = .none
     
     private var hasChanged: Bool {
         viewModel.title != originalTitle ||
         viewModel.cycleDays != originalCycleDays ||
-        viewModel.selectedAlert != originalAlert
+        viewModel.selectedAlert != originalReminderOption
     }
     
     var body: some View {
@@ -163,11 +163,21 @@ struct ChoreDetailView: View {
         .onAppear{
             viewModel.title = item.title
             viewModel.cycleDays = String(item.cycleDays)
-            viewModel.selectedAlert = item.reminderEnabled ? .theDay : .none
+            
+            if !item.reminderEnabled {
+                viewModel.selectedAlert = .none
+            }else{
+                switch item.reminderDays {
+                case 0: viewModel.selectedAlert = .theDay
+                case 1: viewModel.selectedAlert = .oneDayBefore
+                case 2: viewModel.selectedAlert = .twoDaysBefore
+                default: viewModel.selectedAlert = .theDay
+                }
+            }
             
             originalTitle = item.title
             originalCycleDays = String(item.cycleDays)
-            originalAlert = item.reminderEnabled ? .theDay : .none
+            originalReminderOption = item.reminderDays.getReminderOption()
         }
         .task {
             do {
@@ -184,5 +194,5 @@ struct ChoreDetailView: View {
 }
 
 #Preview {
-    ChoreDetailView(item: ChoreItem(id: 1, title: "빨래하기", cycleDays: 3, nextDue: "2025-05-13", reminderEnabled: true))
+    ChoreDetailView(item: ChoreItem(id: 1, title: "빨래하기", cycleDays: 3, nextDue: "2025-05-13", reminderEnabled: true, reminderDays: 1))
 }

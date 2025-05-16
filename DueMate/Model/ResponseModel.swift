@@ -41,4 +41,5 @@ struct ChoreItem: Codable, Identifiable {
     let cycleDays: Int
     let nextDue: String
     let reminderEnabled: Bool
+    let reminderDays: Int
 }
