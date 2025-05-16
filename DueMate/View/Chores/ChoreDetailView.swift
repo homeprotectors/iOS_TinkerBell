@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct ChoreDetailView: View {
+    var item: ChoreItem
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
     @StateObject private var viewModel =  ChoreDetailViewModel()
-    @State private var showDeleteAlert = false
+    
     @State private var showPicker = false
-    var item: ChoreItem
+    @State private var showDeleteAlert = false
+    @State private var showCancelAlert = false
     
+    //to detect changes
+    @State private var originalTitle: String = ""
+    @State private var originalCycleDays: String = ""
+    @State private var originalAlert: alertOptions = .none
     
+    private var hasChanged: Bool {
+        viewModel.title != originalTitle ||
+        viewModel.cycleDays != originalCycleDays ||
+        viewModel.selectedAlert != originalAlert
+    }
     
     var body: some View {
         ScrollView{
@@ -95,10 +106,11 @@ struct ChoreDetailView: View {
                     Text("Save")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(hasChanged ? Color.blue : .gray)
                         .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
+                .disabled(!hasChanged)
                 Button(role: .destructive) {
                     showDeleteAlert = true
                     
@@ -125,10 +137,37 @@ struct ChoreDetailView: View {
             }
         }
         .padding()
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    if hasChanged {
+                        showCancelAlert = true
+                    } else {
+                        dismiss()
+                    }
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .alert("변경 내용을 취소하시겠습니까?", isPresented: $showCancelAlert) {
+            Button("취소", role: .cancel) {}
+            Button("확인", role: .destructive) {
+                dismiss()
+            }
+        } message: {
+            Text("저장하지 않은 변경 사항이 사라집니다.")
+        }
         .onAppear{
             viewModel.title = item.title
             viewModel.cycleDays = String(item.cycleDays)
             viewModel.selectedAlert = item.reminderEnabled ? .theDay : .none
+            
+            originalTitle = item.title
+            originalCycleDays = String(item.cycleDays)
+            originalAlert = item.reminderEnabled ? .theDay : .none
         }
         .task {
             do {
