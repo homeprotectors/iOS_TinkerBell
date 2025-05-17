@@ -40,7 +40,7 @@ struct ChoreMainView: View {
                         }label: {
                             ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
                                 //vm server networking
-                                print("checkToggeld!")
+                                print("check Toggeld!")
                             } )
                         }
                         .buttonStyle(.plain)

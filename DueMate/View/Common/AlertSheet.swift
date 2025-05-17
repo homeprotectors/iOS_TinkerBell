@@ -23,16 +23,6 @@ enum alertOptions: String, CaseIterable{
     
 }
 
-extension Int {
-    func getReminderOption() -> alertOptions {
-        switch self {
-        case 0: return .theDay
-        case 1: return .oneDayBefore
-        case 2: return .twoDaysBefore
-        default: return .none
-        }
-    }
-}
 
 
 struct AlertSheet: View {

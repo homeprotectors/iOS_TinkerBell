@@ -17,17 +17,6 @@ struct ChoreDetailView: View {
     @State private var showDeleteAlert = false
     @State private var showCancelAlert = false
     
-    //to detect changes
-    @State private var originalTitle: String = ""
-    @State private var originalCycleDays: String = ""
-    @State private var originalReminderOption: alertOptions = .none
-    
-    private var hasChanged: Bool {
-        viewModel.title != originalTitle ||
-        viewModel.cycleDays != originalCycleDays ||
-        viewModel.selectedAlert != originalReminderOption
-    }
-    
     var body: some View {
         ScrollView{
             //title
@@ -77,8 +66,8 @@ struct ChoreDetailView: View {
                         showPicker = true
                     }) {
                         HStack {
-                            Text(viewModel.selectedAlert.rawValue)
-                                .foregroundColor(viewModel.selectedAlert == .none ? .gray : .primary)
+                            Text(viewModel.reminderOption.rawValue)
+                                .foregroundColor(viewModel.reminderOption == .none ? .gray : .primary)
                             Spacer()
                             Image(systemName: "chevron.down")
                                 .foregroundColor(.gray)
@@ -88,7 +77,7 @@ struct ChoreDetailView: View {
                         .cornerRadius(12)
                     }
                     .sheet(isPresented: $showPicker) {
-                        AlertSheet(alert: $viewModel.selectedAlert)
+                        AlertSheet(alert: $viewModel.reminderOption)
                     }
                 }
                 
@@ -106,11 +95,11 @@ struct ChoreDetailView: View {
                     Text("Save")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(hasChanged ? Color.blue : .gray)
+                        .background(viewModel.hasInputChanges() ? Color.blue : .gray)
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
-                .disabled(!hasChanged)
+                .disabled(!viewModel.hasInputChanges())
                 Button(role: .destructive) {
                     showDeleteAlert = true
                     
@@ -141,7 +130,7 @@ struct ChoreDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
-                    if hasChanged {
+                    if viewModel.hasInputChanges() {
                         showCancelAlert = true
                     } else {
                         dismiss()
@@ -161,23 +150,15 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            viewModel.title = item.title
-            viewModel.cycleDays = String(item.cycleDays)
-            
+            var reminder: alertOptions
             if !item.reminderEnabled {
-                viewModel.selectedAlert = .none
+                reminder = .none
             }else{
-                switch item.reminderDays {
-                case 0: viewModel.selectedAlert = .theDay
-                case 1: viewModel.selectedAlert = .oneDayBefore
-                case 2: viewModel.selectedAlert = .twoDaysBefore
-                default: viewModel.selectedAlert = .theDay
-                }
+                reminder = item.reminderDays.getReminderOption()
             }
             
-            originalTitle = item.title
-            originalCycleDays = String(item.cycleDays)
-            originalReminderOption = item.reminderDays.getReminderOption()
+            viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: reminder)
+            
         }
         .task {
             do {

@@ -12,8 +12,11 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var historyDates: [String] = []
     @Published var title: String = ""
     @Published var cycleDays: String = ""
-    @Published var selectedAlert: alertOptions = .none
+    @Published var reminderOption: alertOptions = .none
     
+    @Published var firstTitle: String = ""
+    @Published var firstCycleDays: String = ""
+    @Published var firstReminderOption: alertOptions = .none
     
     
     func fetchHistory(for id: Int){
@@ -22,21 +25,26 @@ class ChoreDetailViewModel: ObservableObject {
         
     }
     
+    func firstInputSetting(title: String, cycleDays: String, reminderOption: alertOptions) {
+        self.title = title
+        self.cycleDays = cycleDays
+        self.reminderOption = reminderOption
+        
+        firstTitle = title
+        firstCycleDays = cycleDays
+        firstReminderOption = reminderOption        
+    }
+    
+    func hasInputChanges() -> Bool {
+        return title != firstTitle || cycleDays != firstCycleDays || reminderOption != firstReminderOption
+    }
+    
     func updateChore(for id:Int) async throws {
-        let intCycledays = Int(cycleDays) ?? 0
-        var reminderEnabled = true
-        var reminderDays = 0
-        switch selectedAlert {
-        case .theDay:
-            reminderDays = 0
-        case .oneDayBefore:
-            reminderDays = 1
-        case .twoDaysBefore:
-            reminderDays = 2
-        case .none:
-            reminderDays = 0
-            reminderEnabled = false
-        }
+        let intCycledays = Int(cycleDays) ?? 1
+        let reminderDays = reminderOption.getDays()
+        let reminderEnabled = reminderOption == .none ? false : true
+        
+        
         let body = CreateChoreRequest(title: title, cycleDays: intCycledays, startDate: "2025-05-15", reminderEnabled: reminderEnabled, reminderDays: reminderDays)
         try await withCheckedThrowingContinuation {continuation in
             AF.request(Router.updateChoreItem(id: id, body: body))
