@@ -8,37 +8,14 @@
 import SwiftUI
 
 struct ChoreMainView: View {
-    @State private var viewModel = ViewModel()
+    @StateObject private var viewModel = ChoreMainViewModel()
     
     var body: some View {
         NavigationStack{
             HStack{
-                Text("Chore List")
-                    .font(.system(size: 40))
+                Text("HOUSEHOLD\nLIST")
+                    .font(.system(size: 40, weight: .bold))
                 Spacer()
-            }
-            .padding()
-            
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(viewModel.items) { item in
-                        NavigationLink {
-                            ChoreDetailView(item: item)
-                            ChoreCreateView(onComplete:{
-                                print("MainView: complete!!")
-                                viewModel.fetchChores()
-                            })
-                        }label: {
-                            ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
-                                //vm server networking
-                                print("checkToggeld!")
-                            } )
-                        }
-                        .buttonStyle(.plain)
-                        
-                    }
-                }
-                
                 NavigationLink {
                     ChoreCreateView(onComplete:{
                         print("MainView: complete!!")
@@ -50,12 +27,42 @@ struct ChoreMainView: View {
                         .foregroundStyle(.black)
                 }
                 .padding()
+            }
+            .padding()
+            .padding(.top, 30)
+            
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.items) { item in
+                        NavigationLink {
+                            ChoreDetailView(item: item)
+                                .environmentObject(viewModel)
+                        }label: {
+                            ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
+                                //vm server networking
+                                print("check Toggeld!")
+                            } )
+                        }
+                        .buttonStyle(.plain)
+                        
+                    }
+                }
+                
+                
                 
             }
             .padding()
         }
         .onAppear {
+            print("main onAppear")
             viewModel.fetchChores()
+        }
+        .onChange(of: viewModel.shouldRefresh) {
+            if viewModel.shouldRefresh {
+                print("main refresh")
+                viewModel.fetchChores()
+                viewModel.shouldRefresh = false
+            }
         }
         
     }

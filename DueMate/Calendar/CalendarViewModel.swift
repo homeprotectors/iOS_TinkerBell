@@ -38,7 +38,7 @@ class CalendarViewModel: ObservableObject {
     }
     
     var isNextMonthAvaliable: Bool {
-        guard let now = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Date())) else {
+        guard let now = calendar.date(from: calendar.dateComponents([.year, .month], from: Date())) else {
             return false
         }
         return currentMonth < now
@@ -51,22 +51,21 @@ class CalendarViewModel: ObservableObject {
     
 
     func goToPreviousMonth() {
-        currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth)!
+        currentMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth)!
         selectedDate = nil
         generateCalendar()
     }
 
     func goToNextMonth() {
-        currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth)!
+        currentMonth = calendar.date(byAdding: .month, value: 1, to: currentMonth)!
         selectedDate = nil
         generateCalendar()
     }
     
     
     func loadHistory(_ dateStrings: [String]) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        self.historyDates = dateStrings.compactMap { formatter.date(from: $0) }
+        self.historyDates = dateStrings.compactMap { DateFormatter.yyyyMMdd.date(from: $0) }
+        generateCalendar()
     }
     
     func generateCalendar() {
@@ -131,7 +130,7 @@ class CalendarViewModel: ObservableObject {
     }
     
     func numberOfDays(in date:Date) -> Int {
-        return Calendar.current.range(of:.day, in: .month, for:date)?.count ?? 0
+        return calendar.range(of:.day, in: .month, for:date)?.count ?? 0
     }
     
    

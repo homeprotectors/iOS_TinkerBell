@@ -13,7 +13,16 @@ enum alertOptions: String, CaseIterable{
     case oneDayBefore = "하루 전(9am)"
     case twoDaysBefore = "이틀 전(9am)"
     
+    func getDays() -> Int {
+        switch self {
+        case .none, .theDay: return 0
+        case .oneDayBefore: return 1
+        case .twoDaysBefore: return 2
+        }
+    }
+    
 }
+
 
 
 struct AlertSheet: View {
