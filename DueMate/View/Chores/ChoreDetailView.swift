@@ -13,116 +13,143 @@ struct ChoreDetailView: View {
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
     @StateObject private var viewModel =  ChoreDetailViewModel()
     
+    @State private var selectedDate : Date? = nil
+    @State private var showDialog = false
     @State private var showPicker = false
     @State private var showDeleteAlert = false
     @State private var showCancelAlert = false
     
     var body: some View {
-        ScrollView{
-            //title
-            VStack(spacing: 15){
-                HStack(spacing: 8) {
-                    TextField("", text: $viewModel.title)
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.black)
-                        .textFieldStyle(.plain)
-                        .fixedSize()
-                    Image(systemName: "pencil")
-                        .font(.system(size: 30))
-                        .foregroundStyle(.black)
-                    Spacer()
-                }
-                .padding(20)
-                
-                //history calendar
-                CalendarView(history: $viewModel.historyDates)
-                
-                // cycle days
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Cycle")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+        ZStack {
+            ScrollView{
+                //title
+                VStack(spacing: 15){
+                    HStack(spacing: 8) {
+                        TextField("", text: $viewModel.title)
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.black)
+                            .textFieldStyle(.plain)
+                            .fixedSize()
+                        Image(systemName: "pencil")
+                            .font(.system(size: 30))
+                            .foregroundStyle(.black)
+                        Spacer()
+                    }
+                    .padding(20)
                     
-                    HStack {
-                        TextField("", text: $viewModel.cycleDays)
-                            .keyboardType(.numberPad)
+                    //history calendar
+                    CalendarView(history: $viewModel.historyDates, selectedDate: $selectedDate)
+                    
+                    // cycle days
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Cycle")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        
+                        HStack {
+                            TextField("", text: $viewModel.cycleDays)
+                                .keyboardType(.numberPad)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                            
+                            Text("일")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    
+                    //alert
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Reminder")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        
+                        Button(action: {
+                            showPicker = true
+                        }) {
+                            HStack {
+                                Text(viewModel.reminderOption.rawValue)
+                                    .foregroundColor(viewModel.reminderOption == .none ? .gray : .primary)
+                                Spacer()
+                                Image(systemName: "chevron.down")
+                                    .foregroundColor(.gray)
+                            }
                             .padding()
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
-                        
-                        Text("일")
-                            .foregroundColor(.gray)
+                        }
+                        .sheet(isPresented: $showPicker) {
+                            AlertSheet(alert: $viewModel.reminderOption)
+                        }
                     }
-                }
-                
-                
-                //alert
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Reminder")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
                     
                     Button(action: {
-                        showPicker = true
-                    }) {
-                        HStack {
-                            Text(viewModel.reminderOption.rawValue)
-                                .foregroundColor(viewModel.reminderOption == .none ? .gray : .primary)
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-                    .sheet(isPresented: $showPicker) {
-                        AlertSheet(alert: $viewModel.reminderOption)
-                    }
-                }
-                
-                Button(action: {
-                    Task {
-                        do {
-                            try await viewModel.updateChore(for: item.id)
-                            mainViewModel.shouldRefresh = true
-                            dismiss()
-                        } catch {
-                            print("Failed to save chore: \(error.localizedDescription)")
-                        }
-                    }
-                }) {
-                    Text("Save")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.hasInputChanges() ? Color.blue : .gray)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                }
-                .disabled(!viewModel.hasInputChanges())
-                Button(role: .destructive) {
-                    showDeleteAlert = true
-                    
-                } label: {
-                    Text("Delete Chore")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
-                .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
-                    Button("삭제", role: .destructive){
                         Task {
                             do {
-                                try await viewModel.deleteChore(id: item.id)
+                                try await viewModel.updateChore(for: item.id)
                                 mainViewModel.shouldRefresh = true
                                 dismiss()
                             } catch {
-                                print("Failed to delete chore: \(error.localizedDescription)")
+                                print("Failed to save chore: \(error.localizedDescription)")
                             }
                         }
+                    }) {
+                        Text("Save")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(viewModel.hasInputChanges() ? Color.blue : .gray)
+                            .foregroundColor(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
-                    Button("취소",role: .cancel) {}
+                    .disabled(!viewModel.hasInputChanges())
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                        
+                    } label: {
+                        Text("Delete Chore")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                    .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
+                        Button("삭제", role: .destructive){
+                            Task {
+                                do {
+                                    try await viewModel.deleteChore(id: item.id)
+                                    mainViewModel.shouldRefresh = true
+                                    dismiss()
+                                } catch {
+                                    print("Failed to delete chore: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                        Button("취소",role: .cancel) {}
+                    }
+                    
                 }
                 
+            }
+            
+            if showDialog {
+                if let selectedDate = selectedDate {
+                    if viewModel.historyDates.contains(selectedDate.toString()) {
+                        ConfirmationDialog(
+                            isPresented: $showDialog,
+                            type: .historyCancelation,
+                            onConfirm: {
+                                print("date: \(selectedDate)")
+                            }
+                        )
+                    } else {
+                        ConfirmationDialog(
+                            isPresented: $showDialog,
+                            type: .historyCompletion,
+                            onConfirm: {
+                                print("date: \(selectedDate)")
+                            }
+                        )
+                    }
+                }
             }
         }
         .padding()
@@ -156,9 +183,12 @@ struct ChoreDetailView: View {
             }else{
                 reminder = item.reminderDays.getReminderOption()
             }
-            
             viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: reminder)
-            
+        }
+        .onChange(of: selectedDate) { newDate in
+            if newDate != nil {
+                showDialog = true
+            }
         }
         .task {
             do {
@@ -167,7 +197,6 @@ struct ChoreDetailView: View {
             } catch {
                 print("fetch canceled")
             }
-            
         }
         
     }

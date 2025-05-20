@@ -33,6 +33,10 @@ class ChoreMainViewModel: ObservableObject {
             }
     }
     
+    func completeChore(_ chore: ChoreItem) {
+        print("\(chore.title) 췍!!!!")
+    }
+    
     func sortByDueDate() {
         items.sort { (item1, item2) -> Bool in
             return item1.nextDue < item2.nextDue

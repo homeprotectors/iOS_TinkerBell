@@ -10,7 +10,7 @@ import SwiftUI
 struct CalendarView: View {
     @Binding var history: [String]
     @StateObject private var viewModel = CalendarViewModel()
-    @State private var selectedDate: Date?
+    @Binding var selectedDate: Date?
     
     var body: some View {
         VStack {
@@ -55,6 +55,7 @@ struct CalendarView: View {
                     CalendarCellView(theCell: cell)
                         .onTapGesture {
                             guard cell.isSelectable else { return }
+                            selectedDate = cell.date
                             viewModel.selectedDate = cell.date
                             viewModel.generateCalendar()
                         }
@@ -78,6 +79,7 @@ struct CalendarView: View {
 
 
 #Preview {
+    @Previewable @State var selectedDate: Date? = nil
     CalendarView(history: .constant(["2025-05-01",
-                                     "2025-05-10"]))
+                                     "2025-05-10"]), selectedDate: $selectedDate)
 }
