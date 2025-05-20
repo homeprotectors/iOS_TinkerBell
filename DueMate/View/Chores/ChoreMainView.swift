@@ -75,7 +75,6 @@ struct ChoreMainView: View {
                     type: .mainViewCompletion,
                     onConfirm: {
                         viewModel.completeChore(item)
-                        
                     }
                 )
             }
