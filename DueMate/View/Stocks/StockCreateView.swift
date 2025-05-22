@@ -47,25 +47,26 @@ struct StockCreateView: View {
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(15)
-                    Spacer()
                     Text("일에")
                     Spacer()
                     HStack(spacing: 0) {
                         TextField("수량", value: $viewModel.usageAmount, formatter: NumberFormatter())
                             .keyboardType(.decimalPad)
                             .padding(.leading)
-                            .frame(width: 80)
                             .background(Color.clear)
                         
                         Button {
                             showUnitPicker = true
                         } label: {
-                            HStack(spacing: 4) {
+                            HStack {
                                 Text(viewModel.usageUnit)
                                 Image(systemName: "chevron.down")
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
                             }
                             .foregroundColor(.primary)
-                            .padding(.horizontal)
+                            .frame(minWidth: 60)
+                            
                         }
                     }
                     .padding()
