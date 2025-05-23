@@ -11,8 +11,8 @@ import SwiftUI
 class StockCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var usageDays: Int = 3
-    @Published var usageAmount: Int = 1
-    @Published var usageUnit: String = "개"
+    @Published var consumptionDays: Int = 1
+    @Published var consumptionUnit: String = "개"
     @Published var currentAmount: Int? = nil
     @Published var selectedReminder: alertOptions = .none
     @Published var isStockCreated = false
@@ -24,8 +24,8 @@ class StockCreateViewModel: ObservableObject {
     }
     
     var expectedDaysLeft: Int {
-        guard let currentAmount = currentAmount , usageAmount > 0 else { return 0 }
-        return (currentAmount * usageDays) / usageAmount
+        guard let currentAmount = currentAmount , consumptionDays > 0 else { return 0 }
+        return (currentAmount * usageDays) / consumptionDays
     }
     
     

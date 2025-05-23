@@ -50,7 +50,7 @@ struct StockCreateView: View {
                     Text("일에")
                     Spacer()
                     HStack(spacing: 0) {
-                        TextField("수량", value: $viewModel.usageAmount, formatter: NumberFormatter())
+                        TextField("수량", value: $viewModel.consumptionDays, formatter: NumberFormatter())
                             .keyboardType(.decimalPad)
                             .padding(.leading)
                             .background(Color.clear)
@@ -59,7 +59,7 @@ struct StockCreateView: View {
                             showUnitPicker = true
                         } label: {
                             HStack {
-                                Text(viewModel.usageUnit)
+                                Text(viewModel.consumptionUnit)
                                 Image(systemName: "chevron.down")
                                     .foregroundStyle(.secondary)
                                     .font(.caption)
@@ -89,7 +89,7 @@ struct StockCreateView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(15)
                     
-                    Text(viewModel.usageUnit)
+                    Text(viewModel.consumptionUnit)
                         .foregroundColor(.gray)
                 }
                 Group {
