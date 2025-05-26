@@ -80,7 +80,7 @@ struct ChoreDetailView: View {
                             .cornerRadius(12)
                         }
                         .sheet(isPresented: $showReminderPicker) {
-                            AlertSheet(alert: $viewModel.reminderOption)
+                            ReminderPickerView(alert: $viewModel.reminderOption)
                         }
                     }
                     
@@ -177,7 +177,7 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            var reminder: alertOptions
+            var reminder: ReminderOptions
             if !item.reminderEnabled {
                 reminder = .none
             }else{

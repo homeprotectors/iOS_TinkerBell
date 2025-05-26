@@ -12,11 +12,11 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var historyDates: [String] = []
     @Published var title: String = ""
     @Published var cycleDays: String = ""
-    @Published var reminderOption: alertOptions = .none
+    @Published var reminderOption: ReminderOptions = .none
     
     @Published var firstTitle: String = ""
     @Published var firstCycleDays: String = ""
-    @Published var firstReminderOption: alertOptions = .none
+    @Published var firstReminderOption: ReminderOptions = .none
     
     
     func fetchHistory(for id: Int){
@@ -25,7 +25,7 @@ class ChoreDetailViewModel: ObservableObject {
         
     }
     
-    func firstInputSetting(title: String, cycleDays: String, reminderOption: alertOptions) {
+    func firstInputSetting(title: String, cycleDays: String, reminderOption: ReminderOptions) {
         self.title = title
         self.cycleDays = cycleDays
         self.reminderOption = reminderOption

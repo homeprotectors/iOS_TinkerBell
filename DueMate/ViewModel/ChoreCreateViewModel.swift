@@ -15,7 +15,7 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycle: String = ""
     @Published var startDate: Date = Date()
-    @Published var selectedAlert: alertOptions = .none
+    @Published var selectedAlert: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
     

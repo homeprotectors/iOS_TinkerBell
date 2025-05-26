@@ -14,7 +14,7 @@ class StockCreateViewModel: ObservableObject {
     @Published var consumptionAmount: Int = 1
     @Published var consumptionUnit: String = "개"
     @Published var currentAmount: Int? = nil
-    @Published var selectedReminder: alertOptions = .none
+    @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
     
     let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]

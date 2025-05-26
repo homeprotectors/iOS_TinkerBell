@@ -132,7 +132,7 @@ struct StockCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showReminderPicker) {
-                    AlertSheet(alert: $viewModel.selectedReminder)
+                    ReminderPickerView(alert: $viewModel.selectedReminder)
                 }
             }
             Spacer()

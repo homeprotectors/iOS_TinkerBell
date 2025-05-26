@@ -97,7 +97,7 @@ struct ChoreCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertSheet(alert: $viewModel.selectedAlert)
+                    ReminderPickerView(alert: $viewModel.selectedAlert)
                 }
             }
             

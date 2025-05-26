@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum alertOptions: String, CaseIterable{
+enum ReminderOptions: String, CaseIterable{
     case none = "없음"
     case theDay = "당일 (9am)"
     case oneDayBefore = "하루 전(9am)"
@@ -25,9 +25,9 @@ enum alertOptions: String, CaseIterable{
 
 
 
-struct AlertSheet: View {
+struct ReminderPickerView: View {
     @Environment(\.dismiss) private var dismiss
-    @Binding var alert:alertOptions
+    @Binding var alert:ReminderOptions
     
     var body: some View {
         VStack{
@@ -42,7 +42,7 @@ struct AlertSheet: View {
                 }
             }
             Picker("Select", selection: $alert){
-                ForEach(alertOptions.allCases, id:\.self){
+                ForEach(ReminderOptions.allCases, id:\.self){
                     Text($0.rawValue)
                 }
             }
@@ -55,5 +55,5 @@ struct AlertSheet: View {
 }
 
 #Preview {
-    AlertSheet(alert: .constant(.none))
+    ReminderPickerView(alert: .constant(.none))
 }
