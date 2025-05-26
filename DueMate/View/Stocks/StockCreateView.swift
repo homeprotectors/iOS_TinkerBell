@@ -42,7 +42,7 @@ struct StockCreateView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 HStack(spacing: 12) {
-                    TextField("n", value: $viewModel.usageDays, formatter: NumberFormatter())
+                    TextField("n", value: $viewModel.consumptionDays, formatter: NumberFormatter())
                         .keyboardType(.numberPad)
                         .padding()
                         .background(Color(.systemGray6))
@@ -50,7 +50,7 @@ struct StockCreateView: View {
                     Text("일에")
                     Spacer()
                     HStack(spacing: 0) {
-                        TextField("수량", value: $viewModel.consumptionDays, formatter: NumberFormatter())
+                        TextField("수량", value: $viewModel.consumptionAmount, formatter: NumberFormatter())
                             .keyboardType(.decimalPad)
                             .padding(.leading)
                             .background(Color.clear)
@@ -68,6 +68,12 @@ struct StockCreateView: View {
                             .frame(minWidth: 60)
                             
                         }
+                    }
+                    .sheet(isPresented: $showUnitPicker) {
+                        StockUnitPickerView(
+                            amount: $viewModel.consumptionAmount,
+                            unit: $viewModel.consumptionUnit
+                        )
                     }
                     .padding()
                     .background(Color(.systemGray6))
@@ -152,6 +158,7 @@ struct StockCreateView: View {
             }
             
         }
+        
         .padding(25)
         .onChange(of: viewModel.currentAmount) {
             withAnimation(.easeInOut(duration: 0.3)) {

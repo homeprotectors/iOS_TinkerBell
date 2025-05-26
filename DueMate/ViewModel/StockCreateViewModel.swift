@@ -10,22 +10,22 @@ import SwiftUI
 
 class StockCreateViewModel: ObservableObject {
     @Published var title: String = ""
-    @Published var usageDays: Int = 3
-    @Published var consumptionDays: Int = 1
+    @Published var consumptionDays: Int = 3
+    @Published var consumptionAmount: Int = 1
     @Published var consumptionUnit: String = "개"
     @Published var currentAmount: Int? = nil
     @Published var selectedReminder: alertOptions = .none
     @Published var isStockCreated = false
     
-    let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩"]
+    let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
     
     var isFormValid: Bool {
         return true
     }
     
     var expectedDaysLeft: Int {
-        guard let currentAmount = currentAmount , consumptionDays > 0 else { return 0 }
-        return (currentAmount * usageDays) / consumptionDays
+        guard let currentAmount = currentAmount , consumptionAmount > 0 else { return 0 }
+        return (currentAmount * consumptionDays) / consumptionAmount
     }
     
     
