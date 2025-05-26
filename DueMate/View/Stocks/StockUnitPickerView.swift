@@ -13,7 +13,7 @@ struct StockUnitPickerView: View {
     @Binding var unit: String
     
     
-    let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
+    let unitOptions = ["개", "롤", "팩", "병", "장", "캔", "ml", "L", "g", "kg" ]
     
     var body: some View {
         VStack(spacing: 24) {
