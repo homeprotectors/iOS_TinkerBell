@@ -19,6 +19,12 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var showPicker = false
     @Published var isChoreCreated = false
     
+    // Form Validation
+    var isFormValid: Bool {
+        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        Int(cycle) != nil && Int(cycle)! > 0 && Int(cycle)! <= 365
+    }
+    
     // - Network
     func createChore() {
         let cycleInt = Int(cycle) ?? 1

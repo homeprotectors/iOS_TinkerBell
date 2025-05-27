@@ -20,7 +20,10 @@ class StockCreateViewModel: ObservableObject {
     let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
     
     var isFormValid: Bool {
-        return true
+        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        currentAmount != nil && currentAmount! > 0 &&
+        consumptionDays > 0 &&
+        consumptionAmount > 0
     }
     
     var expectedDaysLeft: Int {

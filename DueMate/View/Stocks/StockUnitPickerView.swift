@@ -32,7 +32,7 @@ struct StockUnitPickerView: View {
                 // consumption amount
                 TextField("수량", value: $amount, formatter: NumberFormatter())
                     .keyboardType(.numberPad)
-                    .frame(width: .infinity)
+                    .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
@@ -44,7 +44,7 @@ struct StockUnitPickerView: View {
                     }
                 }
                 .pickerStyle(WheelPickerStyle())
-                .frame(width:.infinity)
+                .frame(maxWidth: .infinity)
             }
             .padding(.horizontal)
 

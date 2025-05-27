@@ -17,6 +17,13 @@ struct StockCreateView: View {
     @State private var showReminderPicker = false
     @State private var showExpectedText = false
     
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .none
+        formatter.minimum = 1
+        formatter.maximum = 999999
+        return formatter
+    }()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -42,7 +49,7 @@ struct StockCreateView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 HStack(spacing: 12) {
-                    TextField("n", value: $viewModel.consumptionDays, formatter: NumberFormatter())
+                    TextField("n", value: $viewModel.consumptionDays, formatter: numberFormatter)
                         .keyboardType(.numberPad)
                         .padding()
                         .background(Color(.systemGray6))
@@ -50,8 +57,8 @@ struct StockCreateView: View {
                     Text("일에")
                     Spacer()
                     HStack(spacing: 0) {
-                        TextField("수량", value: $viewModel.consumptionAmount, formatter: NumberFormatter())
-                            .keyboardType(.decimalPad)
+                        TextField("수량", value: $viewModel.consumptionAmount, formatter: numberFormatter)
+                            .keyboardType(.numberPad)
                             .padding(.leading)
                             .background(Color.clear)
                         
@@ -88,7 +95,7 @@ struct StockCreateView: View {
                     .font(.caption)
                     .foregroundColor(.gray)
                 HStack {
-                    TextField("수량", value: $viewModel.currentAmount, formatter: NumberFormatter())
+                    TextField("수량", value: $viewModel.currentAmount, formatter: numberFormatter)
                         .keyboardType(.numberPad)
                         .padding()
                         .frame(maxWidth: .infinity)
