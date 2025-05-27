@@ -125,6 +125,7 @@ struct ChoreCreateView: View {
             
             Spacer()
         }
+        .toolbar(.hidden, for: .tabBar)
         .padding(24)
         .background(Color(.systemBackground))
     }
