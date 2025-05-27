@@ -10,10 +10,20 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
-            ChoreMainView()
-                .tabItem{
-                    Label("Chore", systemImage: "house")
-                }
+            NavigationStack {
+                ChoreMainView()
+            }
+            .tabItem{
+                Label("", systemImage: "house")
+                
+            }
+            
+            NavigationStack {
+                StockCreateView()
+            }
+            .tabItem {
+                Label("", systemImage: "cart.fill")
+            }
         }
         
     }

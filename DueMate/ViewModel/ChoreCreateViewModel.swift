@@ -15,9 +15,15 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycle: String = ""
     @Published var startDate: Date = Date()
-    @Published var selectedAlert: alertOptions = .none
+    @Published var selectedAlert: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
+    
+    // Form Validation
+    var isFormValid: Bool {
+        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        Int(cycle) != nil && Int(cycle)! > 0 && Int(cycle)! <= 365
+    }
     
     // - Network
     func createChore() {

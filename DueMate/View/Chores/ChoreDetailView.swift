@@ -15,7 +15,7 @@ struct ChoreDetailView: View {
     
     @State private var selectedDate : Date? = nil
     @State private var showDialog = false
-    @State private var showPicker = false
+    @State private var showReminderPicker = false
     @State private var showDeleteAlert = false
     @State private var showCancelAlert = false
     
@@ -66,7 +66,7 @@ struct ChoreDetailView: View {
                             .foregroundColor(.gray)
                         
                         Button(action: {
-                            showPicker = true
+                            showReminderPicker = true
                         }) {
                             HStack {
                                 Text(viewModel.reminderOption.rawValue)
@@ -79,8 +79,8 @@ struct ChoreDetailView: View {
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
                         }
-                        .sheet(isPresented: $showPicker) {
-                            AlertSheet(alert: $viewModel.reminderOption)
+                        .sheet(isPresented: $showReminderPicker) {
+                            ReminderPickerView(alert: $viewModel.reminderOption)
                         }
                     }
                     
@@ -154,6 +154,7 @@ struct ChoreDetailView: View {
         }
         .padding()
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
@@ -177,7 +178,7 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            var reminder: alertOptions
+            var reminder: ReminderOptions
             if !item.reminderEnabled {
                 reminder = .none
             }else{

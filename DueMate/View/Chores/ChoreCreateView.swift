@@ -15,12 +15,14 @@ struct ChoreCreateView: View {
     @StateObject private var viewModel = ChoreCreateViewModel()
     @State private var showPicker = false
     
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .none
+        formatter.minimum = 1
+        formatter.maximum = 365
+        return formatter
+    }()
     
-    // Form Validation
-    var isFormValid: Bool {
-        !viewModel.title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !viewModel.cycle.trimmingCharacters(in: .whitespaces).isEmpty
-    }
     
     
     var body: some View {
@@ -49,7 +51,10 @@ struct ChoreCreateView: View {
                     .foregroundColor(.gray)
                 
                 HStack {
-                    TextField("1-365", text: $viewModel.cycle)
+                    TextField("1-365", value: Binding(
+                        get: { Int(viewModel.cycle) ?? 0 },
+                        set: { viewModel.cycle = String($0) }
+                    ), formatter: numberFormatter)
                         .keyboardType(.numberPad)
                         .padding()
                         .background(Color(.systemGray6))
@@ -97,7 +102,7 @@ struct ChoreCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertSheet(alert: $viewModel.selectedAlert)
+                    ReminderPickerView(alert: $viewModel.selectedAlert)
                 }
             }
             
@@ -109,11 +114,11 @@ struct ChoreCreateView: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(isFormValid ? Color.black : Color.gray.opacity(0.4))
-                    .foregroundColor(isFormValid ? .white : .gray)
+                    .background(viewModel.isFormValid ? Color.black : Color.gray.opacity(0.4))
+                    .foregroundColor(viewModel.isFormValid ? .white : .gray)
                     .cornerRadius(16)
             }
-            .disabled(!isFormValid)
+            .disabled(!viewModel.isFormValid)
             .padding(.top, 12)
             .onChange(of:viewModel.isChoreCreated){
                 if viewModel.isChoreCreated {
@@ -125,6 +130,7 @@ struct ChoreCreateView: View {
             
             Spacer()
         }
+        .toolbar(.hidden, for: .tabBar)
         .padding(24)
         .background(Color(.systemBackground))
     }
