@@ -19,12 +19,6 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var firstReminderOption: ReminderOptions = .none
     
     
-    func fetchHistory(for id: Int){
-        //history 받아옴
-        historyDates =  ["2025-04-16","2025-04-29","2025-05-01","2025-05-09","2025-05-14"]
-        
-    }
-    
     func firstInputSetting(title: String, cycleDays: String, reminderOption: ReminderOptions) {
         self.title = title
         self.cycleDays = cycleDays
@@ -37,6 +31,34 @@ class ChoreDetailViewModel: ObservableObject {
     
     func hasInputChanges() -> Bool {
         return title != firstTitle || cycleDays != firstCycleDays || reminderOption != firstReminderOption
+    }
+    
+    func fetchHistory(for id: Int){
+        //history 받아옴
+        historyDates =  ["2025-04-16","2025-04-29","2025-05-01","2025-05-09","2025-05-14"]
+        
+    }
+    
+    func completeHistory(for id: Int, doneDate: String) async throws {
+        let body = CompleteChoreRequest(choreId: id, doneDate: doneDate)
+        
+        try await withCheckedThrowingContinuation { continuation in
+            AF.request(Router.completeChore(body: body))
+                .validate()
+                .response { response in
+                    switch response.result {
+                    case .success(_):
+                        print("\(self.title): \(doneDate) 완료!")
+                        continuation.resume(returning: ())
+                    case .failure(let error):
+                        print("❌ complete failed ❌")
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+        
+        fetchHistory(for:id)
+        
     }
     
     func updateChore(for id:Int) async throws {

@@ -137,7 +137,7 @@ struct ChoreDetailView: View {
                             isPresented: $showDialog,
                             type: .historyCancelation,
                             onConfirm: {
-                                print("date: \(selectedDate)")
+                                print("date: \(selectedDate.toString())")
                             }
                         )
                     } else {
@@ -145,7 +145,13 @@ struct ChoreDetailView: View {
                             isPresented: $showDialog,
                             type: .historyCompletion,
                             onConfirm: {
-                                print("date: \(selectedDate)")
+                                Task {
+                                    do {
+                                        try await viewModel.completeHistory(for: item.id, doneDate: selectedDate.toString())
+                                    } catch {
+                                        print("Error:  \(error.localizedDescription)")
+                                    }
+                                }
                             }
                         )
                     }

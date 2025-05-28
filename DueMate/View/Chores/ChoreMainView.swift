@@ -51,8 +51,6 @@ struct ChoreMainView: View {
                         }
                     }
                     
-                    
-                    
                 }
                 .padding()
             }
@@ -77,7 +75,7 @@ struct ChoreMainView: View {
                             do {
                                 try await viewModel.completeChore(item)
                             } catch {
-                                print("Failed to complete chore: \(error.localizedDescription)")
+                                print("Error:  \(error.localizedDescription)")
                             }
                         }
                     }
