@@ -21,7 +21,6 @@ struct ChoreMainView: View {
                     Spacer()
                     NavigationLink {
                         ChoreCreateView(onComplete:{
-                            print("MainView: complete!!")
                             viewModel.fetchChores()
                         })
                     }label: {
@@ -74,7 +73,13 @@ struct ChoreMainView: View {
                     isPresented: $showDialog,
                     type: .mainViewCompletion,
                     onConfirm: {
-                        viewModel.completeChore(item)
+                        Task {
+                            do {
+                                try await viewModel.completeChore(item)
+                            } catch {
+                                print("Failed to complete chore: \(error.localizedDescription)")
+                            }
+                        }
                     }
                 )
             }

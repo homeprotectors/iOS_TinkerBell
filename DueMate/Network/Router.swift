@@ -13,7 +13,9 @@ enum Router: URLRequestConvertible {
     case getChoreItems
     case createChoreItem(body: CreateChoreRequest)
     case deleteChoreItem(id: Int)
-    case updateChoreItem(id: Int, body:CreateChoreRequest)
+    case updateChoreItem(id: Int, body: CreateChoreRequest)
+    case completeChore(body: CompleteChoreRequest)
+    
     
     
     //baseURL
@@ -28,6 +30,8 @@ enum Router: URLRequestConvertible {
             return "/chores"
         case .deleteChoreItem(let id), .updateChoreItem(let id,_):
             return "/chores/\(id)"
+        case .completeChore:
+            return "/chores/complete"
             
         }
     }
@@ -36,22 +40,24 @@ enum Router: URLRequestConvertible {
     var method: HTTPMethod {
         switch self {
         case .getChoreItems: return .get
-        case .createChoreItem: return .post
+        case .createChoreItem, .completeChore: return .post
         case .deleteChoreItem: return .delete
         case .updateChoreItem: return .put
+            
         }
     }
     
     //parameters
     var body: RequestBody? {
-            switch self {
-            case .createChoreItem(let body), .updateChoreItem(_, let body):
-                return body
-            
-            default:
-                return nil
-            }
+        switch self {
+        case .createChoreItem(let body), .updateChoreItem(_, let body):
+            return body
+        case .completeChore(let body):
+            return body
+        default:
+            return nil
         }
+    }
     
     func asURLRequest() throws -> URLRequest {
         

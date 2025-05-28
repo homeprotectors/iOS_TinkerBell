@@ -44,12 +44,11 @@ class ChoreDetailViewModel: ObservableObject {
         let reminderDays = reminderOption.getDays()
         let reminderEnabled = reminderOption == .none ? false : true
         
-        
         let body = CreateChoreRequest(title: title, cycleDays: intCycledays, startDate: "2025-05-15", reminderEnabled: reminderEnabled, reminderDays: reminderDays)
         try await withCheckedThrowingContinuation {continuation in
             AF.request(Router.updateChoreItem(id: id, body: body))
                 .validate()
-                .responseDecodable(of: Response<ChoreUpdateResponseData>.self) {
+                .responseDecodable(of: Response<UpdateChoreResponse>.self) {
                     response in
                     switch response.result {
                     case .success(let result):

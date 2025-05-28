@@ -13,7 +13,7 @@ import Alamofire
 class ChoreMainViewModel: ObservableObject {
     @Published var shouldRefresh: Bool = false
     @Published var items: [ChoreItem] = []
-
+    
     
     
     func fetchChores() {
@@ -33,8 +33,28 @@ class ChoreMainViewModel: ObservableObject {
             }
     }
     
-    func completeChore(_ chore: ChoreItem) {
-        print("\(chore.title) 췍!!!!")
+    func completeChore(_ chore: ChoreItem) async throws {
+        let body = CompleteChoreRequest(
+            choreId: chore.id,
+            doneDate: DateFormatter.yyyyMMdd.string(from: Date())
+        )
+        
+        try await withCheckedThrowingContinuation { continuation in
+            AF.request(Router.completeChore(body: body))
+                .validate()
+                .response { response in
+                    switch response.result {
+                    case .success(_):
+                        print("\(chore.title) 완료!")
+                        continuation.resume(returning: ())
+                    case .failure(let error):
+                        print("❌ complete failed ❌")
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+        
+        await fetchChores()  
     }
     
     func sortByDueDate() {

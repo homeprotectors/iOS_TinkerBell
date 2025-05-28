@@ -9,11 +9,17 @@ import Foundation
 
 protocol RequestBody: Codable {}
 
-//Create Request Body
+//Create Chore Request Body
 struct CreateChoreRequest: RequestBody {
     let title: String
     let cycleDays: Int
     let startDate: String  // "yyyy-MM-dd"
     let reminderEnabled: Bool
     let reminderDays: Int
+}
+
+//Complete Chore Body
+struct CompleteChoreRequest: RequestBody {
+    let choreId: Int
+    let doneDate: String    // "yyyy-MM-dd"
 }

@@ -16,7 +16,7 @@ struct Response<T: Decodable>: Decodable {
 
 
 //Create Response
-struct ChoreCreateResponseData: Codable {
+struct CreateChoreResponse: Codable {
     let id: Int
     let title: String
     let cycleDays: Int
@@ -24,7 +24,7 @@ struct ChoreCreateResponseData: Codable {
     let reminderDays: Int
 }
 
-struct ChoreUpdateResponseData: Codable {
+struct UpdateChoreResponse: Codable {
     let id: Int
     let title: String
     let startDate: String

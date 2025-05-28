@@ -54,7 +54,7 @@ class ChoreCreateViewModel: ObservableObject {
         print("✨New Chore----------\n",body)
         AF.request(Router.createChoreItem(body: body))
             .validate()
-            .responseDecodable(of: Response<ChoreCreateResponseData>.self){
+            .responseDecodable(of: Response<CreateChoreResponse>.self){
                 response in
                 switch response.result {
                 case .success(let result):
