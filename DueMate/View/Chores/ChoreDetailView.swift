@@ -85,7 +85,7 @@ struct ChoreDetailView: View {
                     }
                     
                     
-                    // Save
+                    // Save Button
                     Button(action: {
                         viewModel.updateChore(for: item.id)
                     }) {
@@ -97,15 +97,15 @@ struct ChoreDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     .disabled(!viewModel.hasInputChanges())
-                    .onChange(of: viewModel.isUpdateSuccess) {
-                        if viewModel.isUpdateSuccess {
+                    .onChange(of: viewModel.shoudRedirectMain) {
+                        if viewModel.shoudRedirectMain {
                             mainViewModel.shouldRefresh = true
                             dismiss()
                         }
                     }
                     
                     
-                    // Delete
+                    // Delete Button
                     Button(role: .destructive) {
                         showDeleteAlert = true
                         
@@ -120,12 +120,7 @@ struct ChoreDetailView: View {
                         }
                         Button("취소",role: .cancel) {}
                     }
-                    .onChange(of: viewModel.isDeleteSuccess) {
-                        if viewModel.isDeleteSuccess {
-                            mainViewModel.shouldRefresh = true
-                            dismiss()
-                        }
-                    }
+                    
                     
                 }
                 
@@ -138,6 +133,7 @@ struct ChoreDetailView: View {
                             isPresented: $showDialog,
                             type: .historyCancelation,
                             onConfirm: {
+                                viewModel.editHistory(complete: false, id:item.id, date: selectedDate.toString())
                                 print("date: \(selectedDate.toString())")
                             }
                         )
@@ -146,13 +142,7 @@ struct ChoreDetailView: View {
                             isPresented: $showDialog,
                             type: .historyCompletion,
                             onConfirm: {
-                                Task {
-                                    do {
-                                        try await viewModel.completeHistory(for: item.id, doneDate: selectedDate.toString())
-                                    } catch {
-                                        print("Error:  \(error.localizedDescription)")
-                                    }
-                                }
+                                viewModel.editHistory(complete: true, id:item.id, date: selectedDate.toString())
                             }
                         )
                     }
@@ -198,10 +188,14 @@ struct ChoreDetailView: View {
                 showDialog = true
             }
         }
+        .onChange(of: viewModel.isHistoryUpdated) {
+            if viewModel.isHistoryUpdated {
+                mainViewModel.shouldRefresh = true
+            }
+        }
         .task {
             do {
-                try await viewModel.fetchHistory(for: item.id)
-                
+                viewModel.fetchHistory(for: item.id)
             } catch {
                 print("fetch canceled")
             }

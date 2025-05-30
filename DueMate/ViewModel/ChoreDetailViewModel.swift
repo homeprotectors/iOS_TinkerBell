@@ -13,8 +13,8 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycleDays: String = ""
     @Published var reminderOption: ReminderOptions = .none
-    @Published var isUpdateSuccess: Bool = false
-    @Published var isDeleteSuccess: Bool = false
+    @Published var shoudRedirectMain: Bool = false
+    @Published var isHistoryUpdated: Bool = false
     
     
     @Published var firstTitle: String = ""
@@ -37,27 +37,38 @@ class ChoreDetailViewModel: ObservableObject {
         return title != firstTitle || cycleDays != firstCycleDays || reminderOption != firstReminderOption
     }
     
-    func fetchHistory(for id: Int){
+    func fetchHistory(for id: Int)  {
         //history 받아옴
-        historyDates =  ["2025-04-16","2025-04-29","2025-05-01","2025-05-09","2025-05-14"]
+        
+        historyDates =  ["2025-04-16","2025-04-29","2025-05-01","2025-05-09","2025-05-24"]
+        
+        
         
     }
     
-    func completeHistory(for id: Int, doneDate: String) async throws {
+    func editHistory(complete: Bool, id: Int, date: String) {
+        let body = EditChoreHistoryRequest(choreId: id, doneDate: date)
         Task {
             do {
-                let body = CompleteChoreRequest(choreId: id, doneDate: doneDate)
-                try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
-                print("🎉 complete 성공! \(doneDate)")
+                if complete {
+                    try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
+                } else {
+                    try await network.requestWithoutResponse(ChoreRouter.undo(body: body))
+                }
+                
+                await MainActor.run {
+                    isHistoryUpdated = true
+                }
+                print("🎉 complete \(complete) 성공! \(date)")
             }
             catch {
                 print("💥 complete 실패! \(error.localizedDescription)")
             }
         }
-        
         fetchHistory(for:id)
-        
     }
+    
+    
     
     func updateChore(for id:Int) {
         let intCycledays = Int(cycleDays) ?? 1
@@ -69,15 +80,15 @@ class ChoreDetailViewModel: ObservableObject {
             do {
                 try await network.requestWithoutResponse(ChoreRouter.update(id: id,body: body))
                 await MainActor.run {
-                    isUpdateSuccess = true
+                    shoudRedirectMain = true
                 }
                 print("🎉 update 성공! \(title)")
             }
             catch {
                 // Error handling
-//                await MainActor.run {
-//                    
-//                }
+                //                await MainActor.run {
+                //
+                //                }
                 print("💥 update 실패! \(error.localizedDescription)")
             }
         }
@@ -89,15 +100,15 @@ class ChoreDetailViewModel: ObservableObject {
             do {
                 try await network.requestWithoutResponse(ChoreRouter.delete(id: id))
                 await MainActor.run {
-                    isDeleteSuccess = true
+                    shoudRedirectMain = true
                 }
                 print("🎉 delete 성공! \(title)")
             }
             catch {
                 // Error handling
-//                await MainActor.run {
-//
-//                }
+                //                await MainActor.run {
+                //
+                //                }
                 print("💥 delete 실패! \(error.localizedDescription)\nid: \(id)")
             }
         }

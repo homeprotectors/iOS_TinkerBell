@@ -13,7 +13,8 @@ enum ChoreRouter: BaseRouter {
     case create(body: CreateChoreRequest)
     case delete(id: Int)
     case update(id: Int, body: CreateChoreRequest)
-    case complete(body: CompleteChoreRequest)
+    case complete(body: EditChoreHistoryRequest)
+    case undo(body: EditChoreHistoryRequest)
     
     var path: String {
         switch self {
@@ -23,13 +24,15 @@ enum ChoreRouter: BaseRouter {
             return "/chores/\(id)"
         case .complete:
             return "/chores/complete"
+        case .undo:
+            return "/chores/undo"
         }
     }
     
     var method: HTTPMethod {
         switch self {
         case .getItems: return .get
-        case .create, .complete: return .post
+        case .create, .complete, .undo: return .post
         case .delete: return .delete
         case .update: return .put
             
@@ -41,8 +44,8 @@ enum ChoreRouter: BaseRouter {
         switch self {
         case .create(let body), .update(_, let body):
             return body     //CreateChoreRequest
-        case .complete(let body):
-            return body     //CompleteChoreRequest
+        case .complete(let body), .undo(let body):
+            return body     //EditChoreHistoryRequest
         default:
             return nil
         }

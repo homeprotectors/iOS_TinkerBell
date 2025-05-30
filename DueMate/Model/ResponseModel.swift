@@ -43,3 +43,18 @@ struct ChoreItem: Codable, Identifiable {
     let reminderEnabled: Bool
     let reminderDays: Int
 }
+
+// Responses for updating Chore History : not using at the moment
+struct CompleteChoreHistoryResponse: Codable {
+    let id: Int
+    let newNextDue: String
+    let newReminderDate: String
+    let doneBy: Int
+}
+
+struct UndoChoreHistoryResponse: Codable {
+    let choreId: Int
+    let nextDue: String
+    let reminderDate: String
+    let lastDone: String
+}

@@ -16,7 +16,8 @@ class ChoreMainViewModel: ObservableObject {
     
     private let network = DefaultNetworkService.shared
     
-    func fetchChores() { 
+    func fetchChores() {
+        print("Main list fetch start!")
         Task {
             do {
                 let items: [ChoreItem] = try await network.request(ChoreRouter.getItems)
@@ -34,7 +35,7 @@ class ChoreMainViewModel: ObservableObject {
     func completeChore(_ chore: ChoreItem) {
         Task {
             do {
-                let body = CompleteChoreRequest(
+                let body = EditChoreHistoryRequest(
                     choreId: chore.id,
                     doneDate: DateFormatter.yyyyMMdd.string(from: Date())
                 )

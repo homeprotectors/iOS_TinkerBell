@@ -19,7 +19,7 @@ struct CreateChoreRequest: RequestBody {
 }
 
 //Complete Chore Body
-struct CompleteChoreRequest: RequestBody {
+struct EditChoreHistoryRequest: RequestBody {
     let choreId: Int
     let doneDate: String    // "yyyy-MM-dd"
 }
