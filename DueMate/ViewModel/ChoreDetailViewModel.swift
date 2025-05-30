@@ -13,11 +13,15 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycleDays: String = ""
     @Published var reminderOption: ReminderOptions = .none
+    @Published var isUpdateSuccess: Bool = false
+    @Published var isDeleteSuccess: Bool = false
+    
     
     @Published var firstTitle: String = ""
     @Published var firstCycleDays: String = ""
     @Published var firstReminderOption: ReminderOptions = .none
     
+    private let network = DefaultNetworkService.shared
     
     func firstInputSetting(title: String, cycleDays: String, reminderOption: ReminderOptions) {
         self.title = title
@@ -26,7 +30,7 @@ class ChoreDetailViewModel: ObservableObject {
         
         firstTitle = title
         firstCycleDays = cycleDays
-        firstReminderOption = reminderOption        
+        firstReminderOption = reminderOption
     }
     
     func hasInputChanges() -> Bool {
@@ -40,67 +44,62 @@ class ChoreDetailViewModel: ObservableObject {
     }
     
     func completeHistory(for id: Int, doneDate: String) async throws {
-        let body = CompleteChoreRequest(choreId: id, doneDate: doneDate)
-        
-        try await withCheckedThrowingContinuation { continuation in
-            AF.request(Router.completeChore(body: body))
-                .validate()
-                .response { response in
-                    switch response.result {
-                    case .success(_):
-                        print("\(self.title): \(doneDate) 완료!")
-                        continuation.resume(returning: ())
-                    case .failure(let error):
-                        print("❌ complete failed ❌")
-                        continuation.resume(throwing: error)
-                    }
-                }
+        Task {
+            do {
+                let body = CompleteChoreRequest(choreId: id, doneDate: doneDate)
+                try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
+                print("🎉 complete 성공! \(doneDate)")
+            }
+            catch {
+                print("💥 complete 실패! \(error.localizedDescription)")
+            }
         }
         
         fetchHistory(for:id)
         
     }
     
-    func updateChore(for id:Int) async throws {
+    func updateChore(for id:Int) {
         let intCycledays = Int(cycleDays) ?? 1
         let reminderDays = reminderOption.getDays()
         let reminderEnabled = reminderOption == .none ? false : true
+        let body = CreateChoreRequest(title: title, cycleDays: intCycledays, startDate: "2025-05-29", reminderEnabled: reminderEnabled, reminderDays: reminderDays)
         
-        let body = CreateChoreRequest(title: title, cycleDays: intCycledays, startDate: "2025-05-15", reminderEnabled: reminderEnabled, reminderDays: reminderDays)
-        try await withCheckedThrowingContinuation {continuation in
-            AF.request(Router.updateChoreItem(id: id, body: body))
-                .validate()
-                .responseDecodable(of: Response<UpdateChoreResponse>.self) {
-                    response in
-                    switch response.result {
-                    case .success(let result):
-                        print("업데이트 성공!\(result.message)")
-                        continuation.resume(returning: ())
-                    case .failure(let error):
-                        print("❌ update failed ❌")
-                        continuation.resume(throwing: error)
-                    }
+        Task {
+            do {
+                try await network.requestWithoutResponse(ChoreRouter.update(id: id,body: body))
+                await MainActor.run {
+                    isUpdateSuccess = true
                 }
+                print("🎉 update 성공! \(title)")
+            }
+            catch {
+                // Error handling
+//                await MainActor.run {
+//                    
+//                }
+                print("💥 update 실패! \(error.localizedDescription)")
+            }
         }
     }
     
-    func deleteChore(id:Int) async throws {
-        //for async
-        try await withCheckedThrowingContinuation { continuation in
-            AF.request(Router.deleteChoreItem(id: id))
-                .validate()
-                .response { response in
-                    switch response.result {
-                    case .success(_):
-                        print("delete completed")
-                        continuation.resume(returning: ())
-                    case .failure(let error):
-                        print("❌ delete failed ❌")
-                        continuation.resume(throwing: error)
-                    }
+    func deleteChore(id:Int) {
+        print("deleteChore ::: \(id)")
+        Task {
+            do {
+                try await network.requestWithoutResponse(ChoreRouter.delete(id: id))
+                await MainActor.run {
+                    isDeleteSuccess = true
                 }
-            
+                print("🎉 delete 성공! \(title)")
+            }
+            catch {
+                // Error handling
+//                await MainActor.run {
+//
+//                }
+                print("💥 delete 실패! \(error.localizedDescription)\nid: \(id)")
+            }
         }
-        
     }
 }

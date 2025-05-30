@@ -91,8 +91,8 @@ struct ChoreCreateView: View {
                     showPicker = true
                 }) {
                     HStack {
-                        Text(viewModel.selectedAlert.rawValue)
-                            .foregroundColor(viewModel.selectedAlert == .none ? .gray : .primary)
+                        Text(viewModel.selectedReminder.rawValue)
+                            .foregroundColor(viewModel.selectedReminder == .none ? .gray : .primary)
                         Spacer()
                         Image(systemName: "chevron.down")
                             .foregroundColor(.gray)
@@ -102,7 +102,7 @@ struct ChoreCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showPicker) {
-                    ReminderPickerView(alert: $viewModel.selectedAlert)
+                    ReminderPickerView(alert: $viewModel.selectedReminder)
                 }
             }
             
@@ -122,7 +122,6 @@ struct ChoreCreateView: View {
             .padding(.top, 12)
             .onChange(of:viewModel.isChoreCreated){
                 if viewModel.isChoreCreated {
-                    print("CreateView: isChoreCreated")
                     onComplete?()
                     dismiss()
                 }

@@ -84,16 +84,10 @@ struct ChoreDetailView: View {
                         }
                     }
                     
+                    
+                    // Save
                     Button(action: {
-                        Task {
-                            do {
-                                try await viewModel.updateChore(for: item.id)
-                                mainViewModel.shouldRefresh = true
-                                dismiss()
-                            } catch {
-                                print("Failed to save chore: \(error.localizedDescription)")
-                            }
-                        }
+                        viewModel.updateChore(for: item.id)
                     }) {
                         Text("Save")
                             .frame(maxWidth: .infinity)
@@ -103,6 +97,15 @@ struct ChoreDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     .disabled(!viewModel.hasInputChanges())
+                    .onChange(of: viewModel.isUpdateSuccess) {
+                        if viewModel.isUpdateSuccess {
+                            mainViewModel.shouldRefresh = true
+                            dismiss()
+                        }
+                    }
+                    
+                    
+                    // Delete
                     Button(role: .destructive) {
                         showDeleteAlert = true
                         
@@ -113,17 +116,15 @@ struct ChoreDetailView: View {
                     }
                     .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
                         Button("삭제", role: .destructive){
-                            Task {
-                                do {
-                                    try await viewModel.deleteChore(id: item.id)
-                                    mainViewModel.shouldRefresh = true
-                                    dismiss()
-                                } catch {
-                                    print("Failed to delete chore: \(error.localizedDescription)")
-                                }
-                            }
+                            viewModel.deleteChore(id: item.id)
                         }
                         Button("취소",role: .cancel) {}
+                    }
+                    .onChange(of: viewModel.isDeleteSuccess) {
+                        if viewModel.isDeleteSuccess {
+                            mainViewModel.shouldRefresh = true
+                            dismiss()
+                        }
                     }
                     
                 }
@@ -192,8 +193,8 @@ struct ChoreDetailView: View {
             }
             viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: reminder)
         }
-        .onChange(of: selectedDate) { newDate in
-            if newDate != nil {
+        .onChange(of: selectedDate) {
+            if selectedDate != nil {
                 showDialog = true
             }
         }

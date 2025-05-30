@@ -14,6 +14,7 @@ struct Response<T: Decodable>: Decodable {
     let data: T?
 }
 
+struct EmptyResponse: Decodable {}
 
 //Create Response
 struct CreateChoreResponse: Codable {

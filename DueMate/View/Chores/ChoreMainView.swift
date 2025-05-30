@@ -55,7 +55,6 @@ struct ChoreMainView: View {
                 .padding()
             }
             .onAppear {
-                print("main onAppear")
                 viewModel.fetchChores()
             }
             .onChange(of: viewModel.shouldRefresh) {
@@ -71,13 +70,7 @@ struct ChoreMainView: View {
                     isPresented: $showDialog,
                     type: .mainViewCompletion,
                     onConfirm: {
-                        Task {
-                            do {
-                                try await viewModel.completeChore(item)
-                            } catch {
-                                print("Error:  \(error.localizedDescription)")
-                            }
-                        }
+                        viewModel.completeChore(item)
                     }
                 )
             }

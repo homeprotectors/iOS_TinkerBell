@@ -15,9 +15,10 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycle: String = ""
     @Published var startDate: Date = Date()
-    @Published var selectedAlert: ReminderOptions = .none
+    @Published var selectedReminder: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
+    
     
     // Form Validation
     var isFormValid: Bool {
@@ -28,10 +29,10 @@ class ChoreCreateViewModel: ObservableObject {
     // - Network
     func createChore() {
         let cycleInt = Int(cycle) ?? 1
-        let reminderEnabled = (selectedAlert == .none) ? false : true
+        let reminderEnabled = (selectedReminder == .none) ? false : true
         var reminderDays: Int = 0
         
-        switch selectedAlert {
+        switch selectedReminder {
         case .theDay:
             reminderDays = 0
         case .oneDayBefore:
@@ -42,7 +43,6 @@ class ChoreCreateViewModel: ObservableObject {
             reminderDays = 0
         }
         
-        
         let body = CreateChoreRequest(
             title: title,
             cycleDays: cycleInt,
@@ -51,23 +51,26 @@ class ChoreCreateViewModel: ObservableObject {
             reminderDays: reminderDays
         )
         
-        print("✨New Chore----------\n",body)
-        AF.request(Router.createChoreItem(body: body))
-            .validate()
-            .responseDecodable(of: Response<CreateChoreResponse>.self){
-                response in
-                switch response.result {
-                case .success(let result):
-                    print("성공!✅ \(result.message)")
-                    self.isChoreCreated = true
-                    
-                case .failure(let error):
-                    print("에러🚩 \(error.localizedDescription)")
+        
+        Task {
+            do {
+                try await DefaultNetworkService.shared.requestWithoutResponse(ChoreRouter.create(body: body))
+                await MainActor.run {
+                    isChoreCreated = true
+                    print("🎉 생성 완료! \(title)")
                 }
             }
+            catch {
+//                //Error handling later
+//                await MainActor.run {
+//                    
+//                }
+                print("💥 생성 실패! \(error.localizedDescription)")
+            }
+            
+        }
     }
     
 }
-
 
 

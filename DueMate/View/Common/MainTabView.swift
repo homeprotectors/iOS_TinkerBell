@@ -13,9 +13,8 @@ struct MainTabView: View {
             NavigationStack {
                 ChoreMainView()
             }
-            .tabItem{
+            .tabItem {
                 Label("", systemImage: "house")
-                
             }
             
             NavigationStack {
@@ -25,7 +24,6 @@ struct MainTabView: View {
                 Label("", systemImage: "cart.fill")
             }
         }
-        
     }
 }
 
