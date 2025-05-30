@@ -30,13 +30,10 @@ final class DefaultNetworkService: NetworkService {
     }
     
     func requestWithoutResponse(_ router: any BaseRouter) async throws {
-        let response = try await AF.request(router)
+        try await AF.request(router)
             .validate()
-            .serializingDecodable(Response<EmptyResponse>.self).value
+            .serializingDecodable(Empty.self).value
         
-        guard response.success else {
-            throw NetworkError.custom("에러가 발생했습니다. 다시 시도해 주세요")
-        }
             
     }
     
