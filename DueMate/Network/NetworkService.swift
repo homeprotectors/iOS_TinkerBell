@@ -18,25 +18,69 @@ final class DefaultNetworkService: NetworkService {
     private init() {}
     
     func request<T: Decodable>(_ router: BaseRouter) async throws -> T {
-        let response = try await AF.request(router)
-            .validate()
-            .serializingDecodable(Response<T>.self).value
-        
-        guard let data = response.data else {
-            throw NetworkError.invalidData
+        do {
+            let response = try await AF.request(router)
+                .validate()
+                .serializingDecodable(Response<T>.self)
+                .value
+            
+            guard response.success else {
+                throw NetworkError.server(response.message)
+            }
+            
+            guard let data = response.data else {
+                throw NetworkError.data("No data received")
+            }
+            
+            return data
+            
+        } catch {
+            throw convertToNetworkError(error)
         }
         
-        return data
+        
     }
     
     func requestWithoutResponse(_ router: any BaseRouter) async throws {
-        try await AF.request(router)
-            .validate()
-            .serializingDecodable(Empty.self).value
-        
-            
+        do {
+            let response = try await AF.request(router)
+                .validate()
+                .response
+        } catch {
+            throw convertToNetworkError(error)
+        }
     }
     
-    
+    private func convertToNetworkError(_ error: Error) -> NetworkError {
+        
+        if let afError = error as? AFError {
+            //status code error
+            if case .responseValidationFailed(reason: .unacceptableStatusCode(let code)) = afError {
+                switch code {
+                default :
+                    return .server("statuse code: \(code)")
+                }
+            }
+            
+            // network related error
+            if case .sessionTaskFailed(let error as URLError) = afError {
+                switch error.code {
+                case .notConnectedToInternet, .networkConnectionLost:
+                    return .network("internet connection issue")
+                case .timedOut:
+                    return .network("time out")
+                default:
+                    return .network(error.localizedDescription)
+                }
+            }
+            
+            return .network(afError.localizedDescription)
+        }
+        
+        return .network(error.localizedDescription)
+        
+    }
     
 }
+
+

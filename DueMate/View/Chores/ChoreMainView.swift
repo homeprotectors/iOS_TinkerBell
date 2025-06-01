@@ -75,6 +75,7 @@ struct ChoreMainView: View {
                 )
             }
         }
+        .withErrorToast()
         
     }
 }

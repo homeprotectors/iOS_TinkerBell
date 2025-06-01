@@ -18,6 +18,8 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var selectedReminder: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
+    @Published var showToast = false
+    @Published var toastMessage: String = ""
     
     
     // Form Validation
@@ -28,6 +30,7 @@ class ChoreCreateViewModel: ObservableObject {
     
     // - Network
     func createChore() {
+        print("==> Creating Chore")
         let cycleInt = Int(cycle) ?? 1
         let reminderEnabled = (selectedReminder == .none) ? false : true
         var reminderDays: Int = 0
@@ -61,11 +64,11 @@ class ChoreCreateViewModel: ObservableObject {
                 }
             }
             catch {
-//                //Error handling later
-//                await MainActor.run {
-//                    
-//                }
-                print("💥 생성 실패! \(error.localizedDescription)")
+                if let nwError = error as? NetworkError {
+                    await ErrorHandler.shared.handle(nwError)
+                } else {
+                    print("💥 ErrorHandling Failed:  \(error.localizedDescription)")
+                }
             }
             
         }

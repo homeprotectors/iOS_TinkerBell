@@ -12,9 +12,12 @@ import Alamofire
 
 class ChoreMainViewModel: ObservableObject {
     @Published var shouldRefresh: Bool = false
+    @Published var showToast: Bool  = false
+    @Published var error: NetworkError?
     @Published var items: [ChoreItem] = []
     
     private let network = DefaultNetworkService.shared
+    private let errorHandler = ErrorHandler.shared
     
     func fetchChores() {
         print("Main list fetch start!")
@@ -27,6 +30,13 @@ class ChoreMainViewModel: ObservableObject {
                 }
                 print("🎉 Chore fetch 성공!")
             } catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        errorHandler.handle(networkError)
+                    } else {
+                        errorHandler.handle(.custom(error.localizedDescription))
+                    }
+                }
                 print("💥 Chore fetch 실패!  \(error.localizedDescription)")
             }
         }
@@ -42,7 +52,14 @@ class ChoreMainViewModel: ObservableObject {
                 try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
                 fetchChores()
             } catch {
-                print("❌ Complete failed: \(error.localizedDescription)")
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        errorHandler.handle(networkError)
+                    } else {
+                        errorHandler.handle(.custom(error.localizedDescription))
+                    }
+                }
+                print("💥 Complete failed: \(error.localizedDescription)")
             }
         }
     }
