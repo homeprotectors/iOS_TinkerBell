@@ -20,7 +20,7 @@ extension BaseRouter {
     
     //baseURL
     var baseURL: URL {
-        URL(string: "https://duemate.onrender.com/api")!
+        URL(string: "http://ec2-15-164-220-42.ap-northeast-2.compute.amazonaws.com:8080/api")!
     }
     
     

@@ -12,7 +12,7 @@ enum ChoreRouter: BaseRouter {
     case getItems
     case create(body: CreateChoreRequest)
     case delete(id: Int)
-    case update(id: Int, body: CreateChoreRequest)
+    case update(id: Int, body: UpdateChoreRequest)
     case complete(body: EditChoreHistoryRequest)
     case undo(body: EditChoreHistoryRequest)
     
@@ -42,8 +42,10 @@ enum ChoreRouter: BaseRouter {
     //parameters
     var body: Encodable? {
         switch self {
-        case .create(let body), .update(_, let body):
+        case .create(let body):
             return body     //CreateChoreRequest
+        case .update(_, let body):
+            return body     //UpdateChoreRequest
         case .complete(let body), .undo(let body):
             return body     //EditChoreHistoryRequest
         default:

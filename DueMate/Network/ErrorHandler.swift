@@ -10,13 +10,20 @@ import Foundation
 @MainActor
 class ErrorHandler: ObservableObject {
     static let shared = ErrorHandler()
-    @Published var currentError: NetworkError?
+    @Published var currentError: CustomError?
     @Published var showToast: Bool = false
     
     private init() {}
     
-    func handle(_ error:NetworkError) {
-        print("🚩Error handler: \n\(error)")
+    func handle(_ error: CustomError) {
+        
+        if let originalError = error.originalError {
+            print("🚩 \(error)")
+            print("🚩🚩Original Error: \(originalError.localizedDescription)")
+        }
+        
+        
+        
         currentError = error
         showToast = true
     }

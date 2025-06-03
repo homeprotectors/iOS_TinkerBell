@@ -18,14 +18,14 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var selectedReminder: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
-    @Published var showToast = false
-    @Published var toastMessage: String = ""
+ 
     
     
     // Form Validation
     var isFormValid: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        Int(cycle) != nil && Int(cycle)! > 0 && Int(cycle)! <= 365
+        let isTitleValid = !title.trimmingCharacters(in: .whitespaces).isEmpty
+        let isCycleValid = Int(cycle).map { $0 >= 1 && $0 <= 365 } ?? false
+        return isTitleValid && isCycleValid
     }
     
     // - Network
@@ -33,7 +33,7 @@ class ChoreCreateViewModel: ObservableObject {
         print("==> Creating Chore")
         let cycleInt = Int(cycle) ?? 1
         let reminderEnabled = (selectedReminder == .none) ? false : true
-        var reminderDays: Int = 0
+        var reminderDays: Int? = 0
         
         switch selectedReminder {
         case .theDay:
@@ -43,14 +43,13 @@ class ChoreCreateViewModel: ObservableObject {
         case .twoDaysBefore:
             reminderDays = 2
         case .none:
-            reminderDays = 0
+            reminderDays = nil
         }
         
         let body = CreateChoreRequest(
             title: title,
             cycleDays: cycleInt,
             startDate: DateFormatter.yyyyMMdd.string(from: startDate),
-            reminderEnabled: reminderEnabled,
             reminderDays: reminderDays
         )
         

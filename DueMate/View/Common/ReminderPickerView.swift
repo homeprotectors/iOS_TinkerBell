@@ -13,9 +13,10 @@ enum ReminderOptions: String, CaseIterable{
     case oneDayBefore = "하루 전(9am)"
     case twoDaysBefore = "이틀 전(9am)"
     
-    func getDays() -> Int {
+    func getDays() -> Int? {
         switch self {
-        case .none, .theDay: return 0
+        case .none: return nil
+        case .theDay: return 0
         case .oneDayBefore: return 1
         case .twoDaysBefore: return 2
         }

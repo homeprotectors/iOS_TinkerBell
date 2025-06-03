@@ -14,8 +14,13 @@ struct CreateChoreRequest: RequestBody {
     let title: String
     let cycleDays: Int
     let startDate: String  // "yyyy-MM-dd"
-    let reminderEnabled: Bool
-    let reminderDays: Int
+    let reminderDays: Int?
+}
+
+struct UpdateChoreRequest: RequestBody {
+    let title: String
+    let cycleDays: Int
+    let reminderDays: Int?
 }
 
 //Complete Chore Body

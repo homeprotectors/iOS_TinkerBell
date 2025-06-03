@@ -17,7 +17,6 @@ class ChoreMainViewModel: ObservableObject {
     @Published var items: [ChoreItem] = []
     
     private let network = DefaultNetworkService.shared
-    private let errorHandler = ErrorHandler.shared
     
     func fetchChores() {
         print("Main list fetch start!")
@@ -32,9 +31,9 @@ class ChoreMainViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     if let networkError = error as? NetworkError {
-                        errorHandler.handle(networkError)
+                        ErrorHandler.shared.handle(networkError)
                     } else {
-                        errorHandler.handle(.custom(error.localizedDescription))
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
                     }
                 }
                 print("💥 Chore fetch 실패!  \(error.localizedDescription)")
@@ -51,15 +50,16 @@ class ChoreMainViewModel: ObservableObject {
                 )
                 try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
                 fetchChores()
+                print("🎉 Complete 성공!")
             } catch {
                 await MainActor.run {
                     if let networkError = error as? NetworkError {
-                        errorHandler.handle(networkError)
+                        ErrorHandler.shared.handle(networkError)
                     } else {
-                        errorHandler.handle(.custom(error.localizedDescription))
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
                     }
                 }
-                print("💥 Complete failed: \(error.localizedDescription)")
+                print("💥 Complete 실패! \(error.localizedDescription)")
             }
         }
     }

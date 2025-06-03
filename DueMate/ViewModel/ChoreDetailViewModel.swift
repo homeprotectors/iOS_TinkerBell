@@ -62,6 +62,13 @@ class ChoreDetailViewModel: ObservableObject {
                 print("🎉 complete \(complete) 성공! \(date)")
             }
             catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
                 print("💥 complete 실패! \(error.localizedDescription)")
             }
         }
@@ -73,8 +80,7 @@ class ChoreDetailViewModel: ObservableObject {
     func updateChore(for id:Int) {
         let intCycledays = Int(cycleDays) ?? 1
         let reminderDays = reminderOption.getDays()
-        let reminderEnabled = reminderOption == .none ? false : true
-        let body = CreateChoreRequest(title: title, cycleDays: intCycledays, startDate: "2025-05-29", reminderEnabled: reminderEnabled, reminderDays: reminderDays)
+        let body = UpdateChoreRequest(title: title, cycleDays: intCycledays, reminderDays: reminderDays)
         
         Task {
             do {
@@ -85,10 +91,13 @@ class ChoreDetailViewModel: ObservableObject {
                 print("🎉 update 성공! \(title)")
             }
             catch {
-                // Error handling
-                //                await MainActor.run {
-                //
-                //                }
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
                 print("💥 update 실패! \(error.localizedDescription)")
             }
         }
@@ -105,10 +114,13 @@ class ChoreDetailViewModel: ObservableObject {
                 print("🎉 delete 성공! \(title)")
             }
             catch {
-                // Error handling
-                //                await MainActor.run {
-                //
-                //                }
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }            
                 print("💥 delete 실패! \(error.localizedDescription)\nid: \(id)")
             }
         }

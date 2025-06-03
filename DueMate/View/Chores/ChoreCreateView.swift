@@ -51,16 +51,30 @@ struct ChoreCreateView: View {
                     .foregroundColor(.gray)
                 
                 HStack {
-                    TextField("1-365", value: Binding(
-                        get: { Int(viewModel.cycle) ?? 0 },
-                        set: { viewModel.cycle = String($0) }
-                    ), formatter: numberFormatter)
+                    TextField("1-365", text: $viewModel.cycle)
                         .keyboardType(.numberPad)
+                        .onChange(of: viewModel.cycle) {
+                            
+                            let filtered = viewModel.cycle.filter { $0.isNumber }
+                            if filtered != viewModel.cycle {
+                                viewModel.cycle = filtered
+                            }
+                            
+                            
+                            if let number = Int(filtered) {
+                                if number < 1 || number > 365 {
+                                    viewModel.cycle = ""
+                                    Task { @MainActor in
+                                        ErrorHandler.shared.handle(ValidationError.outOfRange365)
+                                    }
+                                }
+                            }
+                        }
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
                     
-                    Text("일")
+                    Text("일에 한 번")
                         .foregroundColor(.gray)
                 }
             }
@@ -132,6 +146,7 @@ struct ChoreCreateView: View {
         .toolbar(.hidden, for: .tabBar)
         .padding(24)
         .background(Color(.systemBackground))
+        .withErrorToast()
     }
     
 }

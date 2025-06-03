@@ -37,15 +37,14 @@ final class DefaultNetworkService: NetworkService {
         } catch {
             throw convertToNetworkError(error)
         }
-        
-        
     }
     
     func requestWithoutResponse(_ router: any BaseRouter) async throws {
         do {
-            let response = try await AF.request(router)
+            _ = try await AF.request(router)
                 .validate()
-                .response
+                .serializingString()
+                .value
         } catch {
             throw convertToNetworkError(error)
         }
@@ -70,14 +69,18 @@ final class DefaultNetworkService: NetworkService {
                 case .timedOut:
                     return .network("time out")
                 default:
-                    return .network(error.localizedDescription)
+                    return .network(error.localizedDescription, original: error)
                 }
             }
             
-            return .network(afError.localizedDescription)
+            if case .responseSerializationFailed(let reason) = afError {
+                return .data("data decoding Error",original: afError)
+            }
+            
+            return .unknown(afError)
         }
         
-        return .network(error.localizedDescription)
+        return .unknown(error)
         
     }
     
