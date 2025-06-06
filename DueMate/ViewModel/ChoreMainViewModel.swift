@@ -49,7 +49,9 @@ class ChoreMainViewModel: ObservableObject {
                     doneDate: DateFormatter.yyyyMMdd.string(from: Date())
                 )
                 try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
-                fetchChores()
+                await MainActor.run {
+                    fetchChores()
+                }
                 print("🎉 Complete 성공!")
             } catch {
                 await MainActor.run {
@@ -81,6 +83,5 @@ class ChoreMainViewModel: ObservableObject {
             return ListColor.normal
         }
     }
-    
 }
 

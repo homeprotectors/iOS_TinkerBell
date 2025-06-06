@@ -21,12 +21,12 @@ extension String {
     }
 }
 
-extension Int {
+extension Optional where Wrapped == Int {
     func getReminderOption() -> ReminderOptions {
         switch self {
-        case 0: return .theDay
-        case 1: return .oneDayBefore
-        case 2: return .twoDaysBefore
+        case .some(0): return .theDay
+        case .some(1): return .oneDayBefore
+        case .some(2): return .twoDaysBefore
         default: return .none
         }
     }

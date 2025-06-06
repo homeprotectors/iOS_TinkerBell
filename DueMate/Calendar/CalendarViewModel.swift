@@ -81,12 +81,15 @@ class CalendarViewModel: ObservableObject {
         let previousMonthDays = calendar.range(of:.day , in:.month, for: previousMonth)!
         
         //previous month days
-        for previousDay in (previousMonthDays.count - daysBefore + 1 )...previousMonthDays.count {
-            let date = calendar.date(from: DateComponents(year: calendar.component(.year, from: previousMonth),
-                                                          month: calendar.component(.month, from: previousMonth),
-                                                          day: previousDay))!
-            dates.append(makeCell(date: date, isInCurrentMonth: false))
+        if daysBefore > 0 {
+            for previousDay in (previousMonthDays.count - daysBefore + 1 )...previousMonthDays.count {
+                let date = calendar.date(from: DateComponents(year: calendar.component(.year, from: previousMonth),
+                                                              month: calendar.component(.month, from: previousMonth),
+                                                              day: previousDay))!
+                dates.append(makeCell(date: date, isInCurrentMonth: false))
+            }
         }
+        
         
         //current month days
         for day in range {

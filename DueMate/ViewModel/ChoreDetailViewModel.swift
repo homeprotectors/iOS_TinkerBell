@@ -16,7 +16,6 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var shoudRedirectMain: Bool = false
     @Published var isHistoryUpdated: Bool = false
     
-    
     @Published var firstTitle: String = ""
     @Published var firstCycleDays: String = ""
     @Published var firstReminderOption: ReminderOptions = .none
@@ -38,12 +37,25 @@ class ChoreDetailViewModel: ObservableObject {
     }
     
     func fetchHistory(for id: Int)  {
-        //history 받아옴
-        
-        historyDates =  ["2025-04-16","2025-04-29","2025-05-01","2025-05-09","2025-05-24"]
-        
-        
-        
+        print("fetchHistory")
+//        Task {
+//            do {
+//                let history: [String] = try await network.request(ChoreRouter.getHistory(id: id))
+//                await MainActor.run {
+//                    self.historyDates = history
+//                }
+//                print("🎉 History fetch 성공!")
+//            } catch {
+//                await MainActor.run {
+//                    if let networkError = error as? NetworkError {
+//                        ErrorHandler.shared.handle(networkError)
+//                    } else {
+//                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+//                    }
+//                }
+//                print("💥 History fetch 실패! \(error.localizedDescription)")
+//            }
+//        }
     }
     
     func editHistory(complete: Bool, id: Int, date: String) {

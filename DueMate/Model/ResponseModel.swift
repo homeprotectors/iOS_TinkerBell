@@ -40,8 +40,7 @@ struct ChoreItem: Codable, Identifiable {
     let title: String
     let cycleDays: Int
     let nextDue: String
-    let reminderEnabled: Bool
-    let reminderDays: Int
+    let reminderDays: Int?
 }
 
 // Responses for updating Chore History : not using at the moment
