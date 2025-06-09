@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalendarView: View {
-    @Binding var history: [String]
+    @Binding var history: [ChoreHistory]
     @StateObject private var viewModel = CalendarViewModel()
     @Binding var selectedDate: Date?
     
@@ -64,7 +64,7 @@ struct CalendarView: View {
             
         }
         .padding()
-        .onChange(of: history) { history in
+        .onChange(of: history) {
             viewModel.loadHistory(history)
         }
         .onAppear {
@@ -80,6 +80,5 @@ struct CalendarView: View {
 
 #Preview {
     @Previewable @State var selectedDate: Date? = nil
-    CalendarView(history: .constant(["2025-05-01",
-                                     "2025-05-10"]), selectedDate: $selectedDate)
+    CalendarView(history: .constant([ChoreHistory(id: 1, doneDate: "2025-06-05", doneBy: 1)]), selectedDate: $selectedDate)
 }

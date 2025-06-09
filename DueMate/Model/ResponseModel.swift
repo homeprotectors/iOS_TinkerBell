@@ -57,3 +57,15 @@ struct UndoChoreHistoryResponse: Codable {
     let reminderDate: String
     let lastDone: String
 }
+
+struct GetChoreHistoryResponse: Codable {
+    let choreId: Int
+    let nextDue: String
+    let history: [ChoreHistory]
+}
+
+struct ChoreHistory: Codable, Equatable {
+    let id: Int
+    let doneDate: String
+    let doneBy: Int
+}

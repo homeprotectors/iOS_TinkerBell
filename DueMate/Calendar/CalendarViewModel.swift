@@ -63,8 +63,10 @@ class CalendarViewModel: ObservableObject {
     }
     
     
-    func loadHistory(_ dateStrings: [String]) {
-        self.historyDates = dateStrings.compactMap { DateFormatter.yyyyMMdd.date(from: $0) }
+    func loadHistory(_ histories: [ChoreHistory]) {
+        self.historyDates = histories
+            .map(\.doneDate)
+            .compactMap { DateFormatter.yyyyMMdd.date(from: $0) }
         generateCalendar()
     }
     

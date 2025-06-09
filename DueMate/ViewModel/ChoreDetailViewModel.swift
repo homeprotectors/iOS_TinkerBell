@@ -9,7 +9,7 @@ import SwiftUI
 import Alamofire
 
 class ChoreDetailViewModel: ObservableObject {
-    @Published var historyDates: [String] = []
+    @Published var historyDates: [ChoreHistory] = []
     @Published var title: String = ""
     @Published var cycleDays: String = ""
     @Published var reminderOption: ReminderOptions = .none
@@ -36,26 +36,29 @@ class ChoreDetailViewModel: ObservableObject {
         return title != firstTitle || cycleDays != firstCycleDays || reminderOption != firstReminderOption
     }
     
+    func isInHistory(_ date: Date) -> Bool {
+        historyDates.contains(where: {$0.doneDate == date.toString()})
+    }
     func fetchHistory(for id: Int)  {
         print("fetchHistory")
-//        Task {
-//            do {
-//                let history: [String] = try await network.request(ChoreRouter.getHistory(id: id))
-//                await MainActor.run {
-//                    self.historyDates = history
-//                }
-//                print("🎉 History fetch 성공!")
-//            } catch {
-//                await MainActor.run {
-//                    if let networkError = error as? NetworkError {
-//                        ErrorHandler.shared.handle(networkError)
-//                    } else {
-//                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-//                    }
-//                }
-//                print("💥 History fetch 실패! \(error.localizedDescription)")
-//            }
-//        }
+        Task {
+            do {
+                let historyResult: GetChoreHistoryResponse = try await network.request(ChoreRouter.getHistory(id: id))
+                await MainActor.run {
+                    self.historyDates = historyResult.history
+                }
+                print("🎉 History fetch 성공!")
+            } catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
+                print("💥 History fetch 실패! \(error.localizedDescription)")
+            }
+        }
     }
     
     func editHistory(complete: Bool, id: Int, date: String) {

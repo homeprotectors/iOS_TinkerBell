@@ -128,7 +128,7 @@ struct ChoreDetailView: View {
             
             if showDialog {
                 if let selectedDate = selectedDate {
-                    if viewModel.historyDates.contains(selectedDate.toString()) {
+                    if viewModel.isInHistory(selectedDate) {
                         ConfirmationDialog(
                             isPresented: $showDialog,
                             type: .historyCancelation,
