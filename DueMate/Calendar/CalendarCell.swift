@@ -27,8 +27,16 @@ struct CalendarCellView: View {
                 .fontWeight(cell.isSelectable ? .bold : .regular)
                 .frame(width: 30, height: 30)
                 .background(
-                    Circle()
-                        .fill(getBackgroundColor().opacity(cell.isInCurrentMonth ? 1.0 : 0.4))
+                    ZStack {
+                        Circle()
+                            .fill(getBackgroundColor().opacity(cell.isInCurrentMonth ? 1.0 : 0.4))
+                        if isSelected {
+                            Circle().stroke(Color.black, lineWidth: 2)
+                        }
+                    }
+                   
+                    
+                    
                 )
                 .foregroundColor(getTextColor())
         }
@@ -36,7 +44,6 @@ struct CalendarCellView: View {
     }
 
     private func getBackgroundColor() -> Color {
-        if isSelected { return .black }
         if let history = history {
             let opacity = cell.isSelectable ? 0.7 : 0.3
             switch history.doneBy {
@@ -55,7 +62,7 @@ struct CalendarCellView: View {
             return history != nil ? .white : .gray
         }
         if !cell.isInCurrentMonth { return .gray }
-        if isSelected || isNextDue || history != nil { return .white }
+        if isNextDue || history != nil { return .white }
         return .black
     }
 }
