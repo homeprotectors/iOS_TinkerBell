@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ChoreDetailView: View {
-    var item: ChoreItem
+    let item: ChoreItem
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
-    @StateObject private var viewModel =  ChoreDetailViewModel()
+    @StateObject private var viewModel = ChoreDetailViewModel()
     
-    @State private var selectedDate : Date? = nil
+    @State private var selectedDate: Date? = nil
     @State private var showDialog = false
     @State private var showReminderPicker = false
     @State private var showDeleteAlert = false
@@ -38,7 +38,12 @@ struct ChoreDetailView: View {
                     .padding(20)
                     
                     //history calendar
-                    CalendarView(history: $viewModel.historyDates, selectedDate: $selectedDate)
+                    CalendarView(
+                        viewModel: CalendarViewModel(),
+                        histories: viewModel.histories,
+                        nextDue: item.nextDue,
+                        selectedDate: $selectedDate
+                    )
                     
                     // cycle days
                     VStack(alignment: .leading, spacing: 8) {
@@ -195,7 +200,6 @@ struct ChoreDetailView: View {
                 print("fetch canceled")
             }
         }
-        
     }
     
 }

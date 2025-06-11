@@ -9,7 +9,7 @@ import SwiftUI
 import Alamofire
 
 class ChoreDetailViewModel: ObservableObject {
-    @Published var historyDates: [ChoreHistory] = []
+    @Published private(set) var histories: [ChoreHistory] = []
     @Published var title: String = ""
     @Published var cycleDays: String = ""
     @Published var reminderOption: ReminderOptions = .none
@@ -20,6 +20,7 @@ class ChoreDetailViewModel: ObservableObject {
     @Published var firstCycleDays: String = ""
     @Published var firstReminderOption: ReminderOptions = .none
     
+    private var historyMap: [String: ChoreHistory] = [:]
     private let network = DefaultNetworkService.shared
     
     func firstInputSetting(title: String, cycleDays: String, reminderOption: ReminderOptions) {
@@ -37,15 +38,17 @@ class ChoreDetailViewModel: ObservableObject {
     }
     
     func isInHistory(_ date: Date) -> Bool {
-        historyDates.contains(where: {$0.doneDate == date.toString()})
+        historyMap[date.toString()] != nil
     }
+    
     func fetchHistory(for id: Int)  {
-        print("fetchHistory")
+        print("Start fetchHistory\(id)")
         Task {
             do {
                 let historyResult: GetChoreHistoryResponse = try await network.request(ChoreRouter.getHistory(id: id))
                 await MainActor.run {
-                    self.historyDates = historyResult.history
+                    self.histories = historyResult.history
+                    self.historyMap = Dictionary(uniqueKeysWithValues: historyResult.history.map { ($0.doneDate, $0) })
                 }
                 print("🎉 History fetch 성공!")
             } catch {
@@ -55,42 +58,55 @@ class ChoreDetailViewModel: ObservableObject {
                     } else {
                         ErrorHandler.shared.handle(NetworkError.unknown(error))
                     }
+                    print("💥 History fetch 실패! \(error.localizedDescription)")
                 }
-                print("💥 History fetch 실패! \(error.localizedDescription)")
             }
         }
     }
     
     func editHistory(complete: Bool, id: Int, date: String) {
-        let body = EditChoreHistoryRequest(choreId: id, doneDate: date)
         Task {
             do {
+                let body = EditChoreHistoryRequest(choreId: id, doneDate: date)
                 if complete {
                     try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
+                    await MainActor.run {
+                        let newHistory = ChoreHistory(id: id, doneDate: date, doneBy: Constants.userID)
+                        histories.append(newHistory)
+                        historyMap[date] = newHistory
+                    }
                 } else {
                     try await network.requestWithoutResponse(ChoreRouter.undo(body: body))
+                    await MainActor.run {
+                        histories.removeAll { $0.doneDate == date }
+                        historyMap[date] = nil
+                    }
                 }
-                
-                await MainActor.run {
-                    isHistoryUpdated = true
-                }
+                //for mainVeiw Update
+                isHistoryUpdated = true
                 print("🎉 complete \(complete) 성공! \(date)")
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     if let networkError = error as? NetworkError {
                         ErrorHandler.shared.handle(networkError)
                     } else {
                         ErrorHandler.shared.handle(NetworkError.unknown(error))
                     }
+                    print("💥 complete \(complete) 실패! \(error.localizedDescription)")
                 }
-                print("💥 complete 실패! \(error.localizedDescription)")
             }
+            
         }
-        fetchHistory(for:id)
     }
     
     
+    func isDateCompleted(_ date: Date) -> Bool {
+        historyMap[date.toString()] != nil
+    }
+    
+    func getHistory(for date: Date) -> ChoreHistory? {
+        historyMap[date.toString()]
+    }
     
     func updateChore(for id:Int) {
         let intCycledays = Int(cycleDays) ?? 1
@@ -135,7 +151,7 @@ class ChoreDetailViewModel: ObservableObject {
                     } else {
                         ErrorHandler.shared.handle(NetworkError.unknown(error))
                     }
-                }            
+                }
                 print("💥 delete 실패! \(error.localizedDescription)\nid: \(id)")
             }
         }
