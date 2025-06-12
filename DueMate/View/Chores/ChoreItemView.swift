@@ -22,7 +22,7 @@ struct ChoreItemView: View {
                 HStack{
                     Text(item.title)
                         .font(.system(size: 25, weight: .bold))
-                    if item.reminderEnabled{
+                    if item.reminderDays != nil {
                         Image(systemName: "bell.fill")
                     }
                     
@@ -66,7 +66,6 @@ struct ChoreItemView: View {
         title: "Take out trash",
         cycleDays: 3,
         nextDue: "2025-05-03",
-        reminderEnabled: true,
         reminderDays: 1
     ), color: ListColor.normal, onCheckToggled: {})
 }

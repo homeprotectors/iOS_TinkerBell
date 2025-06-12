@@ -16,7 +16,7 @@ struct Response<T: Decodable>: Decodable {
 
 
 //Create Response
-struct ChoreCreateResponseData: Codable {
+struct CreateChoreResponse: Codable {
     let id: Int
     let title: String
     let cycleDays: Int
@@ -24,7 +24,7 @@ struct ChoreCreateResponseData: Codable {
     let reminderDays: Int
 }
 
-struct ChoreUpdateResponseData: Codable {
+struct UpdateChoreResponse: Codable {
     let id: Int
     let title: String
     let startDate: String
@@ -40,6 +40,32 @@ struct ChoreItem: Codable, Identifiable {
     let title: String
     let cycleDays: Int
     let nextDue: String
-    let reminderEnabled: Bool
-    let reminderDays: Int
+    let reminderDays: Int?
+}
+
+// Responses for updating Chore History : not using at the moment
+struct CompleteChoreHistoryResponse: Codable {
+    let id: Int
+    let newNextDue: String
+    let newReminderDate: String
+    let doneBy: Int
+}
+
+struct UndoChoreHistoryResponse: Codable {
+    let choreId: Int
+    let nextDue: String
+    let reminderDate: String
+    let lastDone: String
+}
+
+struct GetChoreHistoryResponse: Codable {
+    let choreId: Int
+    let nextDue: String
+    let history: [ChoreHistory]
+}
+
+struct ChoreHistory: Codable, Equatable {
+    let id: Int
+    let doneDate: String
+    let doneBy: Int
 }

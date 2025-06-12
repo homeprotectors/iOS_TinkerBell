@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ChoreDetailView: View {
-    var item: ChoreItem
+    let item: ChoreItem
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var mainViewModel: ChoreMainViewModel
-    @StateObject private var viewModel =  ChoreDetailViewModel()
+    @StateObject private var viewModel = ChoreDetailViewModel()
     
-    @State private var selectedDate : Date? = nil
+    @State private var selectedDate: Date? = nil
     @State private var showDialog = false
     @State private var showReminderPicker = false
     @State private var showDeleteAlert = false
@@ -38,7 +38,12 @@ struct ChoreDetailView: View {
                     .padding(20)
                     
                     //history calendar
-                    CalendarView(history: $viewModel.historyDates, selectedDate: $selectedDate)
+                    CalendarView(
+                        viewModel: CalendarViewModel(),
+                        histories: viewModel.histories,
+                        nextDue: item.nextDue,
+                        selectedDate: $selectedDate
+                    )
                     
                     // cycle days
                     VStack(alignment: .leading, spacing: 8) {
@@ -84,16 +89,10 @@ struct ChoreDetailView: View {
                         }
                     }
                     
+                    
+                    // Save Button
                     Button(action: {
-                        Task {
-                            do {
-                                try await viewModel.updateChore(for: item.id)
-                                mainViewModel.shouldRefresh = true
-                                dismiss()
-                            } catch {
-                                print("Failed to save chore: \(error.localizedDescription)")
-                            }
-                        }
+                        viewModel.updateChore(for: item.id)
                     }) {
                         Text("Save")
                             .frame(maxWidth: .infinity)
@@ -103,6 +102,15 @@ struct ChoreDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     .disabled(!viewModel.hasInputChanges())
+                    .onChange(of: viewModel.shoudRedirectMain) {
+                        if viewModel.shoudRedirectMain {
+                            mainViewModel.shouldRefresh = true
+                            dismiss()
+                        }
+                    }
+                    
+                    
+                    // Delete Button
                     Button(role: .destructive) {
                         showDeleteAlert = true
                         
@@ -113,18 +121,11 @@ struct ChoreDetailView: View {
                     }
                     .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
                         Button("삭제", role: .destructive){
-                            Task {
-                                do {
-                                    try await viewModel.deleteChore(id: item.id)
-                                    mainViewModel.shouldRefresh = true
-                                    dismiss()
-                                } catch {
-                                    print("Failed to delete chore: \(error.localizedDescription)")
-                                }
-                            }
+                            viewModel.deleteChore(id: item.id)
                         }
                         Button("취소",role: .cancel) {}
                     }
+                    
                     
                 }
                 
@@ -132,12 +133,13 @@ struct ChoreDetailView: View {
             
             if showDialog {
                 if let selectedDate = selectedDate {
-                    if viewModel.historyDates.contains(selectedDate.toString()) {
+                    if viewModel.isInHistory(selectedDate) {
                         ConfirmationDialog(
                             isPresented: $showDialog,
                             type: .historyCancelation,
                             onConfirm: {
-                                print("date: \(selectedDate)")
+                                viewModel.editHistory(complete: false, id:item.id, date: selectedDate.toString())
+                                print("date: \(selectedDate.toString())")
                             }
                         )
                     } else {
@@ -145,7 +147,7 @@ struct ChoreDetailView: View {
                             isPresented: $showDialog,
                             type: .historyCompletion,
                             onConfirm: {
-                                print("date: \(selectedDate)")
+                                viewModel.editHistory(complete: true, id:item.id, date: selectedDate.toString())
                             }
                         )
                     }
@@ -178,32 +180,30 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            var reminder: ReminderOptions
-            if !item.reminderEnabled {
-                reminder = .none
-            }else{
-                reminder = item.reminderDays.getReminderOption()
-            }
-            viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: reminder)
+            
+            viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: item.reminderDays.getReminderOption())
         }
-        .onChange(of: selectedDate) { newDate in
-            if newDate != nil {
+        .onChange(of: selectedDate) {
+            if selectedDate != nil {
                 showDialog = true
+            }
+        }
+        .onChange(of: viewModel.isHistoryUpdated) {
+            if viewModel.isHistoryUpdated {
+                mainViewModel.shouldRefresh = true
             }
         }
         .task {
             do {
-                try await viewModel.fetchHistory(for: item.id)
-                
+                viewModel.fetchHistory(for: item.id)
             } catch {
                 print("fetch canceled")
             }
         }
-        
     }
     
 }
 
 #Preview {
-    ChoreDetailView(item: ChoreItem(id: 1, title: "빨래하기", cycleDays: 3, nextDue: "2025-05-13", reminderEnabled: true, reminderDays: 1))
+    ChoreDetailView(item: ChoreItem(id: 1, title: "빨래하기", cycleDays: 3, nextDue: "2025-05-13",  reminderDays: 1))
 }

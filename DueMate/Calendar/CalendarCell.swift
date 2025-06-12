@@ -12,57 +12,57 @@ struct CalendarCell: Identifiable {
     let date: Date
     let day: Int
     let isInCurrentMonth: Bool
-    let isInHistory: Bool
-    let isNextDue: Bool
-    let isSelected: Bool
     let isSelectable: Bool
-    
-    func getBackgroundColor() -> Color {
-        if isSelected {
-            return Color.black
-        } else if isInHistory && isSelectable {
-            return CalendarColor.history
-        } else if isInHistory && !isSelectable {
-            return CalendarColor.oldHistory
-        } else if isNextDue {
-            return CalendarColor.nextDue
-        } else {
-            return Color.white
-        }
-    }
-    
-    func getTextColor() -> Color {
-        if !isSelectable  {
-            if isInHistory {
-                return .white
-            }
-            return .gray
-        } else if !isInCurrentMonth {
-            return .gray
-        }else if isSelected || isNextDue || isInHistory  {
-            return .white
-        } else {
-            return .black
-        }
-    }
-    
 }
 
-
 struct CalendarCellView: View {
-    let theCell: CalendarCell
-    // today: cirecle / history: color / nextdue: different
+    let cell: CalendarCell
+    let isSelected: Bool
+    let isNextDue: Bool
+    let history: ChoreHistory?
+
     var body: some View {
         VStack {
-            Text("\(theCell.day)")
-                .fontWeight(theCell.isSelectable ? .bold : .regular)
+            Text("\(cell.day)")
+                .fontWeight(cell.isSelectable ? .bold : .regular)
                 .frame(width: 30, height: 30)
                 .background(
-                    Circle()
-                        .fill(theCell.getBackgroundColor().opacity(theCell.isInCurrentMonth ? 1.0 : 0.4))
+                    ZStack {
+                        Circle()
+                            .fill(getBackgroundColor().opacity(cell.isInCurrentMonth ? 1.0 : 0.4))
+                        if isSelected {
+                            Circle().stroke(Color.black, lineWidth: 2)
+                        }
+                    }
+                   
+                    
+                    
                 )
-                .foregroundColor(theCell.getTextColor())
+                .foregroundColor(getTextColor())
         }
         .frame(width: 40, height: 40)
+    }
+
+    private func getBackgroundColor() -> Color {
+        if let history = history {
+            let opacity = cell.isSelectable ? 0.7 : 0.3
+            switch history.doneBy {
+            case 1: return .blue.opacity(opacity)
+            case 2: return .green.opacity(opacity)
+            case 3: return .purple.opacity(opacity)
+            default: return cell.isSelectable ? CalendarColor.history : CalendarColor.oldHistory
+            }
+        }
+        if isNextDue { return CalendarColor.nextDue }
+        return .white
+    }
+
+    private func getTextColor() -> Color {
+        if !cell.isSelectable {
+            return history != nil ? .white : .gray
+        }
+        if !cell.isInCurrentMonth { return .gray }
+        if isNextDue || history != nil { return .white }
+        return .black
     }
 }

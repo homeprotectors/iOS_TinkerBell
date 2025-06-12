@@ -15,23 +15,27 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var cycle: String = ""
     @Published var startDate: Date = Date()
-    @Published var selectedAlert: ReminderOptions = .none
+    @Published var selectedReminder: ReminderOptions = .none
     @Published var showPicker = false
     @Published var isChoreCreated = false
+ 
+    
     
     // Form Validation
     var isFormValid: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        Int(cycle) != nil && Int(cycle)! > 0 && Int(cycle)! <= 365
+        let isTitleValid = !title.trimmingCharacters(in: .whitespaces).isEmpty
+        let isCycleValid = Int(cycle).map { $0 >= 1 && $0 <= 365 } ?? false
+        return isTitleValid && isCycleValid
     }
     
     // - Network
     func createChore() {
+        print("==> Creating Chore")
         let cycleInt = Int(cycle) ?? 1
-        let reminderEnabled = (selectedAlert == .none) ? false : true
-        var reminderDays: Int = 0
+        let reminderEnabled = (selectedReminder == .none) ? false : true
+        var reminderDays: Int? = 0
         
-        switch selectedAlert {
+        switch selectedReminder {
         case .theDay:
             reminderDays = 0
         case .oneDayBefore:
@@ -39,35 +43,36 @@ class ChoreCreateViewModel: ObservableObject {
         case .twoDaysBefore:
             reminderDays = 2
         case .none:
-            reminderDays = 0
+            reminderDays = nil
         }
-        
         
         let body = CreateChoreRequest(
             title: title,
             cycleDays: cycleInt,
             startDate: DateFormatter.yyyyMMdd.string(from: startDate),
-            reminderEnabled: reminderEnabled,
             reminderDays: reminderDays
         )
         
-        print("✨New Chore----------\n",body)
-        AF.request(Router.createChoreItem(body: body))
-            .validate()
-            .responseDecodable(of: Response<ChoreCreateResponseData>.self){
-                response in
-                switch response.result {
-                case .success(let result):
-                    print("성공!✅ \(result.message)")
-                    self.isChoreCreated = true
-                    
-                case .failure(let error):
-                    print("에러🚩 \(error.localizedDescription)")
+        
+        Task {
+            do {
+                try await DefaultNetworkService.shared.requestWithoutResponse(ChoreRouter.create(body: body))
+                await MainActor.run {
+                    isChoreCreated = true
+                    print("🎉 생성 완료! \(title)")
                 }
             }
+            catch {
+                if let nwError = error as? NetworkError {
+                    await ErrorHandler.shared.handle(nwError)
+                } else {
+                    print("💥 ErrorHandling Failed:  \(error.localizedDescription)")
+                }
+            }
+            
+        }
     }
     
 }
-
 
 

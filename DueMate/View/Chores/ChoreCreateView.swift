@@ -51,16 +51,30 @@ struct ChoreCreateView: View {
                     .foregroundColor(.gray)
                 
                 HStack {
-                    TextField("1-365", value: Binding(
-                        get: { Int(viewModel.cycle) ?? 0 },
-                        set: { viewModel.cycle = String($0) }
-                    ), formatter: numberFormatter)
+                    TextField("1-365", text: $viewModel.cycle)
                         .keyboardType(.numberPad)
+                        .onChange(of: viewModel.cycle) {
+                            
+                            let filtered = viewModel.cycle.filter { $0.isNumber }
+                            if filtered != viewModel.cycle {
+                                viewModel.cycle = filtered
+                            }
+                            
+                            
+                            if let number = Int(filtered) {
+                                if number < 1 || number > 365 {
+                                    viewModel.cycle = ""
+                                    Task { @MainActor in
+                                        ErrorHandler.shared.handle(ValidationError.outOfRange365)
+                                    }
+                                }
+                            }
+                        }
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
                     
-                    Text("일")
+                    Text("일에 한 번")
                         .foregroundColor(.gray)
                 }
             }
@@ -91,8 +105,8 @@ struct ChoreCreateView: View {
                     showPicker = true
                 }) {
                     HStack {
-                        Text(viewModel.selectedAlert.rawValue)
-                            .foregroundColor(viewModel.selectedAlert == .none ? .gray : .primary)
+                        Text(viewModel.selectedReminder.rawValue)
+                            .foregroundColor(viewModel.selectedReminder == .none ? .gray : .primary)
                         Spacer()
                         Image(systemName: "chevron.down")
                             .foregroundColor(.gray)
@@ -102,7 +116,7 @@ struct ChoreCreateView: View {
                     .cornerRadius(12)
                 }
                 .sheet(isPresented: $showPicker) {
-                    ReminderPickerView(alert: $viewModel.selectedAlert)
+                    ReminderPickerView(alert: $viewModel.selectedReminder)
                 }
             }
             
@@ -122,7 +136,6 @@ struct ChoreCreateView: View {
             .padding(.top, 12)
             .onChange(of:viewModel.isChoreCreated){
                 if viewModel.isChoreCreated {
-                    print("CreateView: isChoreCreated")
                     onComplete?()
                     dismiss()
                 }
@@ -133,6 +146,7 @@ struct ChoreCreateView: View {
         .toolbar(.hidden, for: .tabBar)
         .padding(24)
         .background(Color(.systemBackground))
+        .withErrorToast()
     }
     
 }

@@ -12,35 +12,62 @@ import Alamofire
 
 class ChoreMainViewModel: ObservableObject {
     @Published var shouldRefresh: Bool = false
+    @Published var showToast: Bool  = false
+    @Published var error: NetworkError?
     @Published var items: [ChoreItem] = []
-
     
+    private let network = DefaultNetworkService.shared
     
     func fetchChores() {
-        print("Fetch Start ===========\n")
-        
-        AF.request(Router.getChoreItems)
-            .responseDecodable(of:Response<[ChoreItem]>.self){
-                response in
-                switch response.result {
-                case .success(let result):
-                    print("성공!✅ \(result.message)")
-                    self.items = result.data ?? []
+        print("Main list fetch start!")
+        Task {
+            do {
+                let items: [ChoreItem] = try await network.request(ChoreRouter.getItems)
+                await MainActor.run {
+                    self.items = items
                     self.sortByDueDate()
-                case .failure(let error):
-                    print("에러🚩 \(error.localizedDescription)")
                 }
+                print("🎉 Chore fetch 성공!")
+            } catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
+                print("💥 Chore fetch 실패!  \(error.localizedDescription)")
             }
+        }
     }
     
     func completeChore(_ chore: ChoreItem) {
-        print("\(chore.title) 췍!!!!")
+        Task {
+            do {
+                let body = EditChoreHistoryRequest(
+                    choreId: chore.id,
+                    doneDate: DateFormatter.yyyyMMdd.string(from: Date())
+                )
+                try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
+                await MainActor.run {
+                    fetchChores()
+                }
+                print("🎉 Complete 성공!")
+            } catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
+                print("💥 Complete 실패! \(error.localizedDescription)")
+            }
+        }
     }
     
     func sortByDueDate() {
-        items.sort { (item1, item2) -> Bool in
-            return item1.nextDue < item2.nextDue
-        }
+        items.sort { $0.nextDue < $1.nextDue }
     }
     
     func getListColor(due: String) -> Color {
@@ -56,6 +83,5 @@ class ChoreMainViewModel: ObservableObject {
             return ListColor.normal
         }
     }
-    
 }
 

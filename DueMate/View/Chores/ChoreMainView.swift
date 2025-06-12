@@ -21,7 +21,6 @@ struct ChoreMainView: View {
                     Spacer()
                     NavigationLink {
                         ChoreCreateView(onComplete:{
-                            print("MainView: complete!!")
                             viewModel.fetchChores()
                         })
                     }label: {
@@ -52,13 +51,10 @@ struct ChoreMainView: View {
                         }
                     }
                     
-                    
-                    
                 }
                 .padding()
             }
             .onAppear {
-                print("main onAppear")
                 viewModel.fetchChores()
             }
             .onChange(of: viewModel.shouldRefresh) {
@@ -79,6 +75,7 @@ struct ChoreMainView: View {
                 )
             }
         }
+        .withErrorToast()
         
     }
 }
