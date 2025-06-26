@@ -69,34 +69,5 @@ class ChoreMainViewModel: ObservableObject {
     func sortByDueDate() {
         items.sort { $0.nextDue < $1.nextDue }
     }
-    
-    func getListColor(due: String) -> Color {
-        guard let remainDays = due.daysFromToday() else {
-            return ListColor.normal
-        }
-        switch remainDays {
-        case ...0:
-            return ListColor.overdue
-        case 1...3:
-            return ListColor.warning
-        default:
-            return ListColor.normal
-        }
-    }
-    
-    func getListBackground(due: String) -> LinearGradient {
-        guard let remainDays = due.daysFromToday() else {
-            return ListStatus.normal.gradient
-        }
-        
-        switch remainDays {
-        case ...0:
-            return ListStatus.overdue.gradient
-        case 1...3:
-            return ListStatus.warning.gradient
-        default:
-            return ListStatus.normal.gradient
-        }
-    }
 }
 
