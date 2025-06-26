@@ -14,46 +14,57 @@ struct ChoreMainView: View {
     
     var body: some View {
         ZStack {
+            ListColor.background
+                .ignoresSafeArea()
             NavigationStack{
-                HStack{
-                    Text("HOUSEHOLD\nLIST")
-                        .font(.system(size: 40, weight: .bold))
-                    Spacer()
-                    NavigationLink {
-                        ChoreCreateView(onComplete:{
-                            viewModel.fetchChores()
-                        })
-                    }label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.black)
+                VStack{
+                    HStack{
+                        Text("HOUSEHOLD\nLIST")
+                            .font(.system(size: 40, weight: .bold))
+                        Spacer()
+                        NavigationLink {
+                            ChoreCreateView(onComplete:{
+                                viewModel.fetchChores()
+                            })
+                        }label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.black)
+                        }
+                        .padding()
                     }
+                    .background(Color.clear)
+                    .padding()
+                    .padding(.top, 30)
+                    
+                    ScrollView {
+                        LazyVStack(spacing: 10) {
+                            ForEach(viewModel.items) { item in
+                                NavigationLink {
+                                    ChoreDetailView(item: item)
+                                        .environmentObject(viewModel)
+                                }label: {
+                                    ChoreItemView(item: item, color: viewModel.getListBackground(due: item.nextDue), onCheckToggled: {
+                                        selectedItem = item
+                                        showDialog = true
+                                        
+                                    } )
+                                    
+                                }
+                                .buttonStyle(.plain)
+                                
+                            }
+                        }
+                        .background(Color.clear)
+                        
+                    }
+                    .background(Color.clear)
                     .padding()
                 }
-                .padding()
-                .padding(.top, 30)
+                .background(Color.clear)
                 
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(viewModel.items) { item in
-                            NavigationLink {
-                                ChoreDetailView(item: item)
-                                    .environmentObject(viewModel)
-                            }label: {
-                                ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
-                                    selectedItem = item
-                                    showDialog = true
-                                    
-                                } )
-                            }
-                            .buttonStyle(.plain)
-                            
-                        }
-                    }
-                    
-                }
-                .padding()
             }
+            .background(Color.clear)
             .onAppear {
                 viewModel.fetchChores()
             }

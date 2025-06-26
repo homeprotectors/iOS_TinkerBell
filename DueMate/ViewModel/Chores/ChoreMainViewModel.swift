@@ -83,5 +83,20 @@ class ChoreMainViewModel: ObservableObject {
             return ListColor.normal
         }
     }
+    
+    func getListBackground(due: String) -> LinearGradient {
+        guard let remainDays = due.daysFromToday() else {
+            return ListStatus.normal.gradient
+        }
+        
+        switch remainDays {
+        case ...0:
+            return ListStatus.overdue.gradient
+        case 1...3:
+            return ListStatus.warning.gradient
+        default:
+            return ListStatus.normal.gradient
+        }
+    }
 }
 
