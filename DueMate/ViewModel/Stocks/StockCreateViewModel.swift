@@ -33,25 +33,13 @@ class StockCreateViewModel: ObservableObject {
     
     
     func createStock() {
-        var reminderDays: Int? = 0
-        
-        switch selectedReminder {
-        case .theDay:
-            reminderDays = 0
-        case .oneDayBefore:
-            reminderDays = 1
-        case .twoDaysBefore:
-            reminderDays = 2
-        case .none:
-            reminderDays = nil
-        }
         let body = CreateStockRequest(
             title: title,
             quantity: currentAmount ?? 0,
             unit: unit,
             unitDays: unitDays,
             unitQuantity: unitQuantity,
-            reminderDays: reminderDays
+            reminderDays: selectedReminder.getDays()
         )
         
         Task {

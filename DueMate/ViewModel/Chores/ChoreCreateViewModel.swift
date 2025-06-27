@@ -32,24 +32,12 @@ class ChoreCreateViewModel: ObservableObject {
     func createChore() {
         print("==> Creating Chore")
         let cycleInt = Int(cycle) ?? 1
-        var reminderDays: Int? = 0
-        
-        switch selectedReminder {
-        case .theDay:
-            reminderDays = 0
-        case .oneDayBefore:
-            reminderDays = 1
-        case .twoDaysBefore:
-            reminderDays = 2
-        case .none:
-            reminderDays = nil
-        }
         
         let body = CreateChoreRequest(
             title: title,
             cycleDays: cycleInt,
             startDate: DateFormatter.yyyyMMdd.string(from: startDate),
-            reminderDays: reminderDays
+            reminderDays: selectedReminder.getDays()
         )
         
         
