@@ -44,7 +44,7 @@ struct ChoreMainView: View {
                                     ChoreDetailView(item: item)
                                         .environmentObject(viewModel)
                                 }label: {
-                                    ChoreItemView(item: item, color: viewModel.getListBackground(due: item.nextDue), onCheckToggled: {
+                                    ChoreItemView(item: item, onCheckToggled: {
                                         selectedItem = item
                                         showDialog = true
                                         

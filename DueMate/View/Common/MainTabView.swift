@@ -18,7 +18,7 @@ struct MainTabView: View {
             }
             
             NavigationStack {
-                StockCreateView()
+                StockMainView()
             }
             .tabItem {
                 Label("", systemImage: "cart.fill")

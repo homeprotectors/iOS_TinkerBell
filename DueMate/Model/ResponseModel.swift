@@ -70,6 +70,7 @@ struct ChoreHistory: Codable, Equatable {
     let doneBy: Int
 }
 
+// MARK: Stock
 
 struct StockItem: Codable, Identifiable {
     let id: Int

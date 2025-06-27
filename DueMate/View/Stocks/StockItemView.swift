@@ -9,14 +9,70 @@ import SwiftUI
 
 struct StockItemView: View {
     let item: StockItem
-    let percentage: Int
+    let onCheckToggled: () -> Void
+    var daysRemaining: Int {
+        guard let remaining = item.nextDue.daysFromToday() else {
+            return 0
+        }
+        return remaining
+    }
+    var status: ListStatus {
+        switch daysRemaining {
+        case ...0:
+            return ListStatus.overdue
+        case 1...3:
+            return ListStatus.warning
+        default:
+            return ListStatus.normal
+        }
+    }
+    var style: StockItemStyle {
+        StockItemStyle.style(for: status)
+    }
     
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            HStack{
+                VStack(alignment:.leading){
+                    HStack{
+                        Text(item.title)
+                            .font(style.titleFont)
+                        
+                        
+                    }
+                    Text("\(item.unitDays)일에 \(item.unitAmount)\(item.unit)")
+                }
+                Spacer()
+                
+                HStack{
+                    Text("약 \(daysRemaining)일치")
+                }
+                
+                Button(action:onCheckToggled){
+                    Image(systemName: "staroflife.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(style.textColor)
+                    
+                }
+                .padding(5)
+                
+            }
+            .padding()
+            .overlay(
+                Rectangle()
+                    .stroke(style: StrokeStyle(dash:[4]))
+            )
+            
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity)
+        .background(style.background)
+        .foregroundColor(style.textColor)
     }
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitAmount: 1, unit: "롤", nextDue: "2025-06-29"), percentage: 70)
+    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitAmount: 1, unit: "롤", nextDue: "2025-06-29"), onCheckToggled: {})
 }

@@ -10,7 +10,6 @@ import SwiftUI
 struct ChoreItemView: View {
     
     let item: ChoreItem
-    let color: LinearGradient
     let onCheckToggled: () -> Void
     var daysRemaining: Int {
         guard let remaining = item.nextDue.daysFromToday() else {
@@ -28,8 +27,8 @@ struct ChoreItemView: View {
             return ListStatus.normal
         }
     }
-    var style: ItemStyle {
-        ItemStyle.style(for: status)
+    var style: ChoreItemStyle {
+        ChoreItemStyle.style(for: status)
     }
     
     var body: some View {
@@ -45,7 +44,6 @@ struct ChoreItemView: View {
                         }
                         
                     }
-                    
                     Text("\(item.cycleDays)일에 한 번")
                 }
                 Spacer()
@@ -80,9 +78,6 @@ struct ChoreItemView: View {
         .background(style.background)
         .foregroundColor(style.textColor)
         
-        
-        
-        
     }
 }
 
@@ -93,5 +88,5 @@ struct ChoreItemView: View {
         cycleDays: 3,
         nextDue: "2025-05-03",
         reminderDays: 1
-    ), color: ListStatus.normal.gradient, onCheckToggled: {})
+    ), onCheckToggled: {})
 }
