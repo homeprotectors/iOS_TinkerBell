@@ -32,7 +32,6 @@ class ChoreCreateViewModel: ObservableObject {
     func createChore() {
         print("==> Creating Chore")
         let cycleInt = Int(cycle) ?? 1
-        let reminderEnabled = (selectedReminder == .none) ? false : true
         var reminderDays: Int? = 0
         
         switch selectedReminder {

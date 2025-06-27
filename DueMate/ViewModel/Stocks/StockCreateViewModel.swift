@@ -33,6 +33,42 @@ class StockCreateViewModel: ObservableObject {
     
     
     func createStock() {
-        print("Stock \(title) created! ")
+        var reminderDays: Int? = 0
+        
+        switch selectedReminder {
+        case .theDay:
+            reminderDays = 0
+        case .oneDayBefore:
+            reminderDays = 1
+        case .twoDaysBefore:
+            reminderDays = 2
+        case .none:
+            reminderDays = nil
+        }
+        let body = CreateStockRequest(
+            name: title,
+            quantity: currentAmount ?? 0,
+            unit: consumptionUnit,
+            estimatedConsumptionDays: consumptionDays,
+            reminderDays: reminderDays
+        )
+        
+        Task {
+            do {
+                try await DefaultNetworkService.shared.requestWithoutResponse(StockRouter.create(body: body))
+                await MainActor.run {
+                    isStockCreated = true
+                    print("🎉 생성 완료! \(title)")
+                }
+            }
+            catch {
+                if let nwError = error as? NetworkError {
+                    await ErrorHandler.shared.handle(nwError)
+                } else {
+                    print("💥 ErrorHandling Failed:  \(error.localizedDescription)")
+                }
+            }
+            
+        }
     }
 }
