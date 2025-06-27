@@ -10,9 +10,9 @@ import SwiftUI
 
 class StockCreateViewModel: ObservableObject {
     @Published var title: String = ""
-    @Published var consumptionDays: Int = 3
-    @Published var consumptionAmount: Int = 1
-    @Published var consumptionUnit: String = "개"
+    @Published var unitDays: Int = 3
+    @Published var unitQuantity: Int = 1
+    @Published var unit: String = "개"
     @Published var currentAmount: Int? = nil
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
@@ -22,13 +22,13 @@ class StockCreateViewModel: ObservableObject {
     var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
         currentAmount != nil && currentAmount! > 0 &&
-        consumptionDays > 0 &&
-        consumptionAmount > 0
+        unitDays > 0 &&
+        unitQuantity > 0
     }
     
     var expectedDaysLeft: Int {
-        guard let currentAmount = currentAmount , consumptionAmount > 0 else { return 0 }
-        return (currentAmount * consumptionDays) / consumptionAmount
+        guard let currentAmount = currentAmount , unitQuantity > 0 else { return 0 }
+        return (currentAmount * unitDays) / unitQuantity
     }
     
     
@@ -46,10 +46,11 @@ class StockCreateViewModel: ObservableObject {
             reminderDays = nil
         }
         let body = CreateStockRequest(
-            name: title,
+            title: title,
             quantity: currentAmount ?? 0,
-            unit: consumptionUnit,
-            estimatedConsumptionDays: consumptionDays,
+            unit: unit,
+            unitDays: unitDays,
+            unitQuantity: unitQuantity,
             reminderDays: reminderDays
         )
         
@@ -68,7 +69,6 @@ class StockCreateViewModel: ObservableObject {
                     print("💥 ErrorHandling Failed:  \(error.localizedDescription)")
                 }
             }
-            
         }
     }
 }

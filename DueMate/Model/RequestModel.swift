@@ -31,9 +31,10 @@ struct EditChoreHistoryRequest: RequestBody {
 
 // MARK: Stock
 struct CreateStockRequest: RequestBody {
-    let name: String
+    let title: String
     let quantity: Int
     let unit: String
-    let estimatedConsumptionDays: Int
+    let unitDays: Int
+    let unitQuantity: Int
     let reminderDays: Int?
 }

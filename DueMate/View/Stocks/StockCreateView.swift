@@ -49,7 +49,7 @@ struct StockCreateView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 HStack(spacing: 12) {
-                    TextField("n", value: $viewModel.consumptionDays, formatter: numberFormatter)
+                    TextField("n", value: $viewModel.unitDays, formatter: numberFormatter)
                         .keyboardType(.numberPad)
                         .padding()
                         .background(Color(.systemGray6))
@@ -57,7 +57,7 @@ struct StockCreateView: View {
                     Text("일에")
                     Spacer()
                     HStack(spacing: 0) {
-                        TextField("수량", value: $viewModel.consumptionAmount, formatter: numberFormatter)
+                        TextField("수량", value: $viewModel.unitQuantity, formatter: numberFormatter)
                             .keyboardType(.numberPad)
                             .padding(.leading)
                             .background(Color.clear)
@@ -66,7 +66,7 @@ struct StockCreateView: View {
                             showUnitPicker = true
                         } label: {
                             HStack {
-                                Text(viewModel.consumptionUnit)
+                                Text(viewModel.unit)
                                 Image(systemName: "chevron.down")
                                     .foregroundStyle(.secondary)
                                     .font(.caption)
@@ -78,8 +78,8 @@ struct StockCreateView: View {
                     }
                     .sheet(isPresented: $showUnitPicker) {
                         StockUnitPickerView(
-                            amount: $viewModel.consumptionAmount,
-                            unit: $viewModel.consumptionUnit
+                            amount: $viewModel.unitQuantity,
+                            unit: $viewModel.unit
                         )
                     }
                     .padding()
@@ -102,7 +102,7 @@ struct StockCreateView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(15)
                     
-                    Text(viewModel.consumptionUnit)
+                    Text(viewModel.unit)
                         .foregroundColor(.gray)
                 }
                 Group {
