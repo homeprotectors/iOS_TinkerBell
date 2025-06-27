@@ -17,14 +17,9 @@ struct StockItemView: View {
         return remaining
     }
     var status: ListStatus {
-        switch daysRemaining {
-        case ...0:
-            return ListStatus.overdue
-        case 1...3:
-            return ListStatus.warning
-        default:
-            return ListStatus.normal
-        }
+        if daysRemaining < 0 { return .overdue }
+        else if daysRemaining <= 3 { return .warning}
+        else { return .normal }
     }
     var style: StockItemStyle {
         StockItemStyle.style(for: status)

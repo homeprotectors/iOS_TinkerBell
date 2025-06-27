@@ -43,7 +43,7 @@ enum ListStatus {
                 endPoint: .bottom)
         case .normal:
             return LinearGradient(
-                colors: [ListColor.normal, ListColor.normal],
+                colors: [ListColor.normal, ListColor.normal2],
                 startPoint: .top,
                 endPoint: .bottom)
         }
