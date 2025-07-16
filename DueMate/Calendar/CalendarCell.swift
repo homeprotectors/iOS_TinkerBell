@@ -35,12 +35,10 @@ struct CalendarCellView: View {
                         }
                     }
                    
-                    
-                    
                 )
                 .foregroundColor(getTextColor())
         }
-        .frame(width: 40, height: 40)
+        .frame(width: 30, height:25)
     }
 
     private func getBackgroundColor() -> Color {

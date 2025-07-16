@@ -18,14 +18,14 @@ struct CalendarView: View {
             HStack(spacing: 20) {
                 Button(action: viewModel.goToPreviousMonth) {
                     Image(systemName: "chevron.left")
-                        .font(.title)
+                        .font(.system(size: 20))
                         .foregroundColor(.black)
                 }
                 Text(viewModel.currentMonth.toMonthTitle())
                     .font(.headline)
                 Button(action: viewModel.goToNextMonth) {
                     Image(systemName: "chevron.right")
-                        .font(.title)
+                        .font(.system(size: 20))
                         .foregroundColor(.black)
                 }
             }
@@ -54,7 +54,7 @@ struct CalendarView: View {
                 }
             }
         }
-        .padding()
+        
     }
 }
 

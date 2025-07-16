@@ -19,7 +19,7 @@ class ChoreMainViewModel: ObservableObject {
     private let network = DefaultNetworkService.shared
     
     func fetchChores() {
-        print("Main list fetch start!")
+        print("♻️ Chore List Fetching")
         Task {
             do {
                 let items: [ChoreItem] = try await network.request(ChoreRouter.getItems)
@@ -68,20 +68,6 @@ class ChoreMainViewModel: ObservableObject {
     
     func sortByDueDate() {
         items.sort { $0.nextDue < $1.nextDue }
-    }
-    
-    func getListColor(due: String) -> Color {
-        guard let remainDays = due.daysFromToday() else {
-            return ListColor.normal
-        }
-        switch remainDays {
-        case ...0:
-            return ListColor.overdue
-        case 1...3:
-            return ListColor.warning
-        default:
-            return ListColor.normal
-        }
     }
 }
 

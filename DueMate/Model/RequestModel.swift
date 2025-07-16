@@ -9,7 +9,7 @@ import Foundation
 
 protocol RequestBody: Codable {}
 
-//Create Chore Request Body
+// MARK: Chore
 struct CreateChoreRequest: RequestBody {
     let title: String
     let cycleDays: Int
@@ -27,4 +27,14 @@ struct UpdateChoreRequest: RequestBody {
 struct EditChoreHistoryRequest: RequestBody {
     let choreId: Int
     let doneDate: String    // "yyyy-MM-dd"
+}
+
+// MARK: Stock
+struct CreateStockRequest: RequestBody {
+    let title: String
+    let quantity: Int
+    let unit: String
+    let unitDays: Int
+    let unitQuantity: Int
+    let reminderDays: Int?
 }

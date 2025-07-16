@@ -26,85 +26,48 @@ struct StockCreateView: View {
     }()
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 30) {
             Text("새 재고")
                 .font(.system(size: 28, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .center)
             
             // Title
-            VStack(alignment: .leading, spacing: 8) {
-                Text("물건 이름")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                TextField("ex. 휴지", text: $viewModel.title)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(15)
-            }
+            UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
+                .formLabel("이름")
+            
             
             // Consumption rate
-            VStack(alignment: .leading) {
-                Text("소모 주기")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                HStack(spacing: 12) {
-                    TextField("n", value: $viewModel.consumptionDays, formatter: numberFormatter)
-                        .keyboardType(.numberPad)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(15)
-                    Text("일에")
-                    Spacer()
-                    HStack(spacing: 0) {
-                        TextField("수량", value: $viewModel.consumptionAmount, formatter: numberFormatter)
-                            .keyboardType(.numberPad)
-                            .padding(.leading)
-                            .background(Color.clear)
-                        
-                        Button {
-                            showUnitPicker = true
-                        } label: {
-                            HStack {
-                                Text(viewModel.consumptionUnit)
-                                Image(systemName: "chevron.down")
-                                    .foregroundStyle(.secondary)
-                                    .font(.caption)
-                            }
-                            .foregroundColor(.primary)
-                            .frame(minWidth: 60)
+            HStack {
+                UnderlineTextField(text: $viewModel.unitDaysString,keyboardType: .numberPad)
+                Text("일에")
+                    .padding(.trailing,20)
+                UnderlineTextField(text: $viewModel.unitQuantityString, keyboardType: .numberPad)
+                Button {
+                    showUnitPicker = true
+                } label: {
+                    HStack {
+                        Text(viewModel.unit)
+                            .font(.system(size: 18))
+                        Image(systemName: "chevron.down")
+                            .foregroundStyle(.gray)
                             
-                        }
                     }
-                    .sheet(isPresented: $showUnitPicker) {
-                        StockUnitPickerView(
-                            amount: $viewModel.consumptionAmount,
-                            unit: $viewModel.consumptionUnit
-                        )
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(15)
+                    .foregroundColor(.primary)
                 }
+            }
+            .formLabel("소모 주기")
+            .sheet(isPresented: $showUnitPicker) {
+                StockUnitPickerView(
+                    quantity: $viewModel.unitQuantityString,
+                    unit: $viewModel.unit
+                )
             }
             
             
             // Current Amount
             VStack(alignment: .leading, spacing: 6) {
-                Text("현재 재고")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                HStack {
-                    TextField("수량", value: $viewModel.currentAmount, formatter: numberFormatter)
-                        .keyboardType(.numberPad)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(15)
-                    
-                    Text(viewModel.consumptionUnit)
-                        .foregroundColor(.gray)
-                }
+                UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
+                    .formLabel("현재 수량")
                 Group {
                     if showExpectedText {
                         Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
@@ -113,37 +76,17 @@ struct StockCreateView: View {
                             .transition(.move(edge: .top).combined(with: .opacity))
                         
                     }
-                }.animation(.easeInOut(duration: 0.3), value: viewModel.currentAmount)
-                
+                }.animation(.easeInOut(duration: 0.3), value: viewModel.currentQuantityString)
             }
             
             
             // Reminder Picker
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Reminder")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                Button(action: {
-                    showReminderPicker = true
-                }) {
-                    HStack {
-                        Text(viewModel.selectedReminder.rawValue)
-                            .foregroundColor(viewModel.selectedReminder == .none ? .gray : .primary)
-                        Spacer()
-                        Image(systemName: "chevron.down")
-                            .foregroundColor(.gray)
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                }
-                .sheet(isPresented: $showReminderPicker) {
-                    ReminderPickerView(alert: $viewModel.selectedReminder)
-                }
-            }
-            Spacer()
+            ReminderField(selectedReminder: $viewModel.selectedReminder)
+                .formLabel("알람")
+            
+            
             // Submit Button
+            Spacer()
             Button {
                 viewModel.createStock()
             } label: {
@@ -156,20 +99,17 @@ struct StockCreateView: View {
                     .cornerRadius(16)
             }
             .disabled(!viewModel.isFormValid)
-            .padding(.top, 12)
             .onChange(of: viewModel.isStockCreated) {
                 if viewModel.isStockCreated {
                     onComplete?()
                     dismiss()
                 }
             }
-            
         }
-        
-        .padding(25)
-        .onChange(of: viewModel.currentAmount) {
+        .padding(30)
+        .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                showExpectedText = (viewModel.currentAmount ?? 0) > 0
+                showExpectedText = (viewModel.currentQuantity ?? 0) > 0
             }
         }
     }

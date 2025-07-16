@@ -10,28 +10,44 @@ import SwiftUI
 struct ChoreItemView: View {
     
     let item: ChoreItem
-    let color: Color
     let onCheckToggled: () -> Void
-    var daysRemaining: Int? {
-        item.nextDue.daysFromToday()
+    var daysRemaining: Int {
+        guard let remaining = item.nextDue.daysFromToday() else {
+            return 0
+        }
+        return remaining
     }
-
+    var status: ListStatus {
+        switch daysRemaining {
+        case ...0:
+            return ListStatus.overdue
+        case 1...3:
+            return ListStatus.warning
+        default:
+            return ListStatus.normal
+        }
+    }
+    var style: ChoreItemStyle {
+        ChoreItemStyle.style(for: status)
+    }
+    
     var body: some View {
-        HStack{
-            VStack(alignment:.leading){
-                HStack{
-                    Text(item.title)
-                        .font(.system(size: 25, weight: .bold))
-                    if item.reminderDays != nil {
-                        Image(systemName: "bell.fill")
+        VStack{
+            HStack{
+                VStack(alignment:.leading){
+                    HStack{
+                        Text(item.title)
+                            .font(style.titleFont)
+                            
+                        if item.reminderDays != nil {
+                            Image(systemName: "bell.fill")
+                        }
+                        
                     }
-                    
+                    Text("\(item.cycleDays)일에 한 번")
                 }
+                Spacer()
                 
-                Text("\(item.cycleDays)일에 한 번")
-            }
-            Spacer()
-            if let daysRemaining = daysRemaining {
                 if daysRemaining == 0 {
                     Text("D-Day")
                 } else if daysRemaining < 0 {
@@ -39,25 +55,28 @@ struct ChoreItemView: View {
                 } else {
                     Text("D-\(daysRemaining)")
                 }
-            } else {
-                Text("D-?")
+                
+                Button(action:onCheckToggled){
+                    Image(systemName: "staroflife.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(style.textColor)
+                        
+                }
+                .padding(5)
+                
             }
-            
-            Button(action:onCheckToggled){
-                Image(systemName: "checkmark.circle.fill")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.white)
-            }
-            
-            
+            .padding()
+           
         }
+        .padding(8)
+        .background(style.background)
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(color)
-        .cornerRadius(20)
+        .cornerRadius(35)
+        .foregroundColor(style.textColor)
         
     }
+    
 }
 
 #Preview {
@@ -67,5 +86,5 @@ struct ChoreItemView: View {
         cycleDays: 3,
         nextDue: "2025-05-03",
         reminderDays: 1
-    ), color: ListColor.normal, onCheckToggled: {})
+    ), onCheckToggled: {})
 }

@@ -13,59 +13,90 @@ struct ChoreMainView: View {
     @State private var selectedItem: ChoreItem? = nil
     
     var body: some View {
-        ZStack {
-            NavigationStack{
-                HStack{
-                    Text("HOUSEHOLD\nLIST")
-                        .font(.system(size: 40, weight: .bold))
-                    Spacer()
-                    NavigationLink {
-                        ChoreCreateView(onComplete:{
-                            viewModel.fetchChores()
-                        })
-                    }label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.black)
-                    }
-                    .padding()
-                }
-                .padding()
-                .padding(.top, 30)
+        
+        NavigationStack{
+            ZStack{
+                // background color
+//                ListColor.background
+//                    .ignoresSafeArea()
                 
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(viewModel.items) { item in
-                            NavigationLink {
-                                ChoreDetailView(item: item)
-                                    .environmentObject(viewModel)
-                            }label: {
-                                ChoreItemView(item: item, color: viewModel.getListColor(due: item.nextDue), onCheckToggled: {
-                                    selectedItem = item
-                                    showDialog = true
-                                    
-                                } )
-                            }
-                            .buttonStyle(.plain)
+                // main content
+                VStack{
+                    headerView
+                    choreListView
+                }
+            }
+        }
+        .onAppear {
+            viewModel.fetchChores()
+        }
+        .onChange(of: viewModel.shouldRefresh) {
+            if viewModel.shouldRefresh {
+                print("main refresh")
+                viewModel.fetchChores()
+                viewModel.shouldRefresh = false
+            }
+        }
+        .overlay {
+            dialogView
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showDialog)
+        .withErrorToast()   //error handler
+    }
+    
+    private var headerView: some View {
+        HStack{
+            Text("TODO")
+                .font(.system(size: 50, weight: .heavy))
+            Spacer()
+            NavigationLink {
+                ChoreCreateView(onComplete:{
+                    viewModel.fetchChores()
+                })
+            }label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundStyle(.black)
+            }
+            .padding()
+        }
+        .padding()
+        .padding(.top, 30)
+    }
+    
+    private var choreListView: some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                ForEach(viewModel.items) { item in
+                    NavigationLink {
+                        ChoreDetailView(item: item)
+                            .environmentObject(viewModel)
+                    }label: {
+                        ChoreItemView(item: item, onCheckToggled: {
+                            selectedItem = item
+                            showDialog = true
                             
-                        }
+                        } )
+                        
                     }
+                    .buttonStyle(.plain)
                     
                 }
-                .padding()
             }
-            .onAppear {
-                viewModel.fetchChores()
-            }
-            .onChange(of: viewModel.shouldRefresh) {
-                if viewModel.shouldRefresh {
-                    print("main refresh")
-                    viewModel.fetchChores()
-                    viewModel.shouldRefresh = false
-                }
-            }
-            
+        }
+        .padding()
+    }
+    
+    private var dialogView: some View {
+        Group {
             if showDialog, let item = selectedItem {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                    .onTapGesture {
+                        showDialog = false
+                    }
+                
                 ConfirmationDialog(
                     isPresented: $showDialog,
                     type: .mainViewCompletion,
@@ -73,10 +104,10 @@ struct ChoreMainView: View {
                         viewModel.completeChore(item)
                     }
                 )
+                .transition(.scale.combined(with: .opacity))
+                
             }
         }
-        .withErrorToast()
-        
     }
 }
 

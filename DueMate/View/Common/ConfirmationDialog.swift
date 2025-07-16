@@ -50,14 +50,18 @@ struct ConfirmationDialog: View {
                 .font(.headline)
             HStack {
                 Button(action: {
-                    isPresented = false
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        isPresented = false
+                    }
                 }) {
                     Text(type.cancelText)
                         .frame(maxWidth: .infinity)
                 }
                 Button(action: {
-                    onConfirm()
-                    isPresented = false
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        onConfirm()
+                        isPresented = false
+                    }
                 }){
                     Text(type.confirmText)
                         .frame(maxWidth: .infinity)
@@ -70,6 +74,11 @@ struct ConfirmationDialog: View {
         .cornerRadius(16)
         .shadow(radius: 10)
         .frame(maxWidth: 300)
+        .transition(.asymmetric(
+            insertion: .scale.combined(with: .opacity),
+            removal: .scale.combined(with: .opacity)
+        ))
+        .animation(.easeInOut(duration: 0.3), value: isPresented)
     }
 }
 

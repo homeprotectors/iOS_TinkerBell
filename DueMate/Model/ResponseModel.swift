@@ -69,3 +69,15 @@ struct ChoreHistory: Codable, Equatable {
     let doneDate: String
     let doneBy: Int
 }
+
+// MARK: Stock
+
+struct StockItem: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let unitDays: Int   //며칠에
+    let unitQuantity: Int //몇개
+    let unit: String    //"개"
+    let nextDue: String
+    let reminderDays: Int?
+}

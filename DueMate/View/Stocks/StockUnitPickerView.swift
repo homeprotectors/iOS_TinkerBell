@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StockUnitPickerView: View {
     @Environment(\.dismiss) private var dismiss
-    @Binding var amount: Int
+    @Binding var quantity: String
     @Binding var unit: String
     
     
@@ -30,7 +30,7 @@ struct StockUnitPickerView: View {
 
             HStack {
                 // consumption amount
-                TextField("수량", value: $amount, formatter: NumberFormatter())
+                TextField("수량", value: $quantity, formatter: NumberFormatter())
                     .keyboardType(.numberPad)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -58,5 +58,5 @@ struct StockUnitPickerView: View {
 }
 
 #Preview {
-    StockUnitPickerView(amount: .constant(3), unit: .constant("개"))
+    StockUnitPickerView(quantity: .constant("3"), unit: .constant("개"))
 }
