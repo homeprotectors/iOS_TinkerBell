@@ -13,21 +13,36 @@ class StockCreateViewModel: ObservableObject {
     @Published var unitDays: Int = 3
     @Published var unitQuantity: Int = 1
     @Published var unit: String = "개"
-    @Published var currentAmount: Int? = nil
+    @Published var currentQuantity: Int? = nil
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
+    
+    var unitDaysString: String {
+        get { String(unitDays) }
+        set { unitDays = Int(newValue) ?? 1 }
+    }
+    
+    var unitQuantityString: String {
+        get { String(unitQuantity) }
+        set { unitQuantity = Int(newValue) ?? 1 }
+    }
+    
+    var currentQuantityString: String {
+        get { currentQuantity.map(String.init) ?? "" }
+        set { currentQuantity = Int(newValue) ?? 1 }
+    }
     
     let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
     
     var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        currentAmount != nil && currentAmount! > 0 &&
+        currentQuantity != nil && currentQuantity! > 0 &&
         unitDays > 0 &&
         unitQuantity > 0
     }
     
     var expectedDaysLeft: Int {
-        guard let currentAmount = currentAmount , unitQuantity > 0 else { return 0 }
+        guard let currentAmount = currentQuantity , unitQuantity > 0 else { return 0 }
         return (currentAmount * unitDays) / unitQuantity
     }
     
@@ -35,7 +50,7 @@ class StockCreateViewModel: ObservableObject {
     func createStock() {
         let body = CreateStockRequest(
             title: title,
-            quantity: currentAmount ?? 0,
+            quantity: currentQuantity ?? 0,
             unit: unit,
             unitDays: unitDays,
             unitQuantity: unitQuantity,

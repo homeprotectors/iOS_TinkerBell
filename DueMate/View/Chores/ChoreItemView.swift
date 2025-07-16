@@ -67,18 +67,16 @@ struct ChoreItemView: View {
                 
             }
             .padding()
-            .overlay(
-                Rectangle()
-                    .stroke(style: StrokeStyle(dash:[4]))
-            )
-            
+           
         }
         .padding(8)
-        .frame(maxWidth: .infinity)
         .background(style.background)
+        .frame(maxWidth: .infinity)
+        .cornerRadius(35)
         .foregroundColor(style.textColor)
         
     }
+    
 }
 
 #Preview {

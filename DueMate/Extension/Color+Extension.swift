@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+
 enum ListColor {
-    static let background = Color("test")
+    static let background = LinearGradient(
+        colors: [Color("normal"), Color("test")],
+        startPoint: .top,
+        endPoint: .bottom)
+//    static let background = Color("background")
+    static let itemBackground = Color("ItemBackground")
     
     static let overdue = Color("Overdue")
     static let warning = Color("Warning")
@@ -22,6 +28,7 @@ enum ListColor {
     static let warningText = Color("WarningText")
     static let normalText = Color("NormalText")
     
+    
 }
 
 enum ListStatus {
@@ -33,19 +40,19 @@ enum ListStatus {
         switch self {
         case .overdue:
             return LinearGradient(
-                colors: [ListColor.overdue, ListColor.overdue2],
-                startPoint: .top,
-                endPoint: .bottom)
+                colors: [ListColor.overdue, ListColor.overdue],
+                startPoint: .bottom,
+                endPoint: .top)
         case .warning:
             return LinearGradient(
                 colors: [ListColor.warning, ListColor.warning2],
-                startPoint: .top,
-                endPoint: .bottom)
+                startPoint: .bottom,
+                endPoint: .top)
         case .normal:
             return LinearGradient(
-                colors: [ListColor.normal, ListColor.normal2],
-                startPoint: .top,
-                endPoint: .bottom)
+                colors: [ListColor.normal, ListColor.normal],
+                startPoint: .bottom,
+                endPoint: .top)
         }
     }
 }

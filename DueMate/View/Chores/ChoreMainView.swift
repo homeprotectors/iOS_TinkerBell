@@ -13,28 +13,28 @@ struct ChoreMainView: View {
     @State private var selectedItem: ChoreItem? = nil
     
     var body: some View {
-        ZStack {
-            // background color
-            ListColor.background
-                .ignoresSafeArea()
-            
-            // main content
-            NavigationStack{
+        
+        NavigationStack{
+            ZStack{
+                // background color
+//                ListColor.background
+//                    .ignoresSafeArea()
+                
+                // main content
                 VStack{
                     headerView
                     choreListView
                 }
             }
-            .background(Color.clear)
-            .onAppear {
+        }
+        .onAppear {
+            viewModel.fetchChores()
+        }
+        .onChange(of: viewModel.shouldRefresh) {
+            if viewModel.shouldRefresh {
+                print("main refresh")
                 viewModel.fetchChores()
-            }
-            .onChange(of: viewModel.shouldRefresh) {
-                if viewModel.shouldRefresh {
-                    print("main refresh")
-                    viewModel.fetchChores()
-                    viewModel.shouldRefresh = false
-                }
+                viewModel.shouldRefresh = false
             }
         }
         .overlay {
@@ -46,8 +46,8 @@ struct ChoreMainView: View {
     
     private var headerView: some View {
         HStack{
-            Text("HOUSEHOLD\nLIST")
-                .font(.system(size: 40, weight: .bold))
+            Text("TODO")
+                .font(.system(size: 50, weight: .heavy))
             Spacer()
             NavigationLink {
                 ChoreCreateView(onComplete:{

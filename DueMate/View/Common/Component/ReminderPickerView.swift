@@ -35,27 +35,32 @@ struct ReminderPickerView: View {
     @Binding var alert:ReminderOptions
     
     var body: some View {
-        VStack{
-            Picker("Select", selection: $alert){
-                ForEach(ReminderOptions.allCases, id:\.self){
-                    Text($0.rawValue)
+        ZStack{
+            Color.white.opacity(0.6).blur(radius: 1)
+                .ignoresSafeArea()
+            VStack{
+                Picker("Select", selection: $alert){
+                    ForEach(ReminderOptions.allCases, id:\.self){
+                        Text($0.rawValue)
+                    }
                 }
+                .pickerStyle(.wheel)
+                .overlay(
+                    Button(action:{
+                        self.dismiss()
+                    }){
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 25,weight: .bold))
+                            .foregroundColor(.black)
+                    }, alignment: .topTrailing
+                )
+                Text("알람 전송 시각 9am").foregroundColor(.gray)
+                
             }
-            .pickerStyle(.wheel)
-            .overlay(
-                Button(action:{
-                    self.dismiss()
-                }){
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 25,weight: .bold))
-                        .foregroundColor(.black)
-                }, alignment: .topTrailing
-            )
-            Text("알람 전송 시각 9am").foregroundColor(.gray)
-            
+            .padding(30)
+            .presentationDetents([.height(300)])
         }
-        .padding(30)
-        .presentationDetents([.height(300)])
+        
     }
 }
 

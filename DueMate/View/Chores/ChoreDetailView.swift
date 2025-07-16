@@ -22,20 +22,9 @@ struct ChoreDetailView: View {
     var body: some View {
         ZStack {
             ScrollView{
-                //title
-                VStack(spacing: 15){
-                    HStack(spacing: 8) {
-                        TextField("", text: $viewModel.title)
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.black)
-                            .textFieldStyle(.plain)
-                            .fixedSize()
-                        Image(systemName: "pencil")
-                            .font(.system(size: 30))
-                            .foregroundStyle(.black)
-                        Spacer()
-                    }
-                    .padding(20)
+                VStack(spacing: 30){
+                    //title
+                    TitleTextField(title: $viewModel.title)
                     
                     //history calendar
                     CalendarView(
@@ -46,48 +35,16 @@ struct ChoreDetailView: View {
                     )
                     
                     // cycle days
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Cycle")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        
-                        HStack {
-                            TextField("", text: $viewModel.cycleDays)
-                                .keyboardType(.numberPad)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
-                            
-                            Text("일")
-                                .foregroundColor(.gray)
-                        }
-                    }
+                    UnderlineTextField(text: $viewModel.cycleDays,keyboardType: .numberPad, suffix: "일")
+                        .formLabel("주기")
+                        .padding(.top,20)
+                    
                     
                     
                     //alert
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Reminder")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        
-                        Button(action: {
-                            showReminderPicker = true
-                        }) {
-                            HStack {
-                                Text(viewModel.reminderOption.rawValue)
-                                    .foregroundColor(viewModel.reminderOption == .none ? .gray : .primary)
-                                Spacer()
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                        }
-                        .sheet(isPresented: $showReminderPicker) {
-                            ReminderPickerView(alert: $viewModel.reminderOption)
-                        }
-                    }
+                    ReminderField(selectedReminder: $viewModel.reminderOption)
+                        .formLabel("알람")
+                    
                     
                     
                     // Save Button
@@ -97,11 +54,11 @@ struct ChoreDetailView: View {
                         Text("Save")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(viewModel.hasInputChanges() ? Color.blue : .gray)
+                            .background(viewModel.hasInputChanged() ? Color.blue : .gray)
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
-                    .disabled(!viewModel.hasInputChanges())
+                    .disabled(!viewModel.hasInputChanged())
                     .onChange(of: viewModel.shoudRedirectMain) {
                         if viewModel.shoudRedirectMain {
                             mainViewModel.shouldRefresh = true
@@ -113,7 +70,6 @@ struct ChoreDetailView: View {
                     // Delete Button
                     Button(role: .destructive) {
                         showDeleteAlert = true
-                        
                     } label: {
                         Text("Delete Chore")
                             .frame(maxWidth: .infinity)
@@ -126,9 +82,7 @@ struct ChoreDetailView: View {
                         Button("취소",role: .cancel) {}
                     }
                     
-                    
                 }
-                
             }
             
             if showDialog {
@@ -154,13 +108,13 @@ struct ChoreDetailView: View {
                 }
             }
         }
-        .padding()
+        .padding(30)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
-                    if viewModel.hasInputChanges() {
+                    if viewModel.hasInputChanged() {
                         showCancelAlert = true
                     } else {
                         dismiss()
@@ -180,7 +134,6 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            
             viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: item.reminderDays.getReminderOption())
         }
         .onChange(of: selectedDate) {

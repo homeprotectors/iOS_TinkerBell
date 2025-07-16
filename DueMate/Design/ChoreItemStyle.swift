@@ -18,14 +18,14 @@ struct ChoreItemStyle {
         switch status {
         case .overdue:
             return ChoreItemStyle(
-                background: ListStatus.normal.gradient,
+                background: ListStatus.overdue.gradient,
                 textColor: ListColor.overdueText,
                 titleFont: .system(size: 22, weight: .bold),
                 subtitleFont: .system(size:10))
         case .warning:
             return ChoreItemStyle(
                 background: ListStatus.normal.gradient,
-                textColor: ListColor.warningText,
+                textColor: ListColor.normalText,
                 titleFont: .system(size: 22, weight: .bold),
                 subtitleFont: .system(size:10))
         case .normal:

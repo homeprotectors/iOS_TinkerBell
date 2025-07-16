@@ -19,8 +19,8 @@ struct StockMainView: View {
             NavigationStack{
                 VStack{
                     HStack{
-                        Text("STOCK\nLIST")
-                            .font(.system(size: 40, weight: .bold))
+                        Text("TOBUY")
+                            .font(.system(size: 50, weight: .heavy))
                         Spacer()
                         NavigationLink {
                             StockCreateView(onComplete:{
@@ -28,7 +28,7 @@ struct StockMainView: View {
                             })
                         }label: {
                             Image(systemName: "plus")
-                                .font(.system(size: 40))
+                                .font(.system(size: 40, weight: .bold))
                                 .foregroundStyle(.black)
                         }
                         .padding()

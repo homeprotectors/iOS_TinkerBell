@@ -76,7 +76,8 @@ struct StockItem: Codable, Identifiable {
     let id: Int
     let title: String
     let unitDays: Int   //며칠에
-    let unitAmount: Int //몇개
+    let unitQuantity: Int //몇개
     let unit: String    //"개"
     let nextDue: String
+    let reminderDays: Int?
 }

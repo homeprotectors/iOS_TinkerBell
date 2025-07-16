@@ -19,7 +19,7 @@ class ChoreMainViewModel: ObservableObject {
     private let network = DefaultNetworkService.shared
     
     func fetchChores() {
-        print("Main list fetch start!")
+        print("♻️ Chore List Fetching")
         Task {
             do {
                 let items: [ChoreItem] = try await network.request(ChoreRouter.getItems)

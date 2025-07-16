@@ -33,7 +33,7 @@ class ChoreDetailViewModel: ObservableObject {
         firstReminderOption = reminderOption
     }
     
-    func hasInputChanges() -> Bool {
+    func hasInputChanged() -> Bool {
         return title != firstTitle || cycleDays != firstCycleDays || reminderOption != firstReminderOption
     }
     

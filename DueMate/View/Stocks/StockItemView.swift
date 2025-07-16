@@ -36,7 +36,7 @@ struct StockItemView: View {
                         
                         
                     }
-                    Text("\(item.unitDays)일에 \(item.unitAmount)\(item.unit)")
+                    Text("\(item.unitDays)일에 \(item.unitQuantity)\(item.unit)")
                 }
                 Spacer()
                 
@@ -69,5 +69,5 @@ struct StockItemView: View {
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitAmount: 1, unit: "롤", nextDue: "2025-06-29"), onCheckToggled: {})
+    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤",nextDue: "2025-06-29", reminderDays: 1), onCheckToggled: {})
 }
