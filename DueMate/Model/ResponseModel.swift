@@ -80,4 +80,14 @@ struct StockItem: Codable, Identifiable {
     let unit: String    //"개"
     let nextDue: String
     let reminderDays: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title = "name"         // Server "name" → local "title"
+        case unitDays
+        case unitQuantity
+        case unit
+        case nextDue
+        case reminderDays
+    }
 }

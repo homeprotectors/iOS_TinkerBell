@@ -14,8 +14,8 @@ struct StockMainView: View {
     
     var body: some View {
         ZStack {
-            ListColor.background
-                .ignoresSafeArea()
+//            ListColor.background
+//                .ignoresSafeArea()
             NavigationStack{
                 VStack{
                     HStack{
@@ -53,13 +53,12 @@ struct StockMainView: View {
                                 
                             }
                         }
-                        .background(Color.clear)
                         
                     }
-                    .background(Color.clear)
+                    
                     .padding()
                 }
-                .background(Color.clear)
+                
                 
             }
             .background(Color.clear)
