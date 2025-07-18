@@ -10,47 +10,46 @@ import SwiftUI
 
 class StockCreateViewModel: ObservableObject {
     @Published var title: String = ""
-    @Published var unitDays: Int = 3
-    @Published var unitQuantity: Int = 1
+    @Published var unitDays: Int = 0
+    @Published var unitQuantity: Int = 0
     @Published var unit: String = "개"
-    @Published var currentQuantity: Int? = nil
+    @Published var currentQuantity: Int = 0
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
     
     var unitDaysString: String {
-        get { String(unitDays) }
-        set { unitDays = Int(newValue) ?? 1 }
+        get { unitDays == 0 ? "" : "\(unitDays)" }
+        set { unitDays = Int(newValue) ?? 0 }
     }
     
     var unitQuantityString: String {
-        get { String(unitQuantity) }
-        set { unitQuantity = Int(newValue) ?? 1 }
+        get { unitQuantity == 0 ? "" : "\(unitQuantity)" }
+        set { unitQuantity = Int(newValue) ?? 0 }
     }
     
     var currentQuantityString: String {
-        get { currentQuantity.map(String.init) ?? "" }
-        set { currentQuantity = Int(newValue) ?? 1 }
+        get { "\(currentQuantity)" }
+        set { currentQuantity = Int(newValue) ?? 0  }
     }
     
     let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
     
     var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        currentQuantity != nil && currentQuantity! > 0 &&
         unitDays > 0 &&
         unitQuantity > 0
     }
     
     var expectedDaysLeft: Int {
-        guard let currentAmount = currentQuantity , unitQuantity > 0 else { return 0 }
-        return (currentAmount * unitDays) / unitQuantity
+        if unitQuantity <= 0 { return 0 }
+        return (currentQuantity * unitDays) / unitQuantity
     }
     
     
     func createStock() {
         let body = CreateStockRequest(
             title: title,
-            quantity: currentQuantity ?? 0,
+            currentQuantity: currentQuantity,
             unit: unit,
             unitDays: unitDays,
             unitQuantity: unitQuantity,

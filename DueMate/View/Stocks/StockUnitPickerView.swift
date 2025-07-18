@@ -30,7 +30,7 @@ struct StockUnitPickerView: View {
 
             HStack {
                 // consumption amount
-                TextField("수량", value: $quantity, formatter: NumberFormatter())
+                TextField("수량", text: $quantity)
                     .keyboardType(.numberPad)
                     .frame(maxWidth: .infinity)
                     .padding()

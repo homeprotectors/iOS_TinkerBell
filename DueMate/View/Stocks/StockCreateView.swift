@@ -38,10 +38,10 @@ struct StockCreateView: View {
             
             // Consumption rate
             HStack {
-                UnderlineTextField(text: $viewModel.unitDaysString,keyboardType: .numberPad)
+                UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "1 - 365", keyboardType: .numberPad)
                 Text("일에")
                     .padding(.trailing,20)
-                UnderlineTextField(text: $viewModel.unitQuantityString, keyboardType: .numberPad)
+                UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad)
                 Button {
                     showUnitPicker = true
                 } label: {
