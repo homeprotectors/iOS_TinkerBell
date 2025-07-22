@@ -41,7 +41,8 @@ struct StockMainView: View {
                         LazyVStack(spacing: 10) {
                             ForEach(viewModel.items) { item in
                                 NavigationLink {
-                                   
+                                    StockDetailView(item: item)
+                                        .environmentObject(viewModel)
                                 }label: {
                                     StockItemView(item: item, onCheckToggled: {
                                         selectedItem = item

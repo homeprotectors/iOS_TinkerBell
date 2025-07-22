@@ -17,6 +17,11 @@ struct StockDetailView: View {
     @State private var showUnitPicker = false
     @State private var showDeleteAlert = false
     @State private var showCancelAlert = false
+    @State private var showQuantityOverlay = false
+    
+    @State private var tempQuantity: String = ""
+    @Namespace private var animation
+    
     
     var body: some View {
         ZStack {
@@ -27,6 +32,14 @@ struct StockDetailView: View {
             VStack(spacing: 30){
                 //title
                 TitleTextField(title: $viewModel.title)
+                
+                //current quantity view
+                CurrentQuantityView(quantity: viewModel.currentQuantity, color: .overdue, onTap: {
+                    tempQuantity = viewModel.currentQuantity
+                    withAnimation(.spring()) {
+                        showQuantityOverlay = true
+                    }
+                })
                 
                 // Consumption rate
                 HStack {
@@ -101,9 +114,15 @@ struct StockDetailView: View {
                 viewModel.firstInputSetting(item: item)
             }
             
+            if showQuantityOverlay {
+                QuantityOverlayView(isPresented: $showQuantityOverlay, quantity: $tempQuantity , color: .overdue, onSave: { print("저장 \(tempQuantity)")})
+            }
+            
         }
         .padding(30)
     }
+    
+   
 }
 
 #Preview {

@@ -16,8 +16,13 @@ struct StockItemView: View {
         }
         return remaining
     }
+    var quantityRemaining: Int {
+        let daysRemaining = max(0, daysRemaining)
+        let result = (Double(daysRemaining) / Double(item.unitDays)) * Double(item.unitQuantity)
+        return Int(result)
+    }
     var status: ListStatus {
-        if daysRemaining < 0 { return .overdue }
+        if daysRemaining <= 0 { return .overdue }
         else if daysRemaining <= 3 { return .warning}
         else { return .normal }
     }
@@ -40,9 +45,10 @@ struct StockItemView: View {
                 }
                 Spacer()
                 
-                HStack{
-                    Text("약 \(daysRemaining)일치")
-                }
+                
+                Text("\(quantityRemaining)")
+                    .font(.system(size: 30, weight: .bold))
+                
                 
                 Button(action:onCheckToggled){
                     Image(systemName: "staroflife.fill")
@@ -55,15 +61,12 @@ struct StockItemView: View {
                 
             }
             .padding()
-            .overlay(
-                Rectangle()
-                    .stroke(style: StrokeStyle(dash:[4]))
-            )
             
         }
         .padding(8)
-        .frame(maxWidth: .infinity)
         .background(style.background)
+        .frame(maxWidth: .infinity)
+        .cornerRadius(35)
         .foregroundColor(style.textColor)
     }
 }

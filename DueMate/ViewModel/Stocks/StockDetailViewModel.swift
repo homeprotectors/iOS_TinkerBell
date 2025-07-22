@@ -13,6 +13,7 @@ class StockDetailViewModel: ObservableObject {
     @Published var unitDays: Int = 3
     @Published var unitQuantity: Int = 1
     @Published var unit: String = ""
+    @Published var currentQuantity: String = "14"
     @Published var reminderOptions: ReminderOptions = .none
     @Published var shoudRedirectMain: Bool = false
     
@@ -32,6 +33,7 @@ class StockDetailViewModel: ObservableObject {
         set { unitDays = Int(newValue) ?? 1 }
     }
     
+   
     
     private let network = DefaultNetworkService.shared
     
