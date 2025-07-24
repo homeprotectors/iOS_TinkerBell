@@ -9,6 +9,8 @@ import Foundation
 import Alamofire
 
 class StockDetailViewModel: ObservableObject {
+    private let network = DefaultNetworkService.shared
+    
     @Published var title: String = ""
     @Published var unitDays: Int = 3
     @Published var unitQuantity: Int = 1
@@ -34,8 +36,10 @@ class StockDetailViewModel: ObservableObject {
     }
     
    
+    func saveQuantity() {
+        
+    }
     
-    private let network = DefaultNetworkService.shared
     
     func firstInputSetting(item: StockItem) {
         self.title = item.title
