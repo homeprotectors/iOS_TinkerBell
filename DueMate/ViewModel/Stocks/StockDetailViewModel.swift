@@ -15,7 +15,7 @@ class StockDetailViewModel: ObservableObject {
     @Published var unitDays: Int = 3
     @Published var unitQuantity: Int = 1
     @Published var unit: String = ""
-    @Published var currentQuantity: String = "14"
+    @Published var currentQuantity: Int = 0
     @Published var reminderOptions: ReminderOptions = .none
     @Published var shoudRedirectMain: Bool = false
     
@@ -35,6 +35,10 @@ class StockDetailViewModel: ObservableObject {
         set { unitDays = Int(newValue) ?? 1 }
     }
     
+    var currentQuantityString: String {
+        get { String(currentQuantity) }
+        set { currentQuantity = Int(newValue) ?? 0}
+    }
    
     func saveQuantity() {
         
@@ -46,7 +50,7 @@ class StockDetailViewModel: ObservableObject {
         self.unitDays = item.unitDays
         self.unitQuantity = item.unitQuantity
         self.unit = item.unit
-        
+        self.currentQuantity = item.currentQuantity
         
         firstTitle = title
         firstUnitDays = unitDays

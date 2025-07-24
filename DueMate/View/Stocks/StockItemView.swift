@@ -16,11 +16,7 @@ struct StockItemView: View {
         }
         return remaining
     }
-    var quantityRemaining: Int {
-        let daysRemaining = max(0, daysRemaining)
-        let result = (Double(daysRemaining) / Double(item.unitDays)) * Double(item.unitQuantity)
-        return Int(result)
-    }
+    
     var status: ListStatus {
         if daysRemaining <= 0 { return .overdue }
         else if daysRemaining <= 3 { return .warning}
@@ -46,7 +42,7 @@ struct StockItemView: View {
                 Spacer()
                 
                 
-                Text("\(quantityRemaining)")
+                Text("\(item.currentQuantity)")
                     .font(.system(size: 30, weight: .bold))
                 
                 
@@ -72,5 +68,5 @@ struct StockItemView: View {
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤",nextDue: "2025-06-29", reminderDays: 1), onCheckToggled: {})
+    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤", currentQuantity: 10,nextDue: "2025-06-29", reminderDays: 1), onCheckToggled: {})
 }

@@ -40,7 +40,7 @@ struct StockDetailView: View {
                             .frame(width: 200, height: 200)
                             .scaleEffect(circleScale)
                         
-                        Text(viewModel.currentQuantity)
+                        Text("\(viewModel.currentQuantity)")
                             .foregroundStyle(.white)
                             .font(.system(size: 48, weight: .bold))
                             .offset(x: textPosition.x, y: textPosition.y)
@@ -168,7 +168,7 @@ struct StockDetailView: View {
     }
     
     func expandCircle() {
-        tempQuantity = viewModel.currentQuantity
+        tempQuantity = viewModel.currentQuantityString
         
         let screenSize = UIScreen.main.bounds.size
         let centerPosition = CGPoint(
@@ -184,7 +184,7 @@ struct StockDetailView: View {
     }
     
     func collapseCircle() {
-        viewModel.currentQuantity = tempQuantity
+        viewModel.currentQuantityString = tempQuantity
         viewModel.saveQuantity()
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             circleScale = 1.0
@@ -195,6 +195,6 @@ struct StockDetailView: View {
 }
 
 #Preview {
-    StockDetailView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "개", nextDue: "2025-07-29", reminderDays: 1))
+    StockDetailView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "개", currentQuantity: 10, nextDue: "2025-07-29", reminderDays: 1))
 }
 
