@@ -87,29 +87,21 @@ struct StockCreateView: View {
             
             // Submit Button
             Spacer()
-            Button {
+            //save button
+            SaveButton(isEnabled: viewModel.isFormValid, action:{
                 viewModel.createStock()
-            } label: {
-                Text("저장")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.isFormValid ? Color.black : Color.gray.opacity(0.4))
-                    .foregroundColor(viewModel.isFormValid ? .white : .gray)
-                    .cornerRadius(16)
-            }
-            .disabled(!viewModel.isFormValid)
-            .onChange(of: viewModel.isStockCreated) {
-                if viewModel.isStockCreated {
-                    onComplete?()
-                    dismiss()
-                }
-            }
+            })
         }
         .padding(30)
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 showExpectedText = (viewModel.currentQuantity ?? 0) > 0
+            }
+        }
+        .onChange(of: viewModel.isStockCreated) {
+            if viewModel.isStockCreated {
+                onComplete?()
+                dismiss()
             }
         }
     }

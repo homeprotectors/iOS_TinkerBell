@@ -9,7 +9,6 @@ import SwiftUI
 
 struct StockMainView: View {
     @StateObject private var viewModel = StockMainViewModel()
-    @State private var showDialog = false
     @State private var selectedItem: StockItem? = nil
     
     var body: some View {
@@ -44,10 +43,7 @@ struct StockMainView: View {
                                     StockDetailView(item: item)
                                         .environmentObject(viewModel)
                                 }label: {
-                                    StockItemView(item: item, onCheckToggled: {
-                                        selectedItem = item
-                                        showDialog = true
-                                    } )
+                                    StockItemView(item: item)
                                     
                                 }
                                 .buttonStyle(.plain)
@@ -74,15 +70,7 @@ struct StockMainView: View {
                 }
             }
             
-            if showDialog, let item = selectedItem {
-                ConfirmationDialog(
-                    isPresented: $showDialog,
-                    type: .mainViewCompletion,
-                    onConfirm: {
-                        
-                    }
-                )
-            }
+           
         }
         .withErrorToast()
     }

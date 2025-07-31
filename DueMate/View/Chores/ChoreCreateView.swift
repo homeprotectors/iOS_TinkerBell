@@ -43,7 +43,6 @@ struct ChoreCreateView: View {
                 // Cycle
                 HStack {
                     UnderlineTextField(text: $viewModel.cycle, placeholder: "1 - 365", suffix: "일에 한 번")
-                    
                 }
                 .formLabel("주기")
                 
@@ -63,24 +62,12 @@ struct ChoreCreateView: View {
                 
                 
                 Spacer()
-                // Submit Button
-                Button {
+                
+                //save button
+                SaveButton(isEnabled: viewModel.isFormValid, action:{
                     viewModel.createChore()
-                } label: {
-                    Text("생성")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.isFormValid ? Color.blue : Color.gray.opacity(0.3))
-                        .foregroundColor(.white)
-                        .cornerRadius(20)
-                }
-                .disabled(!viewModel.isFormValid)
-                
-                
+                })
             }
-            
-            
         }
         .padding(30)
         .sheet(isPresented: $showReminderPicker) {

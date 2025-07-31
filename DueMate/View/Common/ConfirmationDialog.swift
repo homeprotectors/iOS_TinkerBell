@@ -51,7 +51,7 @@ struct ConfirmationDialog: View {
             HStack {
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        isPresented = false
+                    isPresented = false
                     }
                 }) {
                     Text(type.cancelText)
@@ -59,8 +59,8 @@ struct ConfirmationDialog: View {
                 }
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        onConfirm()
-                        isPresented = false
+                    onConfirm()
+                    isPresented = false
                     }
                 }){
                     Text(type.confirmText)

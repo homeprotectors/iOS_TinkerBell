@@ -40,7 +40,7 @@ struct StockDetailView: View {
                             .frame(width: 200, height: 200)
                             .scaleEffect(circleScale)
                         
-                        Text("\(viewModel.currentQuantity)")
+                        Text(viewModel.currentQuantityString)
                             .foregroundStyle(.white)
                             .font(.system(size: 48, weight: .bold))
                             .offset(x: textPosition.x, y: textPosition.y)
@@ -77,52 +77,40 @@ struct StockDetailView: View {
                 }
                 
                 //reminder
-                ReminderField(selectedReminder: $viewModel.reminderOptions)
+                ReminderField(selectedReminder: $viewModel.reminderOption)
                     .formLabel("알람")
                 
                 // Save Button
                 Spacer()
-                Button(action: {
-                    //update
-                }) {
-                    Text("Save")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.hasInputChanged() ? Color.blue : .gray)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                }
-                .disabled(!viewModel.hasInputChanged())
-                .onChange(of: viewModel.shoudRedirectMain) {
-                    if viewModel.shoudRedirectMain {
-                        mainViewModel.shouldRefresh = true
-                        dismiss()
-                    }
+                
+                HStack {
+                    // Delete Button
+                    DeleteButton(showAlert: $showDeleteAlert, action: {
+                        viewModel.deleteStock(id: item.id)
+                    })
+                    
+                    //save button
+                    SaveButton(isEnabled: viewModel.hasInputChanged(), action:{
+                        viewModel.updateStock(id: item.id)
+                    })
                 }
                 
-                // Delete Button
-                Button(role: .destructive) {
-                    showDeleteAlert = true
-                } label: {
-                    Text("Delete Chore")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
-                .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
-                    Button("삭제", role: .destructive){
-                        //삭제
-                    }
-                    Button("취소",role: .cancel) {}
-                }
             }
             .onAppear{
                 viewModel.firstInputSetting(item: item)
+            }
+            .onChange(of: viewModel.shoudRedirectMain) {
+                if viewModel.shoudRedirectMain {
+                    mainViewModel.shouldRefresh = true
+                    dismiss()
+                }
             }
             .padding(30)
             
             // 확장된 오버레이
             if isExpanded {
                 expandedOverlay
+                    .zIndex(1)
             }
         }
     }
@@ -141,7 +129,7 @@ struct StockDetailView: View {
                         .foregroundColor(.white)
                         .font(.system(size: 20, weight: .medium))
                     
-                    TextField("수량", text: $tempQuantity)
+                    TextField("수량", text: $viewModel.currentQuantityString)
                         .keyboardType(.numberPad)
                         .font(.system(size: 48, weight: .bold))
                         .multilineTextAlignment(.center)
@@ -152,7 +140,7 @@ struct StockDetailView: View {
                     Button(action: {
                         collapseCircle()
                     }) {
-                        Text("저장")
+                        Text("확인")
                             .font(.system(size: 18, weight: .bold))
                             .padding(.horizontal, 32)
                             .padding(.vertical, 12)
@@ -161,15 +149,13 @@ struct StockDetailView: View {
                             .clipShape(Capsule())
                     }
                 }
-                .position(x: geo.size.width/2, y: geo.size.height/2) // 화면 중앙에 고정
+                .position(x: geo.size.width/2, y: geo.size.height/2) // pin to the center of the screen
             }
         }
         .ignoresSafeArea(.all)
     }
     
     func expandCircle() {
-        tempQuantity = viewModel.currentQuantityString
-        
         let screenSize = UIScreen.main.bounds.size
         let centerPosition = CGPoint(
             x: screenSize.width/2 - 100,
@@ -184,8 +170,7 @@ struct StockDetailView: View {
     }
     
     func collapseCircle() {
-        viewModel.currentQuantityString = tempQuantity
-        viewModel.saveQuantity()
+        
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             circleScale = 1.0
             textPosition = CGPoint(x: 0, y: 0)

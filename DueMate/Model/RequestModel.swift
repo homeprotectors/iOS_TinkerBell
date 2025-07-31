@@ -47,3 +47,12 @@ struct CreateStockRequest: RequestBody {
         case reminderDays
     }
 }
+
+struct UpdateStockRequest: RequestBody {
+    let name: String
+    let unitQuantity: Int
+    let unitDays: Int
+    let reminderDays:Int?
+    let currentQuantity: Int
+    
+}

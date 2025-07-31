@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StockItemView: View {
     let item: StockItem
-    let onCheckToggled: () -> Void
+    
     var daysRemaining: Int {
         guard let remaining = item.nextDue.daysFromToday() else {
             return 0
@@ -43,17 +43,9 @@ struct StockItemView: View {
                 
                 
                 Text("\(item.currentQuantity)")
-                    .font(.system(size: 30, weight: .bold))
-                
-                
-                Button(action:onCheckToggled){
-                    Image(systemName: "staroflife.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(style.textColor)
-                    
-                }
-                .padding(5)
+                    .font(.system(size: 40, weight: .bold))
+                Text("\(item.unit)")
+                    .font(.system(size: 25, weight: .medium))
                 
             }
             .padding()
@@ -68,5 +60,5 @@ struct StockItemView: View {
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤", currentQuantity: 10,nextDue: "2025-06-29", reminderDays: 1), onCheckToggled: {})
+    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤", currentQuantity: 10,nextDue: "2025-06-29", reminderDays: 1))
 }
