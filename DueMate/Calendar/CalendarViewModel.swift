@@ -54,12 +54,15 @@ class CalendarViewModel: ObservableObject {
     }
     
     func generateCalendar() {
+        // 현재 달 범위
         guard let range = calendar.range(of: .day, in: .month, for: currentMonth) else { return }
+        // 달의 1일
         let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth))!
+        // 1일의 요일 : 1(Sun) 2(Mon) 3(Tue) 4(Wed) 5(Thu) 6(Fri) 7(Sat)
         let firstWeekday = calendar.component(.weekday, from: firstDayOfMonth)
         let daysInMonth = range.count
         var cells: [CalendarCell] = []
-        let daysBefore = (firstWeekday - calendar.firstWeekday + 7) % 7
+        let daysBefore = firstWeekday - 1
         if daysBefore > 0 {
             let previousMonth = calendar.date(byAdding: .month, value: -1, to: firstDayOfMonth)!
             let daysInPreviousMonth = calendar.range(of: .day, in: .month, for: previousMonth)!.count
@@ -72,8 +75,8 @@ class CalendarViewModel: ObservableObject {
             let date = calendar.date(from: DateComponents(year: calendar.component(.year, from: currentMonth), month: calendar.component(.month, from: currentMonth), day: day))!
             cells.append(CalendarCell(date: date.normalizedDate(), day: day, isInCurrentMonth: true, isSelectable: isDateSelectable(date.normalizedDate())))
         }
-        let remainingDays = 42 - cells.count
-        if remainingDays > 0 {
+        let remainingDays = 7 - (cells.count % 7)
+        if remainingDays != 7 {
             let nextMonth = calendar.date(byAdding: .month, value: 1, to: firstDayOfMonth)!
             for day in 1...remainingDays {
                 let date = calendar.date(from: DateComponents(year: calendar.component(.year, from: nextMonth), month: calendar.component(.month, from: nextMonth), day: day))!
