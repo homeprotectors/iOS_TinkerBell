@@ -61,9 +61,8 @@ struct ChoreCreateView: View {
                     .formLabel("알람")
                 
                 
+                //Save button
                 Spacer()
-                
-                //save button
                 SaveButton(isEnabled: viewModel.isFormValid, action:{
                     viewModel.createChore()
                 })

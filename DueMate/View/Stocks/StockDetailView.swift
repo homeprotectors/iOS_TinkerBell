@@ -26,55 +26,14 @@ struct StockDetailView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 30) {
-                //title
+                // Title
                 TitleTextField(title: $viewModel.title)
                 
-                //current quantity view
-                
-                Button(action: {
-                    expandCircle()
-                }) {
-                    ZStack {
-                        Circle()
-                            .fill(.overdue)
-                            .frame(width: 200, height: 200)
-                            .scaleEffect(circleScale)
-                        
-                        Text(viewModel.currentQuantityString)
-                            .foregroundStyle(.white)
-                            .font(.system(size: 48, weight: .bold))
-                            .offset(x: textPosition.x, y: textPosition.y)
-                    }
-                }
-                .disabled(isExpanded)
+                // Current quantity view
+                circleView
                 
                 // Consumption rate
-                HStack {
-                    UnderlineTextField(text: $viewModel.unitDaysString,keyboardType: .numberPad)
-                    Text("일에")
-                        .padding(.trailing,20)
-                    UnderlineTextField(text: $viewModel.unitQuantityString, keyboardType: .numberPad)
-                    Button {
-                        showUnitPicker = true
-                    } label: {
-                        HStack {
-                            Text(viewModel.unit)
-                                .font(.system(size: 18))
-                            Image(systemName: "chevron.down")
-                                .foregroundStyle(.gray)
-                            
-                        }
-                        .foregroundColor(.primary)
-                    }
-                }
-                .formLabel("소모 주기")
-                .padding(.top, 20)
-                .sheet(isPresented: $showUnitPicker) {
-                    StockUnitPickerView(
-                        quantity: $viewModel.unitQuantityString,
-                        unit: $viewModel.unit
-                    )
-                }
+                consumptionRateSection
                 
                 //reminder
                 ReminderField(selectedReminder: $viewModel.reminderOption)
@@ -82,7 +41,6 @@ struct StockDetailView: View {
                 
                 // Save Button
                 Spacer()
-                
                 HStack {
                     // Delete Button
                     DeleteButton(showAlert: $showDeleteAlert, action: {
@@ -107,11 +65,59 @@ struct StockDetailView: View {
             }
             .padding(30)
             
-            // 확장된 오버레이
+            // CurrentQuantity overlay view
             if isExpanded {
                 expandedOverlay
                     .zIndex(1)
             }
+        }
+    }
+    
+    private var circleView: some View {
+        Button(action: {
+            expandCircle()
+        }) {
+            ZStack {
+                Circle()
+                    .fill(.overdue)
+                    .frame(width: 200, height: 200)
+                    .scaleEffect(circleScale)
+                
+                Text(viewModel.currentQuantityString)
+                    .foregroundStyle(.white)
+                    .font(.system(size: 48, weight: .bold))
+                    .offset(x: textPosition.x, y: textPosition.y)
+            }
+        }
+        .disabled(isExpanded)
+    }
+    
+    private var consumptionRateSection: some View {
+        HStack {
+            UnderlineTextField(text: $viewModel.unitDaysString,keyboardType: .numberPad)
+            Text("일에")
+                .padding(.trailing,20)
+            UnderlineTextField(text: $viewModel.unitQuantityString, keyboardType: .numberPad)
+            Button {
+                showUnitPicker = true
+            } label: {
+                HStack {
+                    Text(viewModel.unit)
+                        .font(.system(size: 18))
+                    Image(systemName: "chevron.down")
+                        .foregroundStyle(.gray)
+                    
+                }
+                .foregroundColor(.primary)
+            }
+        }
+        .formLabel("소모 주기")
+        .padding(.top, 20)
+        .sheet(isPresented: $showUnitPicker) {
+            StockUnitPickerView(
+                quantity: $viewModel.unitQuantityString,
+                unit: $viewModel.unit
+            )
         }
     }
     
