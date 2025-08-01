@@ -11,19 +11,24 @@ import Alamofire
 enum StockRouter: BaseRouter {
     case getItems
     case create(body: CreateStockRequest)
+    case update(id: Int, body: UpdateStockRequest)
+    case delete(id: Int)
     
     var path: String {
         switch self {
         case .getItems, .create:
             return "/stocks"
             
+        case .delete(let id), .update(let id,_):
+            return "/stocks/\(id)"
         }
     }
     
     var method: Alamofire.HTTPMethod {
         switch self {
         case .getItems: return .get
-        case .create: return .post
+        case .create, .update: return .post
+        case .delete: return .delete
         }
     }
     

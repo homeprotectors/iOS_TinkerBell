@@ -75,12 +75,9 @@ struct ChoreMainView: View {
                         ChoreItemView(item: item, onCheckToggled: {
                             selectedItem = item
                             showDialog = true
-                            
                         } )
-                        
                     }
                     .buttonStyle(.plain)
-                    
                 }
             }
         }

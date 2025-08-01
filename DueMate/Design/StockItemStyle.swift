@@ -19,7 +19,7 @@ struct StockItemStyle {
         switch status {
         case .overdue:
             return StockItemStyle(
-                background: ListStatus.normal.gradient,
+                background: ListStatus.overdue.gradient,
                 textColor: ListColor.overdueText,
                 titleFont: .system(size: 22, weight: .bold),
                 subtitleFont: .system(size:10),

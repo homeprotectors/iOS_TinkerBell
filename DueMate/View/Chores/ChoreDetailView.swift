@@ -21,69 +21,46 @@ struct ChoreDetailView: View {
     
     var body: some View {
         ZStack {
-            ScrollView{
-                VStack(spacing: 30){
-                    //title
-                    TitleTextField(title: $viewModel.title)
-                    
-                    //history calendar
-                    CalendarView(
-                        viewModel: CalendarViewModel(),
-                        histories: viewModel.histories,
-                        nextDue: item.nextDue,
-                        selectedDate: $selectedDate
-                    )
-                    
-                    // cycle days
-                    UnderlineTextField(text: $viewModel.cycleDays,keyboardType: .numberPad, suffix: "일")
-                        .formLabel("주기")
-                        .padding(.top,20)
-                    
-                    
-                    
-                    //alert
-                    ReminderField(selectedReminder: $viewModel.reminderOption)
-                        .formLabel("알람")
-                    
-                    
-                    
-                    // Save Button
-                    Button(action: {
-                        viewModel.updateChore(for: item.id)
-                    }) {
-                        Text("Save")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(viewModel.hasInputChanged() ? Color.blue : .gray)
-                            .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                    }
-                    .disabled(!viewModel.hasInputChanged())
-                    .onChange(of: viewModel.shoudRedirectMain) {
-                        if viewModel.shoudRedirectMain {
-                            mainViewModel.shouldRefresh = true
-                            dismiss()
-                        }
-                    }
-                    
-                    
+            
+            VStack(spacing: 30){
+                //title
+                TitleTextField(title: $viewModel.title)
+                
+                //history calendar
+                CalendarView(
+                    viewModel: CalendarViewModel(),
+                    histories: viewModel.histories,
+                    nextDue: item.nextDue,
+                    selectedDate: $selectedDate
+                )
+                
+                // cycle days
+                UnderlineTextField(text: $viewModel.cycleDays,keyboardType: .numberPad, suffix: "일")
+                    .formLabel("주기")
+                    .padding(.top,20)
+                
+                
+                // alert
+                ReminderField(selectedReminder: $viewModel.reminderOption)
+                    .formLabel("알람")
+                
+                
+                Spacer()
+                // action buttons
+                HStack {
                     // Delete Button
-                    Button(role: .destructive) {
-                        showDeleteAlert = true
-                    } label: {
-                        Text("Delete Chore")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    }
-                    .alert("이 할 일을 삭제하시겠습니까?", isPresented: $showDeleteAlert) {
-                        Button("삭제", role: .destructive){
-                            viewModel.deleteChore(id: item.id)
-                        }
-                        Button("취소",role: .cancel) {}
-                    }
+                    DeleteButton(showAlert: $showDeleteAlert, action: {
+                        viewModel.deleteChore(id: item.id)
+                    })
                     
+                    //save button
+                    SaveButton(isEnabled: viewModel.hasInputChanged(), action:{
+                        viewModel.updateChore(for: item.id)
+                    })
                 }
+                
             }
+            
             
             if showDialog {
                 if let selectedDate = selectedDate {
@@ -146,6 +123,12 @@ struct ChoreDetailView: View {
                 mainViewModel.shouldRefresh = true
             }
         }
+        .onChange(of: viewModel.shoudRedirectMain) {
+            if viewModel.shoudRedirectMain {
+                mainViewModel.shouldRefresh = true
+                dismiss()
+            }
+        }
         .task {
             do {
                 viewModel.fetchHistory(for: item.id)
@@ -154,6 +137,7 @@ struct ChoreDetailView: View {
             }
         }
     }
+    
     
 }
 

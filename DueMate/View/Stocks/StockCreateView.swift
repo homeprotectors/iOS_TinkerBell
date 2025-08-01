@@ -38,10 +38,10 @@ struct StockCreateView: View {
             
             // Consumption rate
             HStack {
-                UnderlineTextField(text: $viewModel.unitDaysString,keyboardType: .numberPad)
+                UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "1 - 365", keyboardType: .numberPad)
                 Text("일에")
                     .padding(.trailing,20)
-                UnderlineTextField(text: $viewModel.unitQuantityString, keyboardType: .numberPad)
+                UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad)
                 Button {
                     showUnitPicker = true
                 } label: {
@@ -68,6 +68,7 @@ struct StockCreateView: View {
             VStack(alignment: .leading, spacing: 6) {
                 UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
                     .formLabel("현재 수량")
+                // estimated days
                 Group {
                     if showExpectedText {
                         Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
@@ -85,31 +86,23 @@ struct StockCreateView: View {
                 .formLabel("알람")
             
             
-            // Submit Button
+            
             Spacer()
-            Button {
+            // Save button
+            SaveButton(isEnabled: viewModel.isFormValid, action:{
                 viewModel.createStock()
-            } label: {
-                Text("저장")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.isFormValid ? Color.black : Color.gray.opacity(0.4))
-                    .foregroundColor(viewModel.isFormValid ? .white : .gray)
-                    .cornerRadius(16)
-            }
-            .disabled(!viewModel.isFormValid)
-            .onChange(of: viewModel.isStockCreated) {
-                if viewModel.isStockCreated {
-                    onComplete?()
-                    dismiss()
-                }
-            }
+            })
         }
         .padding(30)
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 showExpectedText = (viewModel.currentQuantity ?? 0) > 0
+            }
+        }
+        .onChange(of: viewModel.isStockCreated) {
+            if viewModel.isStockCreated {
+                onComplete?()
+                dismiss()
             }
         }
     }
