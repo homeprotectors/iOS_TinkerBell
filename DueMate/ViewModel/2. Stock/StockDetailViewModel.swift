@@ -42,9 +42,9 @@ class StockDetailViewModel: ObservableObject {
     }
    
     func updateStock(id: Int) {
-        print("Update Stock ::: \(id) - \(title)")
         let reminderDays = reminderOption.getDays()
-        let body = UpdateStockRequest(name: title, unitQuantity: unitQuantity, unitDays: unitDays, reminderDays: reminderDays, currentQuantity: currentQuantity)
+        let body = UpdateStockRequest(name: title, unitQuantity: unitQuantity, unit: unit, unitDays: unitDays, reminderDays: reminderDays, updatedQuantity: currentQuantity)
+        print("✨Stock update - \(title) : \(id)\n\(body)")
         
         Task {
             do {
@@ -52,7 +52,7 @@ class StockDetailViewModel: ObservableObject {
                 await MainActor.run {
                     shoudRedirectMain = true
                 }
-                print("🎉 update 성공! \(title)")
+                print("🎉 update 성공!")
             }
             catch {
                 await MainActor.run {

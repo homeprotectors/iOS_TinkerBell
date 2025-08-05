@@ -51,8 +51,8 @@ struct CreateStockRequest: RequestBody {
 struct UpdateStockRequest: RequestBody {
     let name: String
     let unitQuantity: Int
+    let unit: String
     let unitDays: Int
     let reminderDays:Int?
-    let currentQuantity: Int
-    
+    let updatedQuantity: Int   
 }

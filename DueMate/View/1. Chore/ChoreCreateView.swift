@@ -41,10 +41,9 @@ struct ChoreCreateView: View {
                 
                 
                 // Cycle
-                HStack {
-                    UnderlineTextField(text: $viewModel.cycle, placeholder: "1 - 365", suffix: "일에 한 번")
-                }
-                .formLabel("주기")
+                
+                UnderlineTextField(text: $viewModel.cycle, placeholder: "1 - 365", suffix: "일에 한 번")
+                    .formLabel("주기")
                 
                 
                 // Start Day

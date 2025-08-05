@@ -57,7 +57,7 @@ final class DefaultNetworkService: NetworkService {
             if case .responseValidationFailed(reason: .unacceptableStatusCode(let code)) = afError {
                 switch code {
                 default :
-                    return .server("statuse code: \(code)")
+                    return .server("statuse code: \(code)",original: afError)
                 }
             }
             

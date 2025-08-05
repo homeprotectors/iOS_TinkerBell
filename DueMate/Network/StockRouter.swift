@@ -27,7 +27,8 @@ enum StockRouter: BaseRouter {
     var method: Alamofire.HTTPMethod {
         switch self {
         case .getItems: return .get
-        case .create, .update: return .post
+        case .create: return .post
+        case .update: return .put
         case .delete: return .delete
         }
     }
@@ -35,6 +36,8 @@ enum StockRouter: BaseRouter {
     var body: (any Encodable)? {
         switch self {
         case .create(let body):
+            return body
+        case .update(_, let body):
             return body
         default: return nil
         }
