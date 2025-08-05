@@ -12,6 +12,7 @@ class BillCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var isFixed: Bool = false
     @Published var amount: Double = 0
+    @Published var dueDate: Date = Date()
     @Published var selectedReminder: ReminderOptions = .none
     
     var amountString: String {
