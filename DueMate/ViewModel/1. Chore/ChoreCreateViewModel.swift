@@ -40,7 +40,7 @@ class ChoreCreateViewModel: ObservableObject {
             reminderDays: selectedReminder.getDays()
         )
         
-        
+        print(body)
         Task {
             do {
                 try await DefaultNetworkService.shared.requestWithoutResponse(ChoreRouter.create(body: body))

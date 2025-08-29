@@ -28,18 +28,18 @@ struct BillCreateView: View {
                     .formLabel("지출")
                 
                 // Amount
-                Picker("Options", selection: $viewModel.isFixed) {
-                    Text("고정 비용").tag(true)
-                    Text("변동 비용").tag(false)
+                Picker("Options", selection: $viewModel.isVariable) {
+                    Text("고정 비용").tag(false)
+                    Text("변동 비용").tag(true)
                 }
                 .pickerStyle(.segmented)
                 .formLabel("금액")
-                UnderlineTextField(text: $viewModel.amountString, placeholder: viewModel.isFixed ? "달마다 나가는 고정 비용을 적어주세요" : "평균 금액을 적어주세요", suffix: "원")
+                UnderlineTextField(text: $viewModel.amountString, placeholder: viewModel.isVariable ? "평균 금액을 적어주세요" : "달마다 나가는 고정 비용을 적어주세요", suffix: "원")
                 
                 // Due date
                 HStack{
-                    DatePicker("", selection: $viewModel.dueDate, displayedComponents: .date)
-                        .labelsHidden()
+                    Text("매 월 ")
+                    UnderlineTextField(text: $viewModel.dueDateString, placeholder: "1-31", suffix: "일")
                     Spacer()
                 }
                 .formLabel("납부일")

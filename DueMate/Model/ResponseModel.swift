@@ -15,7 +15,7 @@ struct Response<T: Decodable>: Decodable {
 }
 
 
-//Create Response
+// MARK: Chore
 struct CreateChoreResponse: Codable {
     let id: Int
     let title: String
@@ -92,4 +92,26 @@ struct StockItem: Codable, Identifiable {
         case nextDue
         case reminderDays
     }
+}
+
+
+// MARK: Bill
+
+struct BillItem: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let isFixed: Bool
+    let isPaid: Bool
+    let amount: Double
+    let dueDate: Int
+    let reminderDays: Int?
+}
+
+struct CreateBillResponse: Codable{
+    let billId: Int
+    let name: String
+    let amount: Double
+    let dueDate: Int
+    let isVariable: Bool
+    let reminderDays: Int?
 }

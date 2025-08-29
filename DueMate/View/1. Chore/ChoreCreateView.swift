@@ -68,6 +68,12 @@ struct ChoreCreateView: View {
             }
         }
         .padding(30)
+        .onChange(of: viewModel.isChoreCreated) {
+            if viewModel.isChoreCreated {
+                onComplete?()
+                dismiss()
+            }
+        }
         .sheet(isPresented: $showReminderPicker) {
             ReminderPickerView(alert: $viewModel.selectedReminder)
         }

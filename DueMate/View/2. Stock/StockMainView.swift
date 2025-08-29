@@ -12,10 +12,8 @@ struct StockMainView: View {
     @State private var selectedItem: StockItem? = nil
     
     var body: some View {
-        ZStack {
-//                        ListColor.background
-//                            .ignoresSafeArea()
-            NavigationStack{
+        NavigationStack {
+            ZStack{
                 VStack{
                     headerView
                     stockListView

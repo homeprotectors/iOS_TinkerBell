@@ -31,21 +31,13 @@ struct EditChoreHistoryRequest: RequestBody {
 
 // MARK: Stock
 struct CreateStockRequest: RequestBody {
-    let title: String
-    let currentQuantity: Int
+    let name: String
+    let updatedQuantity: Int
     let unit: String
     let unitDays: Int
     let unitQuantity: Int
     let reminderDays: Int?
     
-    enum CodingKeys: String, CodingKey {
-        case title = "name"
-        case currentQuantity
-        case unit
-        case unitDays
-        case unitQuantity
-        case reminderDays
-    }
 }
 
 struct UpdateStockRequest: RequestBody {
@@ -55,4 +47,15 @@ struct UpdateStockRequest: RequestBody {
     let unitDays: Int
     let reminderDays:Int?
     let updatedQuantity: Int   
+}
+
+
+// MARK: Bill
+
+struct CreateBillRequest: RequestBody {
+    let name: String
+    let amount: Double
+    let dueDate: Int
+    let isVariable: Bool
+    let reminderDays: Int?
 }

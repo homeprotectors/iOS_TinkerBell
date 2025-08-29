@@ -24,8 +24,8 @@ enum NetworkError: CustomError {
         switch self {
         case .network:
             return "네트워크 확인 후 다시 시도해주세요."
-        case .server:
-            return "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        case .server(let message, _):
+            return message
         default:
             return "에러가 발생했습니다. 다시 시도해주세요."
         }
