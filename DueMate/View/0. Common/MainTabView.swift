@@ -23,6 +23,19 @@ struct MainTabView: View {
             .tabItem {
                 Label("", systemImage: "cart.fill")
             }
+            
+            NavigationStack {
+                BillMainView()
+            }
+            .tabItem {
+                Label("", systemImage: "dollarsign.circle")
+            }
+            NavigationStack {
+                Test()
+            }
+            .tabItem {
+                Label("", systemImage: "dollarsign.circle")
+            }
         }
     }
 }

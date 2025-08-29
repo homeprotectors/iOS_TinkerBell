@@ -1,59 +1,49 @@
 //
-//  ChoreCreateView.swift
+//  BillCreateView.swift
 //  DueMate
 //
-//  Created by Kacey Kim on 4/21/25.
+//  Created by Kacey Kim on 8/1/25.
 //
 
 import SwiftUI
 
-
-
-struct ChoreCreateView: View {
+struct BillCreateView: View {
     var onComplete: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = ChoreCreateViewModel()
+    @StateObject private var viewModel = BillCreateViewModel()
     @State private var showReminderPicker = false
-    
-    private let numberFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .none
-        formatter.minimum = 1
-        formatter.maximum = 365
-        return formatter
-    }()
-    
-    
     
     var body: some View {
         ZStack {
             //ListColor.background.ignoresSafeArea()
             
             VStack(spacing: 30) {
-                Text("New Chore")
+                Text("New Bill")
                     .font(.system(size: 32, weight: .bold))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 16)
                 
                 // Title
-                UnderlineTextField(text: $viewModel.title, placeholder: "Title")
-                    .formLabel("할 일")
+                UnderlineTextField(text: $viewModel.title, placeholder: "지출 내역")
+                    .formLabel("지출")
                 
-                
-                // Cycle
-                HStack {
-                    UnderlineTextField(text: $viewModel.cycle, placeholder: "1 - 365", suffix: "일에 한 번")
+                // Amount
+                Picker("Options", selection: $viewModel.isVariable) {
+                    Text("고정 비용").tag(false)
+                    Text("변동 비용").tag(true)
                 }
-                .formLabel("주기")
+                .pickerStyle(.segmented)
+                .formLabel("금액")
+                UnderlineTextField(text: $viewModel.amountString, placeholder: viewModel.isVariable ? "평균 금액을 적어주세요" : "달마다 나가는 고정 비용을 적어주세요", suffix: "원")
                 
-                
-                // Start Day
+                // Due date
                 HStack{
-                    DatePicker("", selection: $viewModel.startDate, displayedComponents: .date)
-                        .labelsHidden()
+                    Text("매 월 ")
+                    UnderlineTextField(text: $viewModel.dueDateString, placeholder: "1-31", suffix: "일")
                     Spacer()
                 }
-                .formLabel("시작일")
+                .formLabel("납부일")
+                
                 
                 
                 // Reminder
@@ -64,7 +54,7 @@ struct ChoreCreateView: View {
                 //Save button
                 Spacer()
                 SaveButton(isEnabled: viewModel.isFormValid, action:{
-                    viewModel.createChore()
+                    viewModel.createBill()
                 })
             }
         }
@@ -74,9 +64,8 @@ struct ChoreCreateView: View {
         }
         .withErrorToast()
     }
-    
 }
 
 #Preview {
-    ChoreCreateView()
+    BillCreateView()
 }

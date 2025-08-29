@@ -1,34 +1,35 @@
 //
-//  StockRouter.swift
+//  BillRouter.swift
 //  DueMate
 //
-//  Created by Kacey Kim on 6/27/25.
+//  Created by Kacey Kim on 8/22/25.
 //
 
 import Foundation
 import Alamofire
 
-enum StockRouter: BaseRouter {
+enum BillRouter: BaseRouter {
     case getItems
-    case create(body: CreateStockRequest)
-    case update(id: Int, body: UpdateStockRequest)
+    case create(body: CreateBillRequest)
     case delete(id: Int)
+    
+    
     
     var path: String {
         switch self {
         case .getItems, .create:
-            return "/stocks"
-            
-        case .delete(let id), .update(let id,_):
-            return "/stocks/\(id)"
+            return "/bills"
+        case .delete(let id):
+            return "/bills/\(id)"
         }
     }
     
-    var method: Alamofire.HTTPMethod {
+    var method: HTTPMethod {
         switch self {
         case .getItems: return .get
-        case .create, .update: return .post
+        case .create: return .post
         case .delete: return .delete
+        
         }
     }
     
@@ -36,9 +37,10 @@ enum StockRouter: BaseRouter {
         switch self {
         case .create(let body):
             return body
-        default: return nil
+        default:
+            return nil
         }
     }
     
-    
+   
 }

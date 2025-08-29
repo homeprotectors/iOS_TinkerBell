@@ -34,8 +34,6 @@ struct StockItemView: View {
                     HStack{
                         Text(item.title)
                             .font(style.titleFont)
-                        
-                        
                     }
                     Text("\(item.unitDays)일에 \(item.unitQuantity)\(item.unit)")
                 }

@@ -64,6 +64,7 @@ struct StockDetailView: View {
                 }
             }
             .padding(30)
+            .withErrorToast()
             
             // CurrentQuantity overlay view
             if isExpanded {
