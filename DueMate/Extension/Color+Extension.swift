@@ -8,6 +8,11 @@
 import SwiftUI
 
 
+extension Color {
+    static let primary = Color("PrimaryText")
+}
+
+
 enum ListColor {
     static let background = LinearGradient(
         colors: [Color("normal"), Color("test")],

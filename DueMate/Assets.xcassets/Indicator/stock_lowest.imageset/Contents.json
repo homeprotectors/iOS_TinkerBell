@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "stock_lowest.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
