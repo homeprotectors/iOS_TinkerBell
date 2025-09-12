@@ -16,15 +16,13 @@ struct SaveButton: View {
             Spacer()
             Button(action: action) {
                 Text("저장")
-                    .frame(width: 70, height: 37)
-                    .font(.system(size: 18, weight: .medium))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(isEnabled ? Color.overdue : .gray)
+                    .font(.system(size: 14, weight: .medium))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .foregroundColor(.white)
-                    .cornerRadius(16)
-                    
             }
+            .frame(width: 70, height: 36)
+            .background(isEnabled ? Color.accentColor : .gray)
+            .cornerRadius(5)
             .disabled(!isEnabled)
         }
         

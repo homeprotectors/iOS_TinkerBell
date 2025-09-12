@@ -28,7 +28,7 @@ class StockCreateViewModel: ObservableObject {
     }
     
     var currentQuantityString: String {
-        get { "\(currentQuantity)" }
+        get { currentQuantity == 0 ? "" : "\(currentQuantity)" }
         set { currentQuantity = Int(newValue) ?? 0  }
     }
     

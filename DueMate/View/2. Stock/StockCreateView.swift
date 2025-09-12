@@ -26,14 +26,17 @@ struct StockCreateView: View {
     }()
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 30) {
+        VStack(alignment: .leading) {
             Text("물품 추가하기")
                 .font(.system(size: 18, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 28)
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
-                .formLabel("이름")
+                .padding(.horizontal, 16)
+            Divider()
+                .padding(.vertical, 12)
             
                 
             
@@ -42,27 +45,14 @@ struct StockCreateView: View {
                 UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "주기 (1 - 365)", keyboardType: .numberPad)
                 Text("일에")
                     .padding(.trailing,20)
-                UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad)
-                Button {
-                    showUnitPicker = true
-                } label: {
-                    HStack {
-                        Text(viewModel.unit)
-                            .font(.system(size: 18))
-                        Image(systemName: "chevron.down")
-                            .foregroundStyle(.gray)
-                            
-                    }
-                    .foregroundColor(.primary)
-                }
+                UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad, suffix: "개")
+                
             }
             .formLabel("얼마나 자주 쓰나요?")
-            .sheet(isPresented: $showUnitPicker) {
-                StockUnitPickerView(
-                    quantity: $viewModel.unitQuantityString,
-                    unit: $viewModel.unit
-                )
-            }
+            .padding(.horizontal, 16)
+            
+            Divider()
+                .padding(.vertical, 12)
             
             
             // Current Amount
@@ -80,14 +70,20 @@ struct StockCreateView: View {
                     }
                 }.animation(.easeInOut(duration: 0.3), value: viewModel.currentQuantityString)
             }
+            .padding(.horizontal, 16)
+            
+            Divider()
+                .padding(.vertical, 12)
+            
             
             Spacer()
             // Save button
             SaveButton(isEnabled: viewModel.isFormValid, action:{
                 viewModel.createStock()
             })
+            .padding(12)
         }
-        .padding(30)
+        .padding(.top, 20)
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 showExpectedText = (viewModel.currentQuantity ?? 0) > 0
