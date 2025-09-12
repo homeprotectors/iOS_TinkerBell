@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "stock_full.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

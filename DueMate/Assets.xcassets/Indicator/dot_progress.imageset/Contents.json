@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "dot_progress.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

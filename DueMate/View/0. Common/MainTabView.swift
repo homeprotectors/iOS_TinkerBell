@@ -8,34 +8,40 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @State private var selectedTab: Int = 0
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack {
                 ChoreMainView()
             }
             .tabItem {
-                Label("", systemImage: "house")
+                Image(selectedTab == 0 ? "ic_home" : "ic_home_off")
             }
+            .tag(0)
+            
+            NavigationStack {
+                ChoreMainView()
+            }
+            .tabItem {
+                Image(selectedTab == 1 ? "ic_chore" : "ic_chore_off")
+            }
+            .tag(1)
             
             NavigationStack {
                 StockMainView()
             }
             .tabItem {
-                Label("", systemImage: "cart.fill")
+                Image(selectedTab == 2 ? "ic_stock" : "ic_stock_off")
             }
+            .tag(2)
             
             NavigationStack {
                 BillMainView()
             }
             .tabItem {
-                Label("", systemImage: "dollarsign.circle")
+                Image(selectedTab == 3 ? "ic_bill" : "ic_bill_off")
             }
-            NavigationStack {
-                Test()
-            }
-            .tabItem {
-                Label("", systemImage: "dollarsign.circle")
-            }
+            .tag(3)
         }
     }
 }
