@@ -13,7 +13,7 @@ struct UnderlineTextField: View {
     var keyboardType: UIKeyboardType = .default
     var onTextChange: ((String) -> Void)? = nil
     var foregroundColor: Color = .gray
-    var fontSize: CGFloat = 18
+    var fontSize: CGFloat = 16
     var fontWeight: Font.Weight = .medium
     var suffix: String? = nil
     
@@ -30,15 +30,16 @@ struct UnderlineTextField: View {
                     }
                 if let suffix = suffix {
                     Text(suffix)
-                        .font(.system(size: 18))
+                        .font(.system(size: 16))
                 }
             }
             
+            
             // 언더라인
-            Rectangle()
-                .fill(foregroundColor)
-                .frame(height: 1)
-                .padding(.top, 2)
+//            Rectangle()
+//                .fill(foregroundColor)
+//                .frame(height: 1)
+//                .padding(.top, 2)
                 
         }
     }

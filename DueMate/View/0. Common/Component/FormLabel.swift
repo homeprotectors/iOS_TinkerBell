@@ -10,7 +10,7 @@ import SwiftUI
 struct FormLabel: ViewModifier {
     let label: String
     var color: Color = .black
-    var size: CGFloat = 16
+    var size: CGFloat = 12
     
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {

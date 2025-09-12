@@ -27,18 +27,19 @@ struct StockCreateView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-            Text("새 재고")
-                .font(.system(size: 28, weight: .bold))
+            Text("물품 추가하기")
+                .font(.system(size: 18, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .center)
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
                 .formLabel("이름")
             
+                
             
             // Consumption rate
             HStack {
-                UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "1 - 365", keyboardType: .numberPad)
+                UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "주기 (1 - 365)", keyboardType: .numberPad)
                 Text("일에")
                     .padding(.trailing,20)
                 UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad)
@@ -55,7 +56,7 @@ struct StockCreateView: View {
                     .foregroundColor(.primary)
                 }
             }
-            .formLabel("소모 주기")
+            .formLabel("얼마나 자주 쓰나요?")
             .sheet(isPresented: $showUnitPicker) {
                 StockUnitPickerView(
                     quantity: $viewModel.unitQuantityString,
@@ -79,13 +80,6 @@ struct StockCreateView: View {
                     }
                 }.animation(.easeInOut(duration: 0.3), value: viewModel.currentQuantityString)
             }
-            
-            
-            // Reminder Picker
-            ReminderField(selectedReminder: $viewModel.selectedReminder)
-                .formLabel("알람")
-            
-            
             
             Spacer()
             // Save button

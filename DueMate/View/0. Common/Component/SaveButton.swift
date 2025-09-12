@@ -12,17 +12,22 @@ struct SaveButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            Text("저장")
-                .frame(maxWidth: .infinity)
-                .font(.system(size: 18, weight: .medium))
-                .padding(.horizontal, 50)
-                .padding(.vertical, 20)
-                .background(isEnabled ? Color.overdue : .gray)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
+        HStack {
+            Spacer()
+            Button(action: action) {
+                Text("저장")
+                    .frame(width: 70, height: 37)
+                    .font(.system(size: 18, weight: .medium))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(isEnabled ? Color.overdue : .gray)
+                    .foregroundColor(.white)
+                    .cornerRadius(16)
+                    
+            }
+            .disabled(!isEnabled)
         }
-        .disabled(!isEnabled)
+        
     }
 }
 

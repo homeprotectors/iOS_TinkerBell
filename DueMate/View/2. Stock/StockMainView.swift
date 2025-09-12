@@ -10,6 +10,7 @@ import SwiftUI
 struct StockMainView: View {
     @StateObject private var viewModel = StockMainViewModel()
     @State private var selectedItem: StockItem? = nil
+    @State private var isPresentingCreate = false
     
     var body: some View {
         NavigationStack {
@@ -39,10 +40,8 @@ struct StockMainView: View {
             Text("TOBUY")
                 .font(.system(size: 50, weight: .heavy))
             Spacer()
-            NavigationLink {
-                StockCreateView(onComplete:{
-                    viewModel.fetchStocks()
-                })
+            Button {
+                isPresentingCreate = true
             }label: {
                 Image(systemName: "plus")
                     .font(.system(size: 40, weight: .bold))
@@ -53,6 +52,14 @@ struct StockMainView: View {
         .background(Color.clear)
         .padding()
         .padding(.top, 30)
+        .sheet(isPresented: $isPresentingCreate) {
+            StockCreateView(onComplete: {
+                viewModel.fetchStocks()
+                isPresentingCreate = false
+            })
+            .presentationDetents([.medium, .large])
+        }
+        
     }
     
     private var stockListView: some View {
