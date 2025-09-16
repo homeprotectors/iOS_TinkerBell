@@ -34,7 +34,9 @@ struct StockCreateView: View {
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
+                .formLabel("이름")
                 .padding(.horizontal, 16)
+                
             Divider()
                 .padding(.vertical, 12)
             

@@ -13,7 +13,7 @@ struct FormLabel: ViewModifier {
     var size: CGFloat = 12
     
     func body(content: Content) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(label)
                 .font(.system(size: size, weight: .medium))
                 .foregroundColor(color)
