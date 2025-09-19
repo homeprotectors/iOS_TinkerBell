@@ -14,6 +14,7 @@ struct Response<T: Decodable>: Decodable {
     let data: T?
 }
 
+// MARK: HOME
 struct HomeItem: Codable, Identifiable {
     let id: Int
     let title: String
@@ -29,6 +30,10 @@ struct ShoppingItem: Codable, Identifiable {
     let currentQuantity: Int
 }
 
+struct HomeSection: Codable, Identifiable {
+    let id: Int
+    let list: [HomeItem]
+}
 
 // MARK: Chore
 struct CreateChoreResponse: Codable {

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ExpandableItemCard: View {
     let shoppingList: [ShoppingItem]
-    @State private var isExpanded = true
+    @State private var isExpanded = false
     
     var body: some View {
         VStack {
@@ -37,7 +37,7 @@ struct ExpandableItemCard: View {
                 VStack {
                     ForEach(shoppingList) { item in
                         Divider()
-                        HStack(spacing: 12) {
+                        HStack {
                             Text(item.name)
                                 .font(.listSubitem)
                                 
@@ -47,7 +47,7 @@ struct ExpandableItemCard: View {
                             Image("stock_lowest")
                             
                         }
-                        .padding(12)
+                        .padding(8)
                     }
                 }
             }
@@ -56,5 +56,5 @@ struct ExpandableItemCard: View {
 }
 
 #Preview {
-    ExpandableItemCard(shoppingList: [ShoppingItem(id: 1, name: "빵", currentQuantity: 2),ShoppingItem(id: 2, name: "빵", currentQuantity: 2)] )
+    ExpandableItemCard(shoppingList: [ShoppingItem(id: 1, name: "빵", currentQuantity: 2),ShoppingItem(id: 2, name: "물티슈", currentQuantity: 1)] )
 }

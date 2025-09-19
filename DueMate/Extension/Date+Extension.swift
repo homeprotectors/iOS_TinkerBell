@@ -46,6 +46,13 @@ extension Date {
         return DateFormatter.monthTitle.string(from: self)
     }
     
+    func toHomeToday() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd일 E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from:self)
+    }
+    
     func normalizedDate() -> Date {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: self)
         return Calendar.current.date(from: components)!

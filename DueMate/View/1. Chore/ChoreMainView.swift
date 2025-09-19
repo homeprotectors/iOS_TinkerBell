@@ -16,10 +16,6 @@ struct ChoreMainView: View {
         
         NavigationStack{
             ZStack{
-                // background color
-//                ListColor.background
-//                    .ignoresSafeArea()
-                
                 // main content
                 VStack{
                     headerView

@@ -29,6 +29,7 @@ struct HomeItemView: View {
             self.icon = "ic_\(item.category)"
             self.background = .backgoundBlue
             self.dotColor = .dotRed
+            
         default:
             self.icon = "ic_\(item.category)_off"
             self.background = .lightGray
@@ -45,7 +46,10 @@ struct HomeItemView: View {
     var body: some View {
         if isExpandable {
             ExpandableItemCard(shoppingList: item.shoppingList ?? [])
-        } else { itemCard
+                .padding(6)
+        } else {
+            itemCard
+                .padding(6)
         }
     }
     

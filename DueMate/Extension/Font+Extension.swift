@@ -10,7 +10,7 @@ import SwiftUI
 
 extension Font {
     static let listTitle = Font.system(size: 16, weight: .bold)
-    static let listSubitem = Font.system(size: 16, weight: .semibold)
+    static let listSubitem = Font.system(size: 14, weight: .semibold)
     static let listText = Font.system(size: 12, weight: .light)
     
 }
