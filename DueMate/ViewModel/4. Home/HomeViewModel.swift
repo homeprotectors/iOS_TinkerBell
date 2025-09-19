@@ -7,9 +7,16 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 class HomeViewModel: ObservableObject {
     @Published var homeList: [HomeSection] = []
+    @Published var selectedItem: HomeItem? = nil
+    @Published var selectedItemFrame: CGRect = .zero
+    @Published var dragOffset: CGSize = .zero
+    
+    private var choreFrames: [Int: CGRect] = [:]
+    private var maxFrameCache = 50
     
     func fetchHome() {
         homeList = [
@@ -27,4 +34,19 @@ class HomeViewModel: ObservableObject {
             ])
         ]
     }
+    
+    func selecItem(_ item: HomeItem, frame: CGRect) {
+        //진동
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        selectedItemFrame = frame
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            selectedItem = item
+        }
+        
+        
+    }
+    
+    
 }

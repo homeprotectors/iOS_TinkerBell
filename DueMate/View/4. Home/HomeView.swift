@@ -52,7 +52,11 @@ struct HomeView: View {
                 //내부 리스트
                 LazyVStack {
                     ForEach(section.list) { item in
-                        HomeItemView(item: item)
+                        HomeItemView(item: item, onLongPress: { frame in
+                            viewModel.selectedItemFrame = frame
+                            
+                        })
+                        .padding(6)
                     }
                 }
             }

@@ -14,10 +14,12 @@ struct HomeItemView: View {
     let background: Color
     let dotColor: Color
     let isExpandable: Bool
+    var onLongPress: (CGRect) -> Void
+    @State var currentFrame: CGRect = .zero
     
-    
-    init(item: HomeItem) {
+    init(item: HomeItem, onLongPress: @escaping (CGRect) -> Void = { _ in }) {
         self.item = item
+        self.onLongPress = onLongPress
         
         switch item.status {
         case "inProgress":
@@ -46,10 +48,49 @@ struct HomeItemView: View {
     var body: some View {
         if isExpandable {
             ExpandableItemCard(shoppingList: item.shoppingList ?? [])
-                .padding(6)
+                .onLongPressGesture {
+                    onLongPress(currentFrame)
+                }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
+                                }
+                            }
+                            .onChange(of: geometry.frame(in: .global)) {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
+                                }
+                            }
+                    }
+                )
+            
         } else {
             itemCard
-                .padding(6)
+                .onLongPressGesture {
+                    onLongPress(currentFrame)
+                }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
+                                }
+                            }
+                            .onChange(of: geometry.frame(in: .global)) {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
+                                }
+                            }
+                    }
+                )
         }
     }
     
@@ -76,7 +117,11 @@ struct HomeItemView: View {
         }
     }
     
-   
+    func getCurrentFrame() -> CGRect {
+        
+        
+        return .zero
+    }
 }
 
 #Preview {
