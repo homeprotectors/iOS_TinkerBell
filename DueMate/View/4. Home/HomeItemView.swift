@@ -17,9 +17,10 @@ struct HomeItemView: View {
     var onLongPress: (CGRect) -> Void
     @State var currentFrame: CGRect = .zero
     
-    init(item: HomeItem, onLongPress: @escaping (CGRect) -> Void = { _ in }) {
+    init(item: HomeItem,  onLongPress: @escaping (CGRect) -> Void = { _ in }) {
         self.item = item
         self.onLongPress = onLongPress
+        self.isExpandable = item.shoppingList != nil
         
         switch item.status {
         case "inProgress":
@@ -37,64 +38,40 @@ struct HomeItemView: View {
             self.background = .lightGray
             self.dotColor = .dotGray
         }
-        
-        if item.shoppingList != nil {
-            self.isExpandable = true
-        } else {
-            self.isExpandable = false
-        }
     }
     
     var body: some View {
-        if isExpandable {
-            ExpandableItemCard(shoppingList: item.shoppingList ?? [])
-                .onLongPressGesture {
-                    onLongPress(currentFrame)
-                }
-                .background(
-                    GeometryReader { geometry in
-                        Color.clear
-                            .onAppear {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
-                            .onChange(of: geometry.frame(in: .global)) {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
-                    }
-                )
-            
-        } else {
-            itemCard
-                .onLongPressGesture {
-                    onLongPress(currentFrame)
-                }
-                .background(
-                    GeometryReader { geometry in
-                        Color.clear
-                            .onAppear {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
-                            .onChange(of: geometry.frame(in: .global)) {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
-                    }
-                )
+        VStack {
+            if isExpandable {
+                ExpandableItemCard(shoppingList: item.shoppingList ?? [])
+            } else {
+                itemCard
+            }
         }
+        .background (
+            GeometryReader { geometry in
+                Color.clear
+                    .onAppear {
+                        let frame = geometry.frame(in: .global)
+                        if frame.width > 0 && frame.height > 0 {
+                            currentFrame = frame
+                        }
+                    }
+                    .onChange(of: geometry.frame(in: .global)) {
+                        let frame = geometry.frame(in: .global)
+                        if frame.width > 0 && frame.height > 0 {
+                            currentFrame = frame
+                        }
+                    }
+            }
+        )
+        .onLongPressGesture {
+            onLongPress(currentFrame)
+        }
+        
     }
     
-    private var itemCard: some View {
+    var itemCard: some View {
         HStack(spacing: 12) {
             Image(icon)
                 .padding(11)
@@ -115,13 +92,12 @@ struct HomeItemView: View {
                 .foregroundColor(dotColor)
             
         }
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(12)
+        
     }
     
-    func getCurrentFrame() -> CGRect {
-        
-        
-        return .zero
-    }
 }
 
 #Preview {

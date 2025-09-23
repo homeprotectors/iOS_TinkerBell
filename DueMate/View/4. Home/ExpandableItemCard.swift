@@ -52,6 +52,10 @@ struct ExpandableItemCard: View {
                 }
             }
         }
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(12)
+        
     }
 }
 

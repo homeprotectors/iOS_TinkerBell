@@ -8,12 +8,32 @@
 import SwiftUI
 
 struct FocusView: View {
+    let item: HomeItem
+    let dragOffset: CGSize
+    let onDragChanged: (CGSize) -> Void
+    let onDragEnded: (CGSize) -> Void
+    let onDismiss: () -> Void
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            HomeItemView(item: item)
+                .padding()
+                .offset(y: dragOffset.height)
+                .gesture (
+                    DragGesture()
+                        .onChanged { value in
+                            onDragChanged(value.translation)
+                        }
+                        .onEnded { value in
+                            onDragEnded(value.translation)
+                        }
+                )
+        }
     }
 }
 
+
+
 #Preview {
-    FocusView()
+    FocusView(item: HomeItem(id: 1, title: "화장실 청소", status: "overdue", category: "washroom", cycle: "한달에 1 번", shoppingList: nil ), dragOffset: .zero, onDragChanged: {_ in }, onDragEnded: {_ in }, onDismiss: {})
 }

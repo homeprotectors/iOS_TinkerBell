@@ -15,8 +15,6 @@ class HomeViewModel: ObservableObject {
     @Published var selectedItemFrame: CGRect = .zero
     @Published var dragOffset: CGSize = .zero
     
-    private var choreFrames: [Int: CGRect] = [:]
-    private var maxFrameCache = 50
     
     func fetchHome() {
         homeList = [
@@ -35,7 +33,7 @@ class HomeViewModel: ObservableObject {
         ]
     }
     
-    func selecItem(_ item: HomeItem, frame: CGRect) {
+    func selectItem(_ item: HomeItem, frame: CGRect) {
         //진동
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
@@ -44,7 +42,25 @@ class HomeViewModel: ObservableObject {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
             selectedItem = item
         }
+        print("\(item.title) 누름, \(frame)")
         
+    }
+    
+    func dragEnded(_ translation: CGSize) {
+        if translation.height < -50 {
+            print("complete")
+        }else if translation.height > 50 {
+            print("cancel")
+            
+        }
+        clearSelectedItem()
+    }
+    
+    func clearSelectedItem() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)){
+            selectedItem = nil
+            dragOffset = .zero
+        }
         
     }
     
