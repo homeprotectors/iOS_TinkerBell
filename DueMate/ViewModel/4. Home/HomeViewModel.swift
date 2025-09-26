@@ -21,7 +21,7 @@ class HomeViewModel: ObservableObject {
             //이번주 할 일
             HomeSection(id: 0, list: [
                 HomeItem(id: 1, title: "부엌 청소", status: "inProgress", category: "kitchen", cycle: "한달에 1 번", shoppingList: nil ),
-                HomeItem(id: 3, title: "빨래", status: "overdue", category: "bedroom", cycle: "한달에 1 번", shoppingList:[ShoppingItem(id: 1, name: "계란", currentQuantity: 2),ShoppingItem(id: 2, name: "빵", currentQuantity: 2)]),
+                HomeItem(id: 3, title: "장보기", status: "overdue", category: "bedroom", cycle: "한달에 1 번", shoppingList:[ShoppingItem(id: 1, name: "계란", currentQuantity: 2),ShoppingItem(id: 2, name: "빵", currentQuantity: 2)]),
                 HomeItem(id: 2, title: "빨래", status: "overdue", category: "bedroom", cycle: "한달에 1 번", shoppingList: nil)
             ]),
             
@@ -61,8 +61,6 @@ class HomeViewModel: ObservableObject {
             selectedItem = nil
             dragOffset = .zero
         }
-        
     }
-    
     
 }

@@ -14,6 +14,7 @@ class StockMainViewModel: ObservableObject {
     @Published var showToast: Bool  = false
     @Published var error: NetworkError?
     @Published var items: [StockItem] = []
+    @Published var sections: [StockSection: [StockItem]] = [:]
     
     private let network = DefaultNetworkService.shared
     
@@ -24,7 +25,7 @@ class StockMainViewModel: ObservableObject {
                 let items: [StockItem] = try await network.request(StockRouter.getItems)
                 await MainActor.run {
                     self.items = items
-                    self.sortByDueDate()
+                    self.groupBySection()
                 }
                 print("🎉 Stock fetch 성공!")
             } catch {
@@ -41,8 +42,21 @@ class StockMainViewModel: ObservableObject {
     }
     
     
-    func sortByDueDate() {
-        items.sort { $0.nextDue < $1.nextDue }
+    func groupBySection() {
+        let grouped = Dictionary(grouping: items) { item in
+            StockSection.section(for: item.remainingDays)
+        }
+        
+        self.sections = grouped.mapValues { section in
+            section.sorted { lhs, rhs in
+                if lhs.remainingDays != rhs.remainingDays {
+                    return lhs.remainingDays < rhs.remainingDays
+                }
+                return lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+            }
+        }
+        
+        print(sections)
     }
 }
 

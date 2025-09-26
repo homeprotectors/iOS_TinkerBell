@@ -11,47 +11,36 @@ struct StockMainView: View {
     @StateObject private var viewModel = StockMainViewModel()
     @State private var selectedItem: StockItem? = nil
     @State private var isPresentingCreate = false
+    @State private var isPresentingWheel = false
     
     var body: some View {
-        NavigationStack {
-            ZStack{
-                VStack{
-                    headerView
-                    stockListView
-                }
-            }
-            .background(Color.clear)
-            .onAppear {
-                viewModel.fetchStocks()
-            }
-            .onChange(of: viewModel.shouldRefresh) {
-                if viewModel.shouldRefresh {
-                    print("main refresh")
-                    viewModel.fetchStocks()
-                    viewModel.shouldRefresh = false
-                }
-            }
+        VStack{
+            headerView
+            stockListView
+        }
+        .onAppear {
+            viewModel.fetchStocks()
         }
         .withErrorToast()
     }
     
     private var headerView: some View {
         HStack{
-            Text("TOBUY")
-                .font(.system(size: 50, weight: .heavy))
+            Text("Stocks")
+                .font(.headerTitle)
+                .foregroundColor(.accentColor)
             Spacer()
             Button {
                 isPresentingCreate = true
             }label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundStyle(.black)
+                Image(.plus)
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
-            .padding()
+            
         }
         .background(Color.clear)
-        .padding()
-        .padding(.top, 30)
+        .padding(22)
         .sheet(isPresented: $isPresentingCreate) {
             StockCreateView(onComplete: {
                 viewModel.fetchStocks()
@@ -59,26 +48,38 @@ struct StockMainView: View {
             })
             .presentationDetents([.medium, .large])
         }
+        .sheet(isPresented: $isPresentingWheel) {
+            if selectedItem != nil {
+                
+            }
+        }
         
     }
     
     private var stockListView: some View {
         ScrollView {
-            LazyVStack(spacing: 10) {
-                ForEach(viewModel.items) { item in
-                    NavigationLink {
-                        StockDetailView(item: item)
-                            .environmentObject(viewModel)
-                    }label: {
-                        StockItemView(item: item)
-                        
+            LazyVStack(alignment: .leading) {
+                ForEach(StockSection.allCases, id:\.self) { section in
+                    if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
+                        Section {
+                            LazyVStack(spacing: 8) {
+                                ForEach(sectionItems) { item in
+                                    StockItemView(item: item, onTapGesture: { item in
+                                        selectedItem = item
+                                        isPresentingWheel = true
+                                    })
+                                }
+                            }
+                        } header: {
+                            Text(section.title)
+                                .font(.listText)
+                                .padding(.horizontal,22)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    
                 }
             }
         }
-        .padding()
+        
     }
 }
 

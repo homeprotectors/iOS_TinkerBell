@@ -187,6 +187,6 @@ struct StockDetailView: View {
 }
 
 #Preview {
-    StockDetailView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "개", currentQuantity: 10, nextDue: "2025-07-29", reminderDays: 1))
+    StockDetailView(item: StockItem(id: 1, name: "휴지",unitDays: 3, unitQuantity: 1,  currentQuantity: 10, remainingDays: 1))
 }
 
