@@ -93,10 +93,10 @@ class StockDetailViewModel: ObservableObject {
     
     
     func firstInputSetting(item: StockItem) {
-        self.title = item.title
+        self.title = item.name
         self.unitDays = item.unitDays
         self.unitQuantity = item.unitQuantity
-        self.unit = item.unit
+        
         self.currentQuantity = item.currentQuantity
         self.currentQuantity = item.currentQuantity
         

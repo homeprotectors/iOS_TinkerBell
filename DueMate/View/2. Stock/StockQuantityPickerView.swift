@@ -10,18 +10,22 @@ import SwiftUI
 struct StockQuantityPickerView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var quantity: Int
+    let name: String
+    let onSave: (Int) -> Void
     
     var body: some View {
         VStack {
-            Text("몇 개가 남아 있나요?")
+            Text("\(name) 몇 개가 남아 있나요?")
             Picker("", selection: $quantity) {
-                ForEach(1...300, id:\.self) { num in
+                ForEach(0...300, id:\.self) { num in
                     Text("\(num)")
                         .tag(num)
                 }
-            }.pickerStyle(.wheel)
+            }
+            .pickerStyle(.wheel)
+            .frame(height: 200)
             SaveButton(isEnabled: true) {
-                print("저장")
+                onSave(quantity)
             }
             
         }
@@ -31,5 +35,5 @@ struct StockQuantityPickerView: View {
 }
 
 #Preview {
-    StockQuantityPickerView(quantity: .constant(3))
+    StockQuantityPickerView(quantity: .constant(3), name: "휴지", onSave: {_ in })
 }

@@ -49,6 +49,9 @@ struct UpdateStockRequest: RequestBody {
     let updatedQuantity: Int   
 }
 
+struct UpdateQuantityRequest: RequestBody {
+    let updatedQuantity: Int
+}
 
 // MARK: Bill
 

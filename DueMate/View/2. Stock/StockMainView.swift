@@ -10,8 +10,8 @@ import SwiftUI
 struct StockMainView: View {
     @StateObject private var viewModel = StockMainViewModel()
     @State private var selectedItem: StockItem? = nil
+    @State private var selectedQuantity: Int = 0
     @State private var isPresentingCreate = false
-    @State private var isPresentingWheel = false
     
     var body: some View {
         VStack{
@@ -23,6 +23,7 @@ struct StockMainView: View {
         }
         .withErrorToast()
     }
+    
     
     private var headerView: some View {
         HStack{
@@ -48,10 +49,18 @@ struct StockMainView: View {
             })
             .presentationDetents([.medium, .large])
         }
-        .sheet(isPresented: $isPresentingWheel) {
-            if selectedItem != nil {
-                
-            }
+        .sheet(item: $selectedItem) { item in
+                StockQuantityPickerView(
+                    quantity: $selectedQuantity,
+                    name: item.name,
+                    onSave: { newQuantity in
+                        viewModel.updateQuantity(
+                            for:item.id,
+                            newQuantity: newQuantity)
+                        selectedItem = nil
+                    }
+                )
+                .presentationDetents([.height(350)])
         }
         
     }
@@ -65,11 +74,13 @@ struct StockMainView: View {
                             LazyVStack(spacing: 8) {
                                 ForEach(sectionItems) { item in
                                     StockItemView(item: item, onTapGesture: { item in
+                                        
                                         selectedItem = item
-                                        isPresentingWheel = true
+                                        selectedQuantity = item.currentQuantity
                                     })
                                 }
                             }
+                            .padding(.bottom, 20)
                         } header: {
                             Text(section.title)
                                 .font(.listText)

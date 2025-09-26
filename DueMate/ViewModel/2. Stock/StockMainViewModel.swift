@@ -56,7 +56,31 @@ class StockMainViewModel: ObservableObject {
             }
         }
         
-        print(sections)
     }
+    
+    func updateQuantity(for itemID:Int, newQuantity: Int) {
+        
+        Task {
+            do {
+                let body = UpdateQuantityRequest(updatedQuantity: newQuantity)
+                try await network.requestWithoutResponse(StockRouter.updateQuantity(id: itemID, body: body))
+                await MainActor.run {
+                    fetchStocks()
+                }
+                print("🎉 \(itemID) : \(newQuantity) update 성공")
+            }
+            catch {
+                await MainActor.run {
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
+                print("💥 update 실패! \(error.localizedDescription)")
+            }
+        }
+    }
+    
 }
 

@@ -12,6 +12,7 @@ enum StockRouter: BaseRouter {
     case getItems
     case create(body: CreateStockRequest)
     case update(id: Int, body: UpdateStockRequest)
+    case updateQuantity(id: Int, body: UpdateQuantityRequest)
     case delete(id: Int)
     
     var path: String {
@@ -19,7 +20,7 @@ enum StockRouter: BaseRouter {
         case .getItems, .create:
             return "/stocks"
             
-        case .delete(let id), .update(let id,_):
+        case .delete(let id), .update(let id, _), .updateQuantity(let id, _):
             return "/stocks/\(id)"
         }
     }
@@ -28,7 +29,7 @@ enum StockRouter: BaseRouter {
         switch self {
         case .getItems: return .get
         case .create: return .post
-        case .update: return .put
+        case .update, .updateQuantity : return .put
         case .delete: return .delete
         }
     }
@@ -38,6 +39,8 @@ enum StockRouter: BaseRouter {
         case .create(let body):
             return body
         case .update(_, let body):
+            return body
+        case .updateQuantity(_, let body):
             return body
         default: return nil
         }
