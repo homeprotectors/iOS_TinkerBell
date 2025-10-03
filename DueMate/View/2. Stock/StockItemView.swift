@@ -11,14 +11,14 @@ struct StockItemView: View {
     let item: StockItem
     let onTapGesture: (StockItem) -> Void
     var QuantityLevel: String {
-        switch item.currentQuantity {
-        case ...2:
+        switch item.remainingDays {
+        case ...3:
             return "stock_lowest"
-        case ...4:
+        case 4...7:
             return "stock_low"
-        case ...5:
-            return "stock_mid"
-        case ...10:
+        case 8...14:
+            return "stock_med"
+        case 15...21:
             return "stock_high"
         default:
             return "stock_full"
@@ -33,8 +33,9 @@ struct StockItemView: View {
                     .font(.listTitle)
                 Spacer()
                 HStack {
-                    Text("\(item.currentQuantity)")
+                    Text("\(item.currentQuantity) 개")
                         .font(.system(size: 20, weight: .bold))
+                        .padding(.trailing,10)
                     Image(QuantityLevel)
                 }
                 .onTapGesture {

@@ -12,32 +12,43 @@ import Alamofire
 
 
 class ChoreCreateViewModel: ObservableObject {
-    @Published var title: String = ""
-    @Published var cycle: String = ""
-    @Published var startDate: Date = Date()
-    @Published var selectedReminder: ReminderOptions = .none
-    @Published var showPicker = false
     @Published var isChoreCreated = false
- 
+    @Published var title: String = ""
+    @Published var category: String = "living"
+    @Published var isFixedCycle: Bool = false
+    @Published var cycleOption: CycleOption = .simple(.weekly)
+    
+    @Published var selectedDays: Set<DayOptions> = []
+    @Published var selectedDates: Set<DateOptions> = []
+    @Published var selectedMonths: Set<MonthOptions> = []
     
     
     // Form Validation
     var isFormValid: Bool {
         let isTitleValid = !title.trimmingCharacters(in: .whitespaces).isEmpty
-        let isCycleValid = Int(cycle).map { $0 >= 1 && $0 <= 365 } ?? false
-        return isTitleValid && isCycleValid
+        guard isTitleValid else { return false }
+        
+        if !isFixedCycle {
+            return true
+        }
+        
+        return !selectedDays.isEmpty || !selectedDates.isEmpty || !selectedMonths.isEmpty
+        
+    }
+    
+    func clearSelectedOptions() {
+        selectedDays = []
+        selectedDates = []
+        selectedMonths = []
     }
     
     // - Network
     func createChore() {
         print("==> Creating Chore")
-        let cycleInt = Int(cycle) ?? 1
+        
         
         let body = CreateChoreRequest(
-            title: title,
-            cycleDays: cycleInt,
-            startDate: DateFormatter.yyyyMMdd.string(from: startDate),
-            reminderDays: selectedReminder.getDays()
+            title: title
         )
         
         print(body)

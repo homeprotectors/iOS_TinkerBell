@@ -114,12 +114,7 @@ struct StockDetailView: View {
         }
         .formLabel("소모 주기")
         .padding(.top, 20)
-        .sheet(isPresented: $showUnitPicker) {
-            StockUnitPickerView(
-                quantity: $viewModel.unitQuantityString,
-                unit: $viewModel.unit
-            )
-        }
+        
     }
     
     var expandedOverlay: some View {

@@ -11,6 +11,7 @@ struct ChoreMainView: View {
     @StateObject private var viewModel = ChoreMainViewModel()
     @State private var showDialog = false
     @State private var selectedItem: ChoreItem? = nil
+    @State private var isPresentingCreateSheet: Bool = false
     
     var body: some View {
         
@@ -45,11 +46,9 @@ struct ChoreMainView: View {
             Text("TODO")
                 .font(.system(size: 50, weight: .heavy))
             Spacer()
-            NavigationLink {
-                ChoreCreateView(onComplete:{
-                    viewModel.fetchChores()
-                })
-            }label: {
+            Button {
+                isPresentingCreateSheet = true
+            } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 40, weight: .bold))
                     .foregroundStyle(.black)
@@ -58,6 +57,10 @@ struct ChoreMainView: View {
         }
         .padding()
         .padding(.top, 30)
+        .sheet(isPresented: $isPresentingCreateSheet) {
+            ChoreCreateView()
+            .presentationDetents([.large])
+        }
     }
     
     private var choreListView: some View {

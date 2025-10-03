@@ -60,7 +60,7 @@ struct StockCreateView: View {
             // Current Amount
             VStack(alignment: .leading, spacing: 6) {
                 UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
-                    .formLabel("현재 수량")
+                    .formLabel("현재 몇 개가 남아있나요?")
                 // estimated days
                 Group {
                     if showExpectedText {

@@ -12,9 +12,7 @@ protocol RequestBody: Codable {}
 // MARK: Chore
 struct CreateChoreRequest: RequestBody {
     let title: String
-    let cycleDays: Int
-    let startDate: String  // "yyyy-MM-dd"
-    let reminderDays: Int?
+    
 }
 
 struct UpdateChoreRequest: RequestBody {
