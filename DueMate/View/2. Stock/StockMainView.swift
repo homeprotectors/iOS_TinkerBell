@@ -50,24 +50,24 @@ struct StockMainView: View {
             .presentationDetents([.medium, .large])
         }
         .sheet(item: $selectedItem) { item in
-                StockQuantityPickerView( 
-                    quantity: $selectedQuantity,
-                    item: item,
-                    onSave: { newQuantity in
-                        viewModel.updateQuantity(
-                            for:item.id,
-                            newQuantity: newQuantity)
-                        selectedItem = nil
-                    }
-                )
-                .presentationDetents([.height(350)])
+            StockQuantityPickerView(
+                quantity: $selectedQuantity,
+                item: item,
+                onSave: { newQuantity in
+                    viewModel.updateQuantity(
+                        for:item.id,
+                        newQuantity: newQuantity)
+                    selectedItem = nil
+                }
+            )
+            .presentationDetents([.height(350)])
         }
         
     }
     
     private var stockListView: some View {
         ScrollView {
-            LazyVStack(alignment: .leading) {
+            LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
                 ForEach(StockSection.allCases, id:\.self) { section in
                     if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
                         Section {
@@ -82,9 +82,14 @@ struct StockMainView: View {
                             }
                             .padding(.bottom, 20)
                         } header: {
-                            Text(section.title)
-                                .font(.listText)
-                                .padding(.horizontal,22)
+                            HStack{
+                                Text(section.title)
+                                    .font(.listText)
+                                Spacer()
+                            }
+                            .padding(.horizontal,22)
+                            .padding(.bottom, 10)
+                            .background(Color.white)
                         }
                     }
                 }
