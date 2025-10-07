@@ -65,12 +65,12 @@ struct StockCreateView: View {
                 Group {
                     if showExpectedText {
                         Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
-                            .font(.subheadline)
+                            .font(.listText)
                             .foregroundColor(.secondary)
                             .transition(.move(edge: .top).combined(with: .opacity))
                         
                     }
-                }.animation(.easeInOut(duration: 0.3), value: viewModel.currentQuantityString)
+                }
             }
             .padding(.horizontal, 16)
             
@@ -88,7 +88,7 @@ struct StockCreateView: View {
         .padding(.top, 20)
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                showExpectedText = (viewModel.currentQuantity ?? 0) > 0
+                showExpectedText = (viewModel.currentQuantity) > 0
             }
         }
         .onChange(of: viewModel.isStockCreated) {

@@ -50,9 +50,9 @@ struct StockMainView: View {
             .presentationDetents([.medium, .large])
         }
         .sheet(item: $selectedItem) { item in
-                StockQuantityPickerView(
+                StockQuantityPickerView( 
                     quantity: $selectedQuantity,
-                    name: item.name,
+                    item: item,
                     onSave: { newQuantity in
                         viewModel.updateQuantity(
                             for:item.id,

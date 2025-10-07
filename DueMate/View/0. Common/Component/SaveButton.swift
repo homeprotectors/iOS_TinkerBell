@@ -23,6 +23,7 @@ struct SaveButton: View {
             .frame(width: 70, height: 36)
             .background(isEnabled ? Color.accentColor : .gray)
             .cornerRadius(5)
+            .padding(16)
             .disabled(!isEnabled)
         }
         
