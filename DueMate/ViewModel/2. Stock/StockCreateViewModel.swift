@@ -45,46 +45,4 @@ class StockCreateViewModel: ObservableObject {
         return (currentQuantity * unitDays) / unitQuantity
     }
     
-    
-    func createStock() {
-        let body = CreateStockRequest(
-            name: title,
-            updatedQuantity: currentQuantity,
-            unit: unit,
-            unitDays: unitDays,
-            unitQuantity: unitQuantity,
-            reminderDays: selectedReminder.getDays()
-        )
-        
-        // 실제 전송되는 JSON 데이터 로그
-        print("📤 Stock 요청 전송: \(body)")
-        do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            if let jsonData = try? encoder.encode(body),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                print(jsonString)
-            }
-        } catch {
-            print("❌ Stock JSON 인코딩 실패: \(error)")
-        }
-        
-        Task {
-            do {
-                try await DefaultNetworkService.shared.requestWithoutResponse(StockRouter.create(body: body))
-                await MainActor.run {
-                    isStockCreated = true
-                    print("🎉 Stock 생성 완료! \(title)")
-                }
-            }
-            catch {
-                print("🚨 Stock 생성 실패: \(error)")
-                if let nwError = error as? NetworkError {
-                    await ErrorHandler.shared.handle(nwError)
-                } else {
-                    print("💥 Stock ErrorHandling Failed:  \(error.localizedDescription)")
-                }
-            }
-        }
-    }
 }

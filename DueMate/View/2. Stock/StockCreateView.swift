@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StockCreateView: View {
-    var onComplete: (() -> Void)? = nil
+    var onComplete: ((StockItem) -> Void)? = nil
     @Namespace private var animation
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = StockCreateViewModel()
@@ -81,7 +81,7 @@ struct StockCreateView: View {
             Spacer()
             // Save button
             SaveButton(isEnabled: viewModel.isFormValid, action:{
-                viewModel.createStock()
+                viewModel.isStockCreated = true
             })
             .padding(12)
         }
@@ -93,7 +93,14 @@ struct StockCreateView: View {
         }
         .onChange(of: viewModel.isStockCreated) {
             if viewModel.isStockCreated {
-                onComplete?()
+                let newStock = StockItem(
+                    id: Int.random(in: 2000...9999),
+                    name: viewModel.title,
+                    unitDays: viewModel.unitDays,
+                    unitQuantity: viewModel.unitQuantity,
+                    currentQuantity: viewModel.currentQuantity,
+                    remainingDays: viewModel.expectedDaysLeft)
+                onComplete?(newStock)
                 dismiss()
             }
         }

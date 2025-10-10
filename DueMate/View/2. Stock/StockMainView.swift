@@ -12,11 +12,24 @@ struct StockMainView: View {
     @State private var selectedItem: StockItem? = nil
     @State private var selectedQuantity: Int = 0
     @State private var isPresentingCreate = false
+    @State private var itemToDelete: StockItem? = nil
+    @State private var showDeleteAlert = false
     
     var body: some View {
-        VStack{
+        VStack {
             headerView
             stockListView
+        }
+        .confirmationDialog("삭제확인", isPresented: $showDeleteAlert) {
+            Button("삭제", role: .destructive) {
+                withAnimation{
+                    viewModel.deleteItem(id: itemToDelete!.id)
+                }
+            }
+            Button("취소", role: .cancel) { }
+        }
+        message: {
+            Text("\(itemToDelete?.name ?? "")을(를) 정말 삭제하시겠습니까?")
         }
         .onAppear {
             viewModel.fetchStocks()
@@ -41,10 +54,13 @@ struct StockMainView: View {
             
         }
         .background(Color.clear)
-        .padding(22)
+        .padding(.horizontal, 22)
+        .padding(.top, 22)
         .sheet(isPresented: $isPresentingCreate) {
-            StockCreateView(onComplete: {
-                viewModel.fetchStocks()
+            StockCreateView(onComplete: { newItem in
+                withAnimation {
+                    viewModel.createItem(item: newItem)
+                }
                 isPresentingCreate = false
             })
             .presentationDetents([.medium, .large])
@@ -66,37 +82,44 @@ struct StockMainView: View {
     }
     
     private var stockListView: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-                ForEach(StockSection.allCases, id:\.self) { section in
-                    if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
-                        Section {
-                            LazyVStack(spacing: 8) {
-                                ForEach(sectionItems) { item in
-                                    StockItemView(item: item, onTapGesture: { item in
-                                        
-                                        selectedItem = item
-                                        selectedQuantity = item.currentQuantity
-                                    })
-                                }
+        List {
+            ForEach(StockSection.allCases, id: \.self) { section in
+                if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
+                    Section {
+                        ForEach(sectionItems) { item in
+                            StockItemView(item: item, onTapGesture: { tapped in
+                                selectedItem = tapped
+                                selectedQuantity = max(tapped.currentQuantity, 1)
+                            })
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                SwipeActionButtons(item: item,
+                                                   onEdit: { print("edit \(item.name)") },
+                                                   onDelete: {
+                                    itemToDelete = item
+                                    showDeleteAlert = true
+                                })
                             }
-                            .padding(.bottom, 20)
-                        } header: {
-                            HStack{
-                                Text(section.title)
-                                    .font(.listText)
-                                Spacer()
-                            }
-                            .padding(.horizontal,22)
-                            .padding(.bottom, 10)
-                            .background(Color.white)
+                            
                         }
+                    } header: {
+                        SectionHeaderView(title: section.title)
                     }
                 }
             }
         }
+        .listStyle(.plain)
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 0)
+        .environment(\.defaultMinListHeaderHeight, 0)
+        
         
     }
+    
+    
+    
 }
 
 #Preview {

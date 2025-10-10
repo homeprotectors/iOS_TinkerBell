@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct SectionHeaderView: View {
+    let title: String
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack {
+            Text(title)
+                .font(.listText)
+            Spacer()
+        }
+        .padding(.horizontal, 22)
+        .padding(.vertical, 0)
+        .listRowInsets(EdgeInsets())
+        .background(Color.white)
     }
 }
-
 #Preview {
-    SectionHeaderView()
+    SectionHeaderView(title: "이번주")
 }

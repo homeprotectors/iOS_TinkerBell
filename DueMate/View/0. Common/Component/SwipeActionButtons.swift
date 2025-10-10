@@ -8,11 +8,30 @@
 import SwiftUI
 
 struct SwipeActionButtons: View {
+    let item: StockItem
+    let onEdit: () -> Void
+    let onDelete: () -> Void
+    
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Group {
+            Button(action: onDelete) {
+                Text("삭제")
+            }
+            .tint(Color.dotRed)
+            
+            
+            Button(action: onEdit) {
+                VStack {
+                    Text("수정")
+                }
+            }
+            .tint(Color.darkBlueGray)
+        }
+        
     }
 }
 
 #Preview {
-    SwipeActionButtons()
+    SwipeActionButtons(item: StockItem(id: 1, name: "휴지", unitDays: 3, unitQuantity: 1, currentQuantity: 10, remainingDays: 30), onEdit: {}, onDelete: {})
 }

@@ -101,6 +101,13 @@ struct StockItem: Codable, Identifiable {
     let remainingDays: Int
 }
 
+struct CreateStockResponse: Codable {
+    let id: Int
+    let name: String
+    let unitDays: Int
+    let unitQuantity: Int
+    let updatedQuantity: Int
+}
 
 // MARK: Bill
 

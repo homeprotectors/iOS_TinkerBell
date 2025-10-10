@@ -27,7 +27,7 @@ struct StockItemView: View {
     
     
     var body: some View {
-        VStack{
+        VStack(spacing:0){
             HStack(spacing: 20){
                 Text(item.name)
                     .font(.listTitle)
@@ -45,9 +45,14 @@ struct StockItemView: View {
             }
             .padding(.horizontal,22)
             .padding(.vertical,18)
-            Divider()
+            
+            Rectangle()
+                .frame(height: 1)        
+                .foregroundColor(.lightGray)
         }
         .frame(maxWidth: .infinity)
+        
+        
     }
 }
 
