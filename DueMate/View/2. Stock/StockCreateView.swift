@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct StockCreateView: View {
-    var onComplete: ((StockItem) -> Void)? = nil
+    var onCreate: ((StockItem) -> Void)? = nil
+    var onUpdate: ((StockItem) -> Void)? = nil
+    var updateItem: StockItem? = nil
+    var isEditMode: Bool { updateItem != nil }
+        
     @Namespace private var animation
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = StockCreateViewModel()
@@ -16,18 +20,11 @@ struct StockCreateView: View {
     @State private var showUnitPicker = false
     @State private var showReminderPicker = false
     @State private var showExpectedText = false
-    
-    private let numberFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .none
-        formatter.minimum = 1
-        formatter.maximum = 999999
-        return formatter
-    }()
+    @State private var showUnsavedChangesAlert = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("물품 추가하기")
+            Text(isEditMode ? "물품 수정하기" : "물품 추가하기")
                 .font(.system(size: 18, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 28)
@@ -58,34 +55,46 @@ struct StockCreateView: View {
             
             
             // Current Amount
-            VStack(alignment: .leading, spacing: 6) {
-                UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
-                    .formLabel("현재 몇 개가 남아있나요?")
-                // estimated days
-                Group {
-                    if showExpectedText {
-                        Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
-                            .font(.listText)
-                            .foregroundColor(.secondary)
-                            .transition(.move(edge: .top).combined(with: .opacity))
-                        
+            if !isEditMode {
+                VStack(alignment: .leading, spacing: 6) {
+                    UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
+                        .formLabel("현재 몇 개가 남아있나요?")
+                    // estimated days
+                    Group {
+                        if showExpectedText {
+                            Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
+                                .font(.listText)
+                                .foregroundColor(.secondary)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                            
+                        }
                     }
                 }
+                .padding(.horizontal, 16)
+                
+                Divider()
+                    .padding(.vertical, 12)
             }
-            .padding(.horizontal, 16)
             
-            Divider()
-                .padding(.vertical, 12)
             
             
             Spacer()
             // Save button
             SaveButton(isEnabled: viewModel.isFormValid, action:{
+                
                 viewModel.isStockCreated = true
             })
             .padding(12)
         }
         .padding(.top, 20)
+        .onAppear {
+            if let updateItem = updateItem {
+                viewModel.setupForUpdate(updateItem)
+            }
+        }
+        .onChange(of: updateItem) {
+            viewModel.setupForUpdate(updateItem!)
+        }
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 showExpectedText = (viewModel.currentQuantity) > 0
@@ -94,16 +103,17 @@ struct StockCreateView: View {
         .onChange(of: viewModel.isStockCreated) {
             if viewModel.isStockCreated {
                 let newStock = StockItem(
-                    id: Int.random(in: 2000...9999),
+                    id: -Int.random(in: 1000...9999),
                     name: viewModel.title,
                     unitDays: viewModel.unitDays,
                     unitQuantity: viewModel.unitQuantity,
                     currentQuantity: viewModel.currentQuantity,
                     remainingDays: viewModel.expectedDaysLeft)
-                onComplete?(newStock)
+                onCreate?(newStock)
                 dismiss()
             }
         }
+        
     }
     
     

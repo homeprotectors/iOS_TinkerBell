@@ -38,6 +38,7 @@ struct StockQuantityPickerView: View {
             }
             SaveButton(isEnabled: true) {
                 onSave(quantity)
+                dismiss()
             }
             
         }

@@ -58,16 +58,23 @@ class StockMainViewModel: ObservableObject {
         
     }
     
-    func updateQuantity(for itemID:Int, newQuantity: Int) {
+    func updateQuantity(for id:Int, newQuantity: Int) {
+        if let index = items.firstIndex(where: { $0.id == id }) {
+            items[index].currentQuantity = newQuantity
+            groupBySection()
+        }
         
         Task {
             do {
-                let body = UpdateQuantityRequest(updatedQuantity: newQuantity)
-                try await network.requestWithoutResponse(StockRouter.updateQuantity(id: itemID, body: body))
+                let body = UpdateStockRequest(name: nil, unitQuantity: nil, unitDays: nil, updatedQuantity: newQuantity)
+                let item: StockItemTemp = try await network.request(StockRouter.update(id: id,body: body))
                 await MainActor.run {
-                    fetchStocks()
+                    if let index = self.items.firstIndex(where: {$0.id == item.id}) {
+                        self.items[index].currentQuantity = item.updatedQuantity
+                        self.groupBySection()
+                    }
                 }
-                print("🎉 \(itemID) : \(newQuantity) update 성공")
+                print("🎉 \(id) : \(newQuantity) update 성공")
             }
             catch {
                 await MainActor.run {
@@ -82,7 +89,40 @@ class StockMainViewModel: ObservableObject {
         }
     }
     
-    func createItem(item: StockItem) {
+    func updateInfo(id: Int, item: StockItem ) {
+        // UI update
+        if let index = items.firstIndex(where: { $0.id == id }) {
+            items[index] = item
+            groupBySection()
+        }
+        
+        Task {
+            do {
+                let body = UpdateStockRequest(name: item.name, unitQuantity: item.unitQuantity, unitDays: item.unitDays, updatedQuantity: nil)
+                let item: StockItem = try await network.request(StockRouter.update(id: id,body: body))
+                await MainActor.run {
+                    if let index = self.items.firstIndex(where: {$0.id == item.id}) {
+                        self.items[index] = item
+                        self.groupBySection()
+                    }
+                }
+                print("🎉 update 성공!")
+            }
+            catch {
+                await MainActor.run {
+                    self.fetchStocks()
+                    if let networkError = error as? NetworkError {
+                        ErrorHandler.shared.handle(networkError)
+                    } else {
+                        ErrorHandler.shared.handle(NetworkError.unknown(error))
+                    }
+                }
+                print("💥 update 실패! \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func createStock(item: StockItem) {
         //UI update
         items.append(item)
         groupBySection()
@@ -108,6 +148,8 @@ class StockMainViewModel: ObservableObject {
             }
             catch {
                 print("🚨 Stock 생성 실패: \(error)")
+                self.items.removeAll { $0.id == item.id }
+                self.groupBySection()
                 if let nwError = error as? NetworkError {
                     await ErrorHandler.shared.handle(nwError)
                 } else {
@@ -117,7 +159,7 @@ class StockMainViewModel: ObservableObject {
         }
     }
     
-    func deleteItem(id: Int) {
+    func deleteStock(id: Int) {
         
         // UI update
         let itemToRemove = items.first { $0.id == id }

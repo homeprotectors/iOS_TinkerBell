@@ -36,12 +36,10 @@ struct CreateStockRequest: RequestBody {
 }
 
 struct UpdateStockRequest: RequestBody {
-    let name: String
-    let unitQuantity: Int
-    let unit: String
-    let unitDays: Int
-    let reminderDays:Int?
-    let updatedQuantity: Int   
+    let name: String?
+    let unitQuantity: Int?
+    let unitDays: Int?
+    let updatedQuantity: Int?
 }
 
 struct UpdateQuantityRequest: RequestBody {

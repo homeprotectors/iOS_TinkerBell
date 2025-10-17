@@ -31,10 +31,13 @@ struct StockItemView: View {
             HStack(spacing: 20){
                 Text(item.name)
                     .font(.listTitle)
+                    .foregroundColor(Color.primaryText)
                 Spacer()
                 HStack {
                     Text("\(item.currentQuantity) 개")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.listSubitem)
+                        .foregroundColor(Color.primaryText)
+                    Image("arrow_double")
                         .padding(.trailing,10)
                     Image(QuantityLevel)
                 }

@@ -49,7 +49,7 @@ struct StockDetailView: View {
                     
                     //save button
                     SaveButton(isEnabled: viewModel.hasInputChanged(), action:{
-                        viewModel.updateStock(id: item.id)
+                        //viewModel.updateStock(id: item.id)
                     })
                 }
                 
@@ -103,7 +103,7 @@ struct StockDetailView: View {
                 showUnitPicker = true
             } label: {
                 HStack {
-                    Text(viewModel.unit)
+                    Text("개")
                         .font(.system(size: 18))
                     Image(systemName: "chevron.down")
                         .foregroundStyle(.gray)

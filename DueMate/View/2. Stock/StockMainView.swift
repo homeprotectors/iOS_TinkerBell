@@ -13,6 +13,7 @@ struct StockMainView: View {
     @State private var selectedQuantity: Int = 0
     @State private var isPresentingCreate = false
     @State private var itemToDelete: StockItem? = nil
+    @State private var itemToUpdate: StockItem? = nil
     @State private var showDeleteAlert = false
     
     var body: some View {
@@ -20,10 +21,46 @@ struct StockMainView: View {
             headerView
             stockListView
         }
-        .confirmationDialog("삭제확인", isPresented: $showDeleteAlert) {
+        //create
+        .sheet(isPresented: $isPresentingCreate) {
+            StockCreateView(onCreate: { newItem in
+                withAnimation {
+                    viewModel.createStock(item: newItem)
+                }
+                isPresentingCreate = false
+            })
+            .presentationDetents([.medium, .large])
+        }
+        //update
+        .sheet(item: $itemToUpdate) { item in
+            StockCreateView(onCreate: { newItem in
+                withAnimation {
+                    viewModel.updateInfo(id: item.id, item: newItem)
+                }
+                itemToUpdate = nil
+            }, updateItem: item)
+            .presentationDetents([.medium, .large])
+        }
+        //update quantity
+        .sheet(item: $selectedItem) { item in
+            StockQuantityPickerView(
+                quantity: $selectedQuantity,
+                item: item,
+                onSave: { newQuantity in
+                    withAnimation {
+                        viewModel.updateQuantity(
+                            for:item.id,
+                            newQuantity: newQuantity)
+                    }
+                    selectedItem = nil
+                }
+            )
+            .presentationDetents([.height(350)])
+        }
+        .alert("삭제확인", isPresented: $showDeleteAlert) {
             Button("삭제", role: .destructive) {
                 withAnimation{
-                    viewModel.deleteItem(id: itemToDelete!.id)
+                    viewModel.deleteStock(id: itemToDelete!.id)
                 }
             }
             Button("취소", role: .cancel) { }
@@ -56,28 +93,6 @@ struct StockMainView: View {
         .background(Color.clear)
         .padding(.horizontal, 22)
         .padding(.top, 22)
-        .sheet(isPresented: $isPresentingCreate) {
-            StockCreateView(onComplete: { newItem in
-                withAnimation {
-                    viewModel.createItem(item: newItem)
-                }
-                isPresentingCreate = false
-            })
-            .presentationDetents([.medium, .large])
-        }
-        .sheet(item: $selectedItem) { item in
-            StockQuantityPickerView(
-                quantity: $selectedQuantity,
-                item: item,
-                onSave: { newQuantity in
-                    viewModel.updateQuantity(
-                        for:item.id,
-                        newQuantity: newQuantity)
-                    selectedItem = nil
-                }
-            )
-            .presentationDetents([.height(350)])
-        }
         
     }
     
@@ -94,12 +109,13 @@ struct StockMainView: View {
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                SwipeActionButtons(item: item,
-                                                   onEdit: { print("edit \(item.name)") },
-                                                   onDelete: {
-                                    itemToDelete = item
-                                    showDeleteAlert = true
-                                })
+                                SwipeActionButtons(
+                                    item: item,
+                                    onEdit: { itemToUpdate = item },
+                                    onDelete: {
+                                        itemToDelete = item
+                                        showDeleteAlert = true }
+                                )
                             }
                             
                         }

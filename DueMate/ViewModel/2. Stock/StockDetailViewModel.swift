@@ -14,7 +14,6 @@ class StockDetailViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var unitDays: Int = 3
     @Published var unitQuantity: Int = 1
-    @Published var unit: String = ""
     @Published var currentQuantity: Int = 0
     @Published var reminderOption: ReminderOptions = .none
     @Published var shoudRedirectMain: Bool = false
@@ -41,32 +40,7 @@ class StockDetailViewModel: ObservableObject {
         set { currentQuantity = Int(newValue) ?? 0}
     }
    
-    func updateStock(id: Int) {
-        let reminderDays = reminderOption.getDays()
-        let body = UpdateStockRequest(name: title, unitQuantity: unitQuantity, unit: unit, unitDays: unitDays, reminderDays: reminderDays, updatedQuantity: currentQuantity)
-        print("✨Stock update - \(title) : \(id)\n\(body)")
-        
-        Task {
-            do {
-                try await network.requestWithoutResponse(StockRouter.update(id: id,body: body))
-                await MainActor.run {
-                    shoudRedirectMain = true
-                }
-                print("🎉 update 성공!")
-            }
-            catch {
-                await MainActor.run {
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
-                }
-                print("💥 update 실패! \(error.localizedDescription)")
-            }
-        }
-        
-    }
+
     
     func deleteStock(id: Int) {
         print("Delete Stock ::: \(id) - \(title)")
@@ -103,13 +77,14 @@ class StockDetailViewModel: ObservableObject {
         firstTitle = title
         firstUnitDays = unitDays
         firstUnitQuantity = unitQuantity
-        firstUnit = unit
+        
         firstCurrentQuantity = currentQuantity
         
     }
     
     func hasInputChanged() -> Bool {
-        return title != firstTitle || unitDays != firstUnitDays || unitQuantity != firstUnitQuantity || unit != firstUnit || reminderOption != firstReminderOption || currentQuantity != firstCurrentQuantity
+//        return title != firstTitle || unitDays != firstUnitDays || unitQuantity != firstUnitQuantity || unit != firstUnit || reminderOption != firstReminderOption || currentQuantity != firstCurrentQuantity
+        return false
     }
 }
 

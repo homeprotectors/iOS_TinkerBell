@@ -92,13 +92,21 @@ struct ChoreHistory: Codable, Equatable {
 
 // MARK: Stock
 
-struct StockItem: Codable, Identifiable {
+struct StockItem: Codable, Identifiable, Equatable {
     let id: Int
     let name: String
     let unitDays: Int   //며칠에
     let unitQuantity: Int //몇개
-    let currentQuantity: Int
+    var currentQuantity: Int
     let remainingDays: Int
+}
+
+struct StockItemTemp: Codable, Identifiable, Equatable {
+    let id: Int
+    let name: String
+    let unitDays: Int   //며칠에
+    let unitQuantity: Int //몇개
+    var updatedQuantity: Int
 }
 
 struct CreateStockResponse: Codable {

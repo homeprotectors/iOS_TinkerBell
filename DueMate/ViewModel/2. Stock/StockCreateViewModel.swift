@@ -17,6 +17,8 @@ class StockCreateViewModel: ObservableObject {
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
     
+    private var originalItem: StockItem?
+    
     var unitDaysString: String {
         get { unitDays == 0 ? "" : "\(unitDays)" }
         set { unitDays = Int(newValue) ?? 0 }
@@ -32,8 +34,6 @@ class StockCreateViewModel: ObservableObject {
         set { currentQuantity = Int(newValue) ?? 0  }
     }
     
-    let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
-    
     var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
         unitDays > 0 &&
@@ -45,4 +45,11 @@ class StockCreateViewModel: ObservableObject {
         return (currentQuantity * unitDays) / unitQuantity
     }
     
+    func setupForUpdate(_ item: StockItem) {
+        originalItem = item
+        title = item.name
+        unitDays = item.unitDays
+        unitQuantity = item.unitQuantity
+        currentQuantity = item.currentQuantity
+    }
 }
