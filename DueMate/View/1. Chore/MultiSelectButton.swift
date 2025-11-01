@@ -17,24 +17,27 @@ struct MultiSelectButton<T: DetailCycleOption>: View {
             isSelected.toggle()
             onTap()
         }) {
-            Text(option.display)
-                .font(.buttonText)
-                .foregroundColor(Color.primaryText)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(isSelected ? Color.backgroundBlue : Color.backgroundGray)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(Color.accentColor, lineWidth: isSelected ? 0.5 : 0)
-                            )
-                )
+            VStack {
+                Text(option.display)
+                    .font(.buttonText)
+                    .foregroundColor(Color.primaryText)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 12)       
+            }
             
         }
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 4)
+                .fill(isSelected ? Color.backgroundBlue : Color.backgroundGray)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.accentColor, lineWidth: isSelected ? 0.5 : 0)
+                )
+        )
     }
 }
 
 #Preview {
-    MultiSelectButton(option: DayOptions.fri, isSelected: .constant(true))
+    MultiSelectButton(option: DayOptions.FRIDAY, isSelected: .constant(true))
 }

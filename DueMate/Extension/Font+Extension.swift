@@ -16,6 +16,7 @@ extension Font {
     static let buttonText = Font.system(size: 14, weight: .bold)
     static let listText = Font.system(size: 12, weight: .light)
     static let formlabel = Font.system(size: 12, weight: .medium)
+    static let smallButtonText = Font.system(size: 12, weight: .bold)
     
     
 }

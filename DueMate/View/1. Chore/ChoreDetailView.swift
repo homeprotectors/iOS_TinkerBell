@@ -111,7 +111,7 @@ struct ChoreDetailView: View {
             Text("저장하지 않은 변경 사항이 사라집니다.")
         }
         .onAppear{
-            viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: item.reminderDays.getReminderOption())
+//            viewModel.firstInputSetting(title: item.title, cycleDays: String(item.cycleDays) , reminderOption: item.reminderDays.getReminderOption())
         }
         .onChange(of: selectedDate) {
             if selectedDate != nil {
@@ -142,5 +142,5 @@ struct ChoreDetailView: View {
 }
 
 #Preview {
-    ChoreDetailView(item: ChoreItem(id: 1, title: "빨래하기", cycleDays: 3, nextDue: "2025-05-13",  reminderDays: 1))
+   
 }

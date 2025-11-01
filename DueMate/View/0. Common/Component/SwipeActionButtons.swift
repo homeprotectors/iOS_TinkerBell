@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SwipeActionButtons: View {
-    let item: StockItem
     let onEdit: () -> Void
     let onDelete: () -> Void
     
@@ -33,5 +32,7 @@ struct SwipeActionButtons: View {
 }
 
 #Preview {
-    SwipeActionButtons(item: StockItem(id: 1, name: "휴지", unitDays: 3, unitQuantity: 1, currentQuantity: 10, remainingDays: 30), onEdit: {}, onDelete: {})
+    SwipeActionButtons(
+//        item: StockItem(id: 1, name: "휴지", unitDays: 3, unitQuantity: 1, currentQuantity: 10, remainingDays: 30),
+        onEdit: {}, onDelete: {})
 }

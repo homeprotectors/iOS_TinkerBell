@@ -12,7 +12,9 @@ protocol RequestBody: Codable {}
 // MARK: Chore
 struct CreateChoreRequest: RequestBody {
     let title: String
-    
+    let recurrenceType: String
+    let selectedCycle: [String]?
+    let roomCategory: String
 }
 
 struct UpdateChoreRequest: RequestBody {

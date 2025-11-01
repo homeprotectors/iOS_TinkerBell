@@ -18,10 +18,12 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var isFixedCycle: Bool = false
     @Published var cycleOption: CycleOption = .simple(.weekly)
     
-    @Published var selectedDays: Set<DayOptions> = []
-    @Published var selectedDates: Set<DateOptions> = []
-    @Published var selectedMonths: Set<MonthOptions> = []
     
+    @Published var selectedDays: Set<String> = []
+    @Published var selectedDates: Set<String> = []
+    @Published var selectedMonths: Set<String> = []
+    
+    private var originalItem: ChoreItem?
     
     // Form Validation
     var isFormValid: Bool {
@@ -42,13 +44,43 @@ class ChoreCreateViewModel: ObservableObject {
         selectedMonths = []
     }
     
+    func setupForUpdate(_ item: ChoreItem){
+        title = item.title
+        category = item.roomCategory
+        cycleOption = item.recurrenceTypeEnum
+        switch cycleOption {
+        case .simple(_):
+            isFixedCycle = false
+        case .fixed(let option):
+            isFixedCycle = true
+            switch option {
+            case .date:
+                selectedDates = Set(item.selectedCycle ?? [])
+            case .day:
+                selectedDays = Set(item.selectedCycle ?? [])
+            case .month:
+                selectedMonths = Set(item.selectedCycle ?? [])
+            }
+        }
+    }
+    
     // - Network
     func createChore() {
         print("==> Creating Chore")
-        
-        
+        print("cycleOption: \(cycleOption)")
+        var selectedCycle: Set<String>? = nil
+        if cycleOption == .fixed(.date) {
+            selectedCycle = selectedDates
+        }else if cycleOption == .fixed(.day) {
+            selectedCycle = selectedDays
+        }else if cycleOption == .fixed(.month) {
+            selectedCycle = selectedMonths
+        }
         let body = CreateChoreRequest(
-            title: title
+            title: title,
+            recurrenceType: cycleOption.serverData,
+            selectedCycle: selectedCycle.map { Array($0) } ?? nil,
+            roomCategory: category.uppercased()
         )
         
         print(body)
@@ -69,6 +101,10 @@ class ChoreCreateViewModel: ObservableObject {
             }
             
         }
+    }
+    
+    func updateChore() {
+        
     }
     
 }

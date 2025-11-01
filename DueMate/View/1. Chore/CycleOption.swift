@@ -18,6 +18,30 @@ enum CycleOption: Equatable {
         case .fixed(let option) : return option.display
         }
     }
+    
+    init?(rawValue: String) {
+        switch rawValue {
+        case "PER_WEEK": self = .simple(.weekly)
+        case "PER_2WEEKS": self = .simple(.biweekly)
+        case "PER_MONTH": self = .simple(.monthly)
+        case "FIXED_DAY": self = .fixed(.day)
+        case "FIXED_DATE": self = .fixed(.date)
+        case "FIXED_MONTH": self = .fixed(.month)
+        default: return nil
+        }
+    }
+    
+    var serverData: String {
+        switch self {
+        case .simple(.weekly): return "PER_WEEK"
+        case .simple(.biweekly): return "PER_2WEEKS"
+        case .simple(.monthly): return "PER_MONTH"
+        case .fixed(.day): return "FIXED_DAY"
+        case .fixed(.date): return "FIXED_DATE"
+        case .fixed(.month): return "FIXED_MONTH"
+        }
+    }
+    
 }
 
 
@@ -51,43 +75,66 @@ protocol DetailCycleOption: CaseIterable, Hashable {
 }
 
 enum DayOptions: String, DetailCycleOption {
-    case mon, tue, wed, thu, fri, sat, sun
+    case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
     
     var serverData: String { rawValue }
     var display: String {
         switch self {
-        case .mon: return "월"
-        case .tue: return "화"
-        case .wed: return "수"
-        case .thu: return "목"
-        case .fri: return "금"
-        case .sat: return "토"
-        case .sun: return "일"
+        case .MONDAY: return "월"
+        case .TUESDAY: return "화"
+        case .WEDNESDAY: return "수"
+        case .THURSDAY: return "목"
+        case .FRIDAY: return "금"
+        case .SATURDAY: return "토"
+        case .SUNDAY: return "일"
+        }
+    }
+    
+    var order: Int {
+        switch self {
+        case .MONDAY: return 1
+        case .TUESDAY: return 2
+        case .WEDNESDAY: return 3
+        case .THURSDAY: return 4
+        case .FRIDAY: return 5
+        case .SATURDAY: return 6
+        case .SUNDAY: return 7
         }
     }
     
 }
 
-enum DateOptions: String, DetailCycleOption {
-    case first, middle, last, custom
+enum DateOptions: DetailCycleOption {
+    case day(Int)
+    case endOfMonth
     
-    var serverData: String {
-        switch self {
-        case .first: return "1"
-        case .middle: return "15"
-        case .last: return "last"
-        case .custom: return "custom"
+    static var allCases: [DateOptions] {
+        var cases: [DateOptions] = []
+        for i in 1...30 {
+            cases.append(.day(i))
         }
+        cases.append(.endOfMonth)
+        return cases
     }
     
     var display: String {
         switch self {
-        case .first: return "1일"
-        case .middle: return "15일"
-        case .last: return "마지막 일"
-        case .custom: return "특정일"
+        case .day(let day):
+            return "\(day)일"
+        case .endOfMonth:
+            return "마지막일"
         }
     }
+    
+    var serverData: String {
+        switch self {
+        case .day(let day):
+            return "\(day)"
+        case .endOfMonth:
+            return "END"
+        }
+    }
+    
 }
 
 enum MonthOptions: String, DetailCycleOption {

@@ -7,84 +7,43 @@
 
 import SwiftUI
 
-struct ChoreItemView: View {
-    
+struct ChoreItemCard: View {
     let item: ChoreItem
-    let onCheckToggled: () -> Void
-    var daysRemaining: Int {
-        guard let remaining = item.nextDue.daysFromToday() else {
-            return 0
-        }
-        return remaining
-    }
-    var status: ListStatus {
-        switch daysRemaining {
-        case ...0:
-            return ListStatus.overdue
-        case 1...3:
-            return ListStatus.warning
-        default:
-            return ListStatus.normal
-        }
-    }
-    var style: ChoreItemStyle {
-        ChoreItemStyle.style(for: status)
-    }
     
     var body: some View {
-        VStack{
-            HStack{
-                VStack(alignment:.leading){
-                    HStack{
-                        Text(item.title)
-                            .font(style.titleFont)
-                            
-                        if item.reminderDays != nil {
-                            Image(systemName: "bell.fill")
-                        }
-                        
-                    }
-                    Text("\(item.cycleDays)일에 한 번")
-                }
-                Spacer()
+        HStack(spacing: 12) {
+            Image("ic_\(item.roomCategory)")
+                .padding(11)
+                .background(Color.backgroundBlue)
+                .cornerRadius(4)
+            
+            Text(item.title)
+                .font(.listTitle)
+            
+            Spacer()
+            
+            
+            Text(item.recurrenceDescription)
+                .font(.listText)
+                .frame(maxWidth: 150, alignment: .trailing)
+                .multilineTextAlignment(.trailing)
+                .allowsTightening(false)
                 
-                if daysRemaining == 0 {
-                    Text("D-Day")
-                } else if daysRemaining < 0 {
-                    Text("D+\(-daysRemaining)")
-                } else {
-                    Text("D-\(daysRemaining)")
-                }
-                
-                Button(action:onCheckToggled){
-                    Image(systemName: "staroflife.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(style.textColor)
-                        
-                }
-                .padding(5)
-                
-            }
-            .padding()
-           
+            
         }
-        .padding(8)
-        .background(style.background)
-        .frame(maxWidth: .infinity)
-        .cornerRadius(35)
-        .foregroundColor(style.textColor)
-        
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(12)
     }
-    
 }
 
 #Preview {
-    ChoreItemView(item: ChoreItem(
+    ChoreItemCard(item: ChoreItem(
         id: 1,
-        title: "Take out trash",
-        cycleDays: 3,
-        nextDue: "2025-05-03",
-        reminderDays: 1
-    ), onCheckToggled: {})
+        title: "쓰레기 버리기",
+        recurrenceType: "FIXED_DATE",
+        selectedCycle: ["1", "2", " 5", "22", "12","27","30"],
+        roomCategory: "living",
+        nextDue: "2025-05-03"
+    ))
 }

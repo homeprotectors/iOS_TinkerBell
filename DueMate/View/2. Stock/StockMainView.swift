@@ -30,6 +30,7 @@ struct StockMainView: View {
                 isPresentingCreate = false
             })
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
         }
         //update
         .sheet(item: $itemToUpdate) { item in
@@ -110,7 +111,7 @@ struct StockMainView: View {
                             .listRowSeparator(.hidden)
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 SwipeActionButtons(
-                                    item: item,
+//                                    item: item,
                                     onEdit: { itemToUpdate = item },
                                     onDelete: {
                                         itemToDelete = item
@@ -130,8 +131,6 @@ struct StockMainView: View {
         .scrollContentBackground(.hidden)
         .environment(\.defaultMinListRowHeight, 0)
         .environment(\.defaultMinListHeaderHeight, 0)
-        
-        
     }
     
     

@@ -69,7 +69,7 @@ struct HomeView: View {
                             HomeItemView(item: item, onLongPress: { frame in
                                 viewModel.selectItem(item, frame: frame)
                             })
-                            
+                            .background(.blue)
                         }
                     }
                 } header: {

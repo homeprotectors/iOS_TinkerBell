@@ -55,12 +55,13 @@ struct UpdateChoreResponse: Codable {
 
 
 //Get chore list item
-struct ChoreItem: Codable, Identifiable {
+struct ChoreItemResponse: Codable, Identifiable {
     let id: Int
     let title: String
-    let cycleDays: Int
+    let recurrenceType: String
+    let selectedCycle: [String]?
+    let roomCategory: String
     let nextDue: String
-    let reminderDays: Int?
 }
 
 // Responses for updating Chore History : not using at the moment

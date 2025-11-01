@@ -16,18 +16,13 @@ struct StockCreateView: View {
     @Namespace private var animation
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = StockCreateViewModel()
-    
-    @State private var showUnitPicker = false
-    @State private var showReminderPicker = false
     @State private var showExpectedText = false
     @State private var showUnsavedChangesAlert = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(isEditMode ? "물품 수정하기" : "물품 추가하기")
-                .font(.system(size: 18, weight: .bold))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.bottom, 28)
+            
+            headerView
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
@@ -66,7 +61,6 @@ struct StockCreateView: View {
                                 .font(.listText)
                                 .foregroundColor(.secondary)
                                 .transition(.move(edge: .top).combined(with: .opacity))
-                            
                         }
                     }
                 }
@@ -75,18 +69,9 @@ struct StockCreateView: View {
                 Divider()
                     .padding(.vertical, 12)
             }
-            
-            
-            
             Spacer()
-            // Save button
-            SaveButton(isEnabled: viewModel.isFormValid, action:{
-                
-                viewModel.isStockCreated = true
-            })
-            .padding(12)
         }
-        .padding(.top, 20)
+        .padding(.top, 30)
         .onAppear {
             if let updateItem = updateItem {
                 viewModel.setupForUpdate(updateItem)
@@ -116,7 +101,21 @@ struct StockCreateView: View {
         
     }
     
-    
+    private var headerView: some View {
+        HStack {
+            Text(isEditMode ? "물품 수정하기" : "물품 추가하기")
+                .font(.system(size: 18, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .overlay(
+            SaveButton(isEnabled: viewModel.isFormValid, action:{
+                viewModel.isStockCreated = true
+            })
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        )
+        .padding(.bottom, 24)
+        
+    }
     
 }
 

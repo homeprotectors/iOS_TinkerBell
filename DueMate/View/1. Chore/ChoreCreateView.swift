@@ -10,20 +10,39 @@ import SwiftUI
 
 
 struct ChoreCreateView: View {
-    var onComplete: (() -> Void)? = nil
+    var onCreate: (() -> Void)? = nil
+    var onUpdate: (() -> Void)? = nil
+    var updateItem: ChoreItem? = nil
+    
+    
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChoreCreateViewModel()
     @State var selectedCycleType: CycleOption = .simple(.weekly)
-    @State var isWheelPresented = false
-    @State var customDate = 1
+    
+    
     
     var body: some View {
         
         VStack(spacing: 0) {
-            Text("집안일 추가하기")
-                .font(.sheetTitle)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 20)
+            HStack {
+                Spacer()
+                Text((updateItem != nil) ? "집안일 수정하기" :"집안일 추가하기")
+                    .font(.sheetTitle)
+                Spacer()
+            }
+            .overlay(
+                SaveButton(isEnabled: viewModel.isFormValid, action:{
+                    if updateItem == nil {
+                        viewModel.createChore()
+                    }else {
+                        viewModel.updateChore()
+                    }
+                    
+                })
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            )
+            .padding(.top, 30)
+            
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "집안일")
@@ -39,17 +58,24 @@ struct ChoreCreateView: View {
             
             //Save button
             Spacer()
-            SaveButton(isEnabled: viewModel.isFormValid, action:{
-                viewModel.createChore()
-            })
+            
         }
-        
-        .onChange(of: selectedCycleType) {
+        .onAppear {
+            if let updateItem = updateItem {
+                viewModel.setupForUpdate(updateItem)
+            }
+        }
+        .onChange(of: updateItem) {
+            if let updateItem = updateItem {
+                viewModel.setupForUpdate(updateItem)
+            }
+        }
+        .onChange(of: viewModel.cycleOption) {
             viewModel.clearSelectedOptions()
         }
         .onChange(of: viewModel.isChoreCreated) {
             if viewModel.isChoreCreated {
-                onComplete?()
+                onCreate?()
                 dismiss()
             }
         }
@@ -58,18 +84,30 @@ struct ChoreCreateView: View {
     }
     
     private var categoryPickerView: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing:24) {
-                ForEach(Constants.categoryOptions) { option in
-                    CategoryRadioButton(option: option, isSelected: viewModel.category == option.value, onTap: {
-                        viewModel.category = option.value
-                        
-                    })
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing:24) {
+                    ForEach(Constants.categoryOptions) { option in
+                        CategoryRadioButton(option: option, isSelected: viewModel.category == option.value, onTap: {
+                            viewModel.category = option.value
+                        })
+                        .id(option.value)
+                    }
+                }
+            }
+            .formLabel("어느 공간에 관련된 일인가요?")
+            .padding(16)
+            .onAppear {
+                if let updateItem = updateItem {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation {
+                            proxy.scrollTo(updateItem.roomCategory.lowercased(), anchor: .center)
+                        }
+                    }
                 }
             }
         }
-        .formLabel("어느 공간에 관련된 일인가요?")
-        .padding(16)
+        
     }
     
     private var cyclePickerView: some View {
@@ -84,9 +122,9 @@ struct ChoreCreateView: View {
                     .toggleStyle(squareToggleStyle())
                     .onChange(of: viewModel.isFixedCycle) {
                         if viewModel.isFixedCycle {
-                            selectedCycleType = CycleOption.fixed(.day)
+                            viewModel.cycleOption = CycleOption.fixed(.day)
                         } else {
-                            selectedCycleType = CycleOption.simple(.weekly)
+                            viewModel.cycleOption = CycleOption.simple(.weekly)
                         }
                     }
             }
@@ -108,14 +146,14 @@ struct ChoreCreateView: View {
         HStack {
             if viewModel.isFixedCycle {
                 ForEach(FixedCycleOption.allCases, id:\.self) { option in
-                    CycleOptionRadioButtons(title: option.display, isSelected: selectedCycleType == .fixed(option), onTap: {
-                        selectedCycleType = .fixed(option)
+                    CycleOptionRadioButtons(title: option.display, isSelected: viewModel.cycleOption == .fixed(option), onTap: {
+                        viewModel.cycleOption = .fixed(option)
                     })
                 }
             } else {
                 ForEach(SimpleCycleOption.allCases, id:\.self) { option in
-                    CycleOptionRadioButtons(title: option.display, isSelected: selectedCycleType == .simple(option), onTap: {
-                        selectedCycleType = .simple(option)
+                    CycleOptionRadioButtons(title: option.display, isSelected: viewModel.cycleOption == .simple(option), onTap: {
+                        viewModel.cycleOption = .simple(option)
                     })
                 }
             }
@@ -126,20 +164,21 @@ struct ChoreCreateView: View {
     private var fixedCycleDetailSection: some View {
         VStack(alignment: .leading){
             
-            switch selectedCycleType {
+            switch viewModel.cycleOption {
             case .fixed(.day):
                 HStack {
                     ForEach(DayOptions.allCases, id: \.self) { day in
                         MultiSelectButton(
                             option: day,
                             isSelected: Binding(
-                                get: { viewModel.selectedDays.contains(day)},
+                                get: { viewModel.selectedDays.contains(day.serverData)},
                                 set: { _ in
-                                    if viewModel.selectedDays.contains(day) {
-                                        viewModel.selectedDays.remove(day)
+                                    if viewModel.selectedDays.contains(day.serverData) {
+                                        viewModel.selectedDays.remove(day.serverData)
                                     } else {
-                                        viewModel.selectedDays.insert(day)
+                                        viewModel.selectedDays.insert(day.serverData)
                                     }
+                                    print(viewModel.selectedDays)
                                 }
                             )
                         )
@@ -149,48 +188,50 @@ struct ChoreCreateView: View {
                 }
                 
             case .fixed(.date):
-                HStack {
-                    ForEach(DateOptions.allCases, id: \.self) { date in
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6)) {
+                    ForEach(DateOptions.allCases.filter { $0 != .endOfMonth }, id: \.self) { date in
                         MultiSelectButton(
                             option: date,
-                            onTap: {
-                                if date == .custom {
-                                    isWheelPresented = true
-                                }
-                            }, isSelected: Binding(
-                                get: { viewModel.selectedDates.contains(date) },
+                            isSelected: Binding(
+                                get: { viewModel.selectedDates.contains(date.serverData)},
                                 set: { _ in
-                                    if viewModel.selectedDates.contains(date) {
-                                        viewModel.selectedDates.remove(date)
-                                    } else {
-                                        viewModel.selectedDates.insert(date)
-                                    }
+                                    if viewModel.selectedDates.contains(date.serverData) {
+                                        viewModel.selectedDates.remove(date.serverData)
+                                    } else { viewModel.selectedDates.insert(date.serverData)}
+                                    print(viewModel.selectedDates)
                                 })
                         )
                     }
                 }
-                .sheet(isPresented: $isWheelPresented) {
-                    Picker("", selection: $customDate) {
-                        ForEach(1...31, id: \.self) { day in
-                            Text("\(day)일").tag(day)
+                MultiSelectButton(
+                    option: DateOptions.endOfMonth,
+                    isSelected: Binding(
+                        get: { viewModel.selectedDates.contains("END") },
+                        set: { _ in
+                            if viewModel.selectedDates.contains("END") {
+                                viewModel.selectedDates.remove("END")
+                            } else {
+                                viewModel.selectedDates.insert("END")
+                            }
+                            print(viewModel.selectedDates)
                         }
-                    }
-                    .pickerStyle(.wheel)   // 휠 스타일
-                    .frame(height: 300)
-                    .presentationDetents([.fraction(0.4)])
-                }
+                    )
+                )
+                
+                
                 
             case .fixed(.month):
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6)) {
                     ForEach(MonthOptions.allCases, id:\.self) { month in
                         MultiSelectButton(option: month, isSelected: Binding(
-                            get: { viewModel.selectedMonths.contains(month) },
+                            get: { viewModel.selectedMonths.contains(month.serverData) },
                             set: { _ in
-                                if viewModel.selectedMonths.contains(month) {
-                                    viewModel.selectedMonths.remove(month)
+                                if viewModel.selectedMonths.contains(month.serverData) {
+                                    viewModel.selectedMonths.remove(month.serverData)
                                 } else {
-                                    viewModel.selectedMonths.insert(month)
+                                    viewModel.selectedMonths.insert(month.serverData)
                                 }
+                                print(viewModel.selectedMonths)
                             })
                         )
                     }
