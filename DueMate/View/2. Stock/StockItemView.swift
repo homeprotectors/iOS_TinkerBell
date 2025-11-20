@@ -54,6 +54,7 @@ struct StockItemView: View {
                 .foregroundColor(.lightGray)
         }
         .frame(maxWidth: .infinity)
+        .frame(height: 68)
         
         
     }

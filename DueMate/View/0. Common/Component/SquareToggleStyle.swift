@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct squareToggleStyle: ToggleStyle {
+struct SquareToggleStyle: ToggleStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         HStack {
@@ -43,7 +43,7 @@ struct wrapper: View {
     
     var body: some View {
         Toggle(isOn: $isOn, label: {Text("고정 일정")})
-            .toggleStyle(squareToggleStyle())
+            .toggleStyle(SquareToggleStyle())
     }
 }
 

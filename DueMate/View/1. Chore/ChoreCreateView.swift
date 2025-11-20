@@ -119,7 +119,7 @@ struct ChoreCreateView: View {
                 Spacer()
                 
                 Toggle(isOn: $viewModel.isFixedCycle, label: { Text("고정 일정")})
-                    .toggleStyle(squareToggleStyle())
+                    .toggleStyle(SquareToggleStyle())
                     .onChange(of: viewModel.isFixedCycle) {
                         if viewModel.isFixedCycle {
                             viewModel.cycleOption = CycleOption.fixed(.day)

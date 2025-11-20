@@ -59,7 +59,7 @@ struct HomeView: View {
         }
         
     }
-    
+     
     private var listView: some View {
         LazyVStack(alignment: .leading, spacing: 16) {
             ForEach(viewModel.homeList) { section in
@@ -69,7 +69,6 @@ struct HomeView: View {
                             HomeItemView(item: item, onLongPress: { frame in
                                 viewModel.selectItem(item, frame: frame)
                             })
-                            .background(.blue)
                         }
                     }
                 } header: {

@@ -12,29 +12,31 @@ import Alamofire
 class BillCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var isVariable: Bool = false
-    @Published var amount: Double = 0
+    @Published var amount: Int? = nil
     @Published var dueDate: Int = 0
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isBillCreated = false
     
-    var amountString: String {
-        get { amount == 0 ? "" : "\(amount)" }
-        set { amount = Double(newValue) ?? 0 }
-    }
-    
-    var dueDateString: String {
-        get { dueDate == 0 ? "" : "\(dueDate)" }
-        set { dueDate = Int(newValue) ?? 0 }
-    }
+
     
     var isFormValid: Bool {
         let isTitleValid = !title.trimmingCharacters(in: .whitespaces).isEmpty
-        return isTitleValid && amount > 0 && dueDate > 0 && dueDate < 32
+        guard let amount = amount else { return false }
+        
+        return isTitleValid && amount > 0 && dueDate != 0
+    }
+    
+    func setUp(item: BillItem) {
+        title = item.name
+        isVariable = item.isVariable
+        amount = Int(item.amount)
+        dueDate = item.dueDate
+        
     }
     
     func createBill() {
-        let body = CreateBillRequest(name: title, amount: 20000, dueDate: 1, isVariable: isVariable, reminderDays: selectedReminder.getDays())
-        print("📤 요청 전송: \(body)")
+        
+        let body = CreateBillRequest(name: title, amount: Double(amount ?? 0), dueDate: 1, isVariable: isVariable)
     
         
         Task {

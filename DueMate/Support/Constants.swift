@@ -18,4 +18,6 @@ struct Constants {
         RadioOption(title: "침실", value: "bedroom", onImage: "ic_bedroom", offImage: "ic_bedroom_off"),
         RadioOption(title: "기타", value: "etc", onImage: "ic_etc", offImage: "ic_etc_off")
     ]
+    
+    static let currencySymbol = "₩"
 }

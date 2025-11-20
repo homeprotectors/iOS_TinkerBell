@@ -120,7 +120,7 @@ enum DateOptions: DetailCycleOption {
     var display: String {
         switch self {
         case .day(let day):
-            return "\(day)일"
+            return "\(day)"
         case .endOfMonth:
             return "마지막일"
         }

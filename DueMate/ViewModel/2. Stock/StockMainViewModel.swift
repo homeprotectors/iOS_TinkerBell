@@ -136,11 +136,10 @@ class StockMainViewModel: ObservableObject {
                     unitDays: item.unitDays,
                     unitQuantity: item.unitQuantity
                 )
-                let createdItem: CreateStockResponse = try await DefaultNetworkService.shared.request(StockRouter.create(body: body))
+                let createdItem: StockItem = try await DefaultNetworkService.shared.request(StockRouter.create(body: body))
                 await MainActor.run {
                     if let index = self.items.firstIndex(where: { $0.id == item.id }) {
-                        //이부분 reponse 바꿔주시면 넣기..
-                        //self.items[index].id = createdItem.data.id
+                        
                         self.groupBySection()
                     }
                     print("🎉 Stock 생성 완료! \(createdItem.id)")

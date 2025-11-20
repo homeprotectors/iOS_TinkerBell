@@ -33,13 +33,6 @@ struct UnderlineTextField: View {
                         .font(.system(size: 16))
                 }
             }
-            
-            
-            // 언더라인
-//            Rectangle()
-//                .fill(foregroundColor)
-//                .frame(height: 1)
-//                .padding(.top, 2)
                 
         }
     }
