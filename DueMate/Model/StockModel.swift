@@ -39,14 +39,5 @@ struct StockItem: Codable, Identifiable, Equatable {
     let unitDays: Int   //며칠에
     let unitQuantity: Int //몇개
     var currentQuantity: Int
-    let remainingDays: Int
+    var remainingDays: Int
 }
-
-struct StockItemTemp: Codable, Identifiable, Equatable {
-    let id: Int
-    let name: String
-    let unitDays: Int   //며칠에
-    let unitQuantity: Int //몇개
-    var updatedQuantity: Int
-}
-

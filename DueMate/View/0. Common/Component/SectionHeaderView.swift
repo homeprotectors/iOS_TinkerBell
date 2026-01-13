@@ -16,8 +16,8 @@ struct SectionHeaderView: View {
                 .font(.listText)
             Spacer()
         }
-        .padding(.horizontal, 22)
-        .padding(.vertical, 0)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 5)
         .listRowInsets(EdgeInsets())
         .background(Color.white)
     }

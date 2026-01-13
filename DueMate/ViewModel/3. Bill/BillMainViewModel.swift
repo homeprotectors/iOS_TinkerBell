@@ -12,8 +12,8 @@ class BillMainViewModel: ObservableObject {
     @Published var items: [SectionItem<BillItem>] = []
     @Published var sections: BillSection = BillSection(fixed: [], variable: [])
     @Published var currentMonth: Date = Date()
-    @Published var total: Double = 120000000
-    @Published var difference: Double =  0
+    @Published var total: Double = 75000
+    @Published var difference: Double =  12000
     
     private let network = DefaultNetworkService.shared
     

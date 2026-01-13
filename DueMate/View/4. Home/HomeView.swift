@@ -9,20 +9,18 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
-    
+    @State private var isExpanded = false
     var body: some View {
         ZStack{
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
                 Image("logo")
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .padding(.vertical,20)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 12)
                 
-                ScrollView {
-                    listView
-                }
+                listView
             }
-            .padding(12)
             .blur(radius: viewModel.selectedItem != nil ? 10 : 0)
             
             //선택시 포커스뷰
@@ -57,41 +55,48 @@ struct HomeView: View {
         .onAppear {
             viewModel.fetchHome()
         }
-        
+        .withErrorToast()
     }
+    
+   
      
     private var listView: some View {
-        LazyVStack(alignment: .leading, spacing: 16) {
+        List {
             ForEach(viewModel.homeList) { section in
                 Section {
-                    LazyVStack {
-                        ForEach(section.list) { item in
-                            HomeItemView(item: item, onLongPress: { frame in
-                                viewModel.selectItem(item, frame: frame)
-                            })
+                    ForEach(section.list) { item in
+                        Group {
+                            if item.shoppingContainer {
+                                HomeExpandableItemView(item: item, shoppingList: item.shoppingItems ?? [], onLongPress: { frame in
+                                    viewModel.selectItem(item, frame: frame)
+                                },isExpanded: $isExpanded)
+                                .onTapGesture {
+                                    withAnimation {
+                                        isExpanded.toggle()
+                                    }
+                                    
+                                }
+                            } else {
+                                HomeItemView(item: item, onLongPress: { frame in
+                                    viewModel.selectItem(item, frame: frame)
+                                })
+                            }
                         }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
                 } header: {
-                    //섹션 헤더
-                    if section.id == 0 {
-                        HStack {
-                            Text("이번주 할 일")
-                                .font(.listText)
-                            Spacer()
-                            Text(Date().toHomeToday())
-                                .font(.listText)
-                        }
-                    } else {
-                        Text("나중에 할 일")
-                            .font(.listText)
-                    }
+                    SectionHeaderView(title: section.title)
                 }
-                
-                
-                
-                
             }
         }
+        
+        .listStyle(.plain)
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 0)
+        .environment(\.defaultMinListHeaderHeight, 0)
     }
 }
 

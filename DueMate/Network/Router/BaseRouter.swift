@@ -18,16 +18,37 @@ protocol BaseRouter: URLRequestConvertible {
 
 extension BaseRouter {
     
-    //baseURL
+    // Configuration 접근 (전역 설정 사용)
+    var configuration: NetworkConfiguration {
+        NetworkConfiguration.default
+    }
+    
+    // baseURL은 configuration에서 가져오기
     var baseURL: URL {
-        URL(string: "http://ec2-15-164-220-42.ap-northeast-2.compute.amazonaws.com:8080/api")!
+        configuration.baseURL
     }
     
     
     func asURLRequest() throws -> URLRequest {
+        let config = configuration
+        
         var request = URLRequest(url: baseURL.appendingPathComponent(path))
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.method = method
+        
+        // 기본 헤더 설정
+        config.defaultHeaders.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        // TODO: 서버에서 인증 구현 후 주석 해제
+        // 인증 헤더 추가 (토큰이 있으면)
+        // if let authHeaders = config.authHeaderProvider() {
+        //     authHeaders.forEach { key, value in
+        //         request.setValue(value, forHTTPHeaderField: key)
+        //     }
+        // }
+        
+        // Body 설정
         if let body = body {
             return try JSONParameterEncoder.default.encode(body, into: request)
         }

@@ -23,6 +23,8 @@ class ChoreCreateViewModel: ObservableObject {
     @Published var selectedDates: Set<String> = []
     @Published var selectedMonths: Set<String> = []
     
+    @Published var isUpdatingMode: Bool = false
+    
     private var originalItem: ChoreItem?
     
     // Form Validation
@@ -45,14 +47,33 @@ class ChoreCreateViewModel: ObservableObject {
     }
     
     func setupForUpdate(_ item: ChoreItem){
+        isUpdatingMode = true
+        defer {
+            DispatchQueue.main.async {
+                self.isUpdatingMode = false
+            }
+        }
+        
+        originalItem = item
         title = item.title
         category = item.roomCategory
-        cycleOption = item.recurrenceTypeEnum
-        switch cycleOption {
+        
+        // isFixedCycle을 먼저 설정
+        switch item.recurrenceTypeEnum {
         case .simple(_):
             isFixedCycle = false
-        case .fixed(let option):
+        case .fixed(_):
             isFixedCycle = true
+        }
+        
+        // 그 다음 cycleOption 설정
+        cycleOption = item.recurrenceTypeEnum
+        
+        // 마지막으로 선택된 값들 설정
+        switch cycleOption {
+        case .simple(_):
+            break
+        case .fixed(let option):
             switch option {
             case .date:
                 selectedDates = Set(item.selectedCycle ?? [])
@@ -93,10 +114,8 @@ class ChoreCreateViewModel: ObservableObject {
                 }
             }
             catch {
-                if let nwError = error as? NetworkError {
-                    await ErrorHandler.shared.handle(nwError)
-                } else {
-                    print("💥 ErrorHandling Failed:  \(error.localizedDescription)")
+                await MainActor.run {
+                    ErrorHandler.shared.handle(error)
                 }
             }
             

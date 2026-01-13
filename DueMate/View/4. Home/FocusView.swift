@@ -13,21 +13,30 @@ struct FocusView: View {
     let onDragChanged: (CGSize) -> Void
     let onDragEnded: (CGSize) -> Void
     let onDismiss: () -> Void
+    @State private var isExpanded: Bool = false
     
     var body: some View {
         ZStack {
-            HomeItemView(item: item)
-                .padding()
-                .offset(y: dragOffset.height)
-                .gesture (
-                    DragGesture()
-                        .onChanged { value in
-                            onDragChanged(value.translation)
-                        }
-                        .onEnded { value in
-                            onDragEnded(value.translation)
-                        }
-                )
+            Group {
+                if item.shoppingContainer {
+                    HomeExpandableItemView(item: item, shoppingList: item.shoppingItems ?? [], onLongPress: { _ in  }, isExpanded: $isExpanded)
+                    
+                } else {
+                    HomeItemView(item: item)
+                }
+            }
+            .padding()
+            .offset(y: dragOffset.height)
+            .gesture (
+                DragGesture()
+                    .onChanged { value in
+                        onDragChanged(value.translation)
+                    }
+                    .onEnded { value in
+                        onDragEnded(value.translation)
+                    }
+            )
+            
         }
     }
 }
@@ -35,5 +44,8 @@ struct FocusView: View {
 
 
 #Preview {
-    FocusView(item: HomeItem(id: 1, title: "화장실 청소", status: "overdue", category: "washroom", cycle: "한달에 1 번", shoppingList: nil ), dragOffset: .zero, onDragChanged: {_ in }, onDragEnded: {_ in }, onDismiss: {})
+    FocusView(item: HomeItem(id: 1, title: "장보기", recurrenceType: nil, selectedCycle: nil, roomCategory: nil, nextDue: nil, shoppingContainer: true, shoppingItems: [
+        ShoppingItem(id: 1, name: "식빵", currentQuantity: 2, remainingDays: 1),
+        ShoppingItem(id: 2, name: "계란", currentQuantity: 2, remainingDays: 1),
+    ]), dragOffset: .zero, onDragChanged: {_ in }, onDragEnded: {_ in }, onDismiss: {})
 }

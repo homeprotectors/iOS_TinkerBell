@@ -31,25 +31,49 @@ struct EditChoreHistoryRequest: Codable {
 
 
 // MARK: HOME
+
+struct HomeSection: Codable, Identifiable {
+    let id = UUID()
+    let title: String
+    let list: [HomeItem]
+}
+
+
+struct HomeSectionsData: Codable {
+    let sections: HomeSections
+}
+
+struct HomeSections: Codable {
+    let thisWeek: HomeSectionResponse
+    let nextWeek: HomeSectionResponse
+    let thisMonth: HomeSectionResponse
+    let nextMonth: HomeSectionResponse
+    
+}
+
+struct HomeSectionResponse: Codable {
+    let count: Int
+    let items: [HomeItem]
+}
+
 struct HomeItem: Codable, Identifiable {
     let id: Int
     let title: String
-    let status: String
-    let category: String
-    let cycle: String
-    let shoppingList: [ShoppingItem]?
+    let recurrenceType: String?
+    let selectedCycle: [String]?
+    let roomCategory: String?
+    let nextDue: String?
+    let shoppingContainer: Bool
+    let shoppingItems: [ShoppingItem]?
 }
 
 struct ShoppingItem: Codable, Identifiable {
     let id: Int
     let name: String
     let currentQuantity: Int
+    let remainingDays: Int
 }
 
-struct HomeSection: Codable, Identifiable {
-    let id: Int
-    let list: [HomeItem]
-}
 
 // MARK: Chore
 struct CreateChoreResponse: Codable {
@@ -106,3 +130,4 @@ struct ChoreHistory: Codable, Equatable {
     let doneDate: String
     let doneBy: Int
 }
+

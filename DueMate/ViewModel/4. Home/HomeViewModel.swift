@@ -15,22 +15,68 @@ class HomeViewModel: ObservableObject {
     @Published var selectedItemFrame: CGRect = .zero
     @Published var dragOffset: CGSize = .zero
     
+    private let network = DefaultNetworkService.shared
     
     func fetchHome() {
-        homeList = [
-            //이번주 할 일
-            HomeSection(id: 0, list: [
-                HomeItem(id: 1, title: "부엌 청소", status: "inProgress", category: "kitchen", cycle: "한달에 1 번", shoppingList: nil ),
-                HomeItem(id: 3, title: "장보기", status: "overdue", category: "bedroom", cycle: "한달에 1 번", shoppingList:[ShoppingItem(id: 1, name: "계란", currentQuantity: 2),ShoppingItem(id: 2, name: "빵", currentQuantity: 2)]),
-                HomeItem(id: 2, title: "빨래", status: "overdue", category: "bedroom", cycle: "한달에 1 번", shoppingList: nil)
-            ]),
+        Task {
+            do {
+                let response: HomeSectionsData = try await network.request(ChoreRouter.getHome)
             
-            //나중에 할 일
-            HomeSection(id: 1, list: [
-                HomeItem(id: 1, title: "화장실 청소", status: "overdue", category: "washroom", cycle: "한달에 1 번", shoppingList: nil ),
-                HomeItem(id: 2, title: "화장실 청소", status: "overdue", category: "washroom", cycle: "한달에 1 번", shoppingList: nil )
-            ])
-        ]
+                await MainActor.run {
+                    let rawSections = [
+                        HomeSection(title: "이번주 할 일", list: response.sections.thisWeek.items),
+                        HomeSection(title: "다음주 할 일", list: response.sections.nextWeek.items),
+                        HomeSection(title: "이번달 할 일", list: response.sections.thisMonth.items),
+                        HomeSection(title: "다음달 할 일", list: response.sections.nextMonth.items)
+                    ]
+                    self.homeList = rawSections.filter { !$0.list.isEmpty }
+                }
+                print("🎉 Home fetch 성공!")
+            } catch {
+                await MainActor.run {
+                    ErrorHandler.shared.handle(error)
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+    private func generateCycleString(recurrenceType: String?, selectedCycle: [String]?) -> String {
+        guard let recurrenceType = recurrenceType else {
+            return ""
+        }
+        
+        switch recurrenceType {
+        case "PER_WEEK":
+            return "일주일에 1번"
+        case "PER_2WEEKS":
+            return "2주일에 1번"
+        case "PER_MONTH":
+            return "한 달에 1번"
+        case "FIXED_DAY":
+            guard let days = selectedCycle, !days.isEmpty else { return "고정 요일 없음" }
+            let sortedEnum = days.compactMap { DayOptions(rawValue: $0) }.sorted { $0.order < $1.order }
+            let koreanDays = sortedEnum.map { $0.display }.joined(separator: ", ")
+            return "매주 \(koreanDays)"
+        case "FIXED_DATE":
+            guard let dates = selectedCycle, !dates.isEmpty else { return "고정 일자 없음" }
+            let sorted = dates.sorted {
+                if $0 == "END" { return false }
+                if $1 == "END" { return true }
+                return (Int($0) ?? 0) < (Int($1) ?? 0)
+            }
+            let formatted = sorted.compactMap { $0 == "END" ? "말일" : "\($0)일" }.joined(separator: ", ")
+            return "매월 \(formatted)"
+        case "FIXED_MONTH":
+            guard let months = selectedCycle, !months.isEmpty else { return "고정 월 없음" }
+            let sorted = months.sorted { (Int($0) ?? 0) < (Int($1) ?? 0) }
+            let formatted = sorted.map { "\($0)월" }.joined(separator: ", ")
+            return "매년 \(formatted)"
+        default:
+            return ""
+        }
     }
     
     func selectItem(_ item: HomeItem, frame: CGRect) {

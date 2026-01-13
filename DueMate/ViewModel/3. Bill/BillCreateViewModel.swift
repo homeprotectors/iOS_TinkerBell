@@ -50,25 +50,8 @@ class BillCreateViewModel: ObservableObject {
                 }
             }
             catch {
-                // 에러 발생 시 실제 서버 응답 확인
-                print("🚨 에러 발생: \(error)")
-                
-                if let nwError = error as? NetworkError {
-                    await ErrorHandler.shared.handle(nwError)
-                } else {
-                    print("💥 ErrorHandling Failed: \(error.localizedDescription)")
-                }
-                
-                // 실제 서버 응답 로그
-                Task {
-                    do {
-                        let rawResponse = try await AF.request(BillRouter.create(body: body))
-                            .serializingString()
-                            .value
-                        print("📥 서버 응답 (raw): \(rawResponse)")
-                    } catch {
-                        print("📥 응답 로그 실패: \(error)")
-                    }
+                await MainActor.run {
+                    ErrorHandler.shared.handle(error)
                 }
             }
         }
