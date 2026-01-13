@@ -11,61 +11,39 @@ import SwiftUI
 struct HomeItemView: View {
     let item: HomeItem
     let icon: String
-    let background: Color
-    let isExpandable: Bool
     var onLongPress: (CGRect) -> Void
     @State var currentFrame: CGRect = .zero
     
     init(item: HomeItem,  onLongPress: @escaping (CGRect) -> Void = { _ in }) {
         self.item = item
         self.onLongPress = onLongPress
-        self.isExpandable = item.shoppingContainer
         self.icon = "ic_\(item.roomCategory?.lowercased() ?? "etc")"
-        self.background = Color.backgoundBlue
+
     }
     
     var body: some View {
         VStack {
-            if isExpandable {
-                ExpandableItemCard(shoppingList: item.shoppingItems ?? [])
-                    .background(
-                        GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    let frame = geometry.frame(in: .global)
-                                    if frame.width > 0 && frame.height > 0 {
-                                        currentFrame = frame
-                                    }
+            
+            itemCard
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
                                 }
-                                .onChange(of: geometry.frame(in: .global)) {
-                                    let frame = geometry.frame(in: .global)
-                                    if frame.width > 0 && frame.height > 0 {
-                                        currentFrame = frame
-                                    }
+                            }
+                            .onChange(of: geometry.frame(in: .global)) {
+                                let frame = geometry.frame(in: .global)
+                                if frame.width > 0 && frame.height > 0 {
+                                    currentFrame = frame
                                 }
-                        }
-                    )
-            } else {
-                itemCard
-                    .background(
-                        GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    let frame = geometry.frame(in: .global)
-                                    if frame.width > 0 && frame.height > 0 {
-                                        currentFrame = frame
-                                    }
-                                }
-                                .onChange(of: geometry.frame(in: .global)) {
-                                    let frame = geometry.frame(in: .global)
-                                    if frame.width > 0 && frame.height > 0 {
-                                        currentFrame = frame
-                                    }
-                                }
-                        }
-                    )
-            }
+                            }
+                    }
+                )
         }
+        
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5)
                 .onEnded { _ in
@@ -79,7 +57,7 @@ struct HomeItemView: View {
         HStack(spacing: 12) {
             Image(icon)
                 .padding(11)
-                .background(background)
+                .background(Color.backgoundBlue)
                 .cornerRadius(4)
             
             Text(item.title)

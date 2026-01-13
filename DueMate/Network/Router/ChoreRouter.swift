@@ -10,6 +10,7 @@ import Alamofire
 
 enum ChoreRouter: BaseRouter {
     case getItems
+    case getHome
     case create(body: CreateChoreRequest)
     case delete(id: Int)
     case update(id: Int, body: UpdateChoreRequest)
@@ -29,12 +30,14 @@ enum ChoreRouter: BaseRouter {
             return "/chores/undo"
         case .getHistory(let id):
             return "/chores/\(id)/history"
+        case .getHome:
+            return "/chores/sections"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .getItems, .getHistory: return .get
+        case .getItems, .getHome, .getHistory: return .get
         case .create, .complete, .undo: return .post
         case .delete: return .delete
         case .update: return .put

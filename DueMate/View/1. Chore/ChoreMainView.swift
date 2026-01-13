@@ -14,14 +14,28 @@ struct ChoreMainView: View {
     @State private var itemToDelete: ChoreItem? = nil
     @State private var itemToUpdate: ChoreItem? = nil
     @State private var showDeleteAlert = false
+    @State private var plusButtonFrame: CGRect = .zero
+    @State private var showTutorialOverlay = true
     
     var body: some View {
-        
-        VStack(spacing: 0){
-            headerView
-            categoryFilterView
-            choreListView
+        ZStack {
+            VStack(spacing: 0){
+                headerView
+                categoryFilterView
+                choreListView
+            }
+            
+            if showTutorialOverlay {
+                HighlightOverlayView(message: "예시로 한가지 집안일을 미리 등록해 두었어요!\n자유롭게 수정해서 집안일 주기를 관리해보세요", onDismiss: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        TutorialManager.completeChoreTutorial()
+                        showTutorialOverlay = false
+                    }
+                })
+                .transition(.opacity)
+            }
         }
+        
         //create
         .sheet(isPresented: $isPresentingCreateSheet) {
             ChoreCreateView(onCreate: { viewModel.fetchChores() })
@@ -46,6 +60,9 @@ struct ChoreMainView: View {
         }
         .onAppear {
             viewModel.fetchChores()
+            if !TutorialManager.isChoreTutorialCompleted {
+                showTutorialOverlay = true
+            }
         }
         .onChange(of: viewModel.shouldRefresh) {
             if viewModel.shouldRefresh {
@@ -71,7 +88,6 @@ struct ChoreMainView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
             }
-            
         }
         .background(Color.clear)
         .padding(.horizontal, 22)

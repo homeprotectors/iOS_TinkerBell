@@ -7,6 +7,84 @@
 
 import Foundation
 
+//String -> Enum 으로 변환
+struct CycleMapper {
+    static func map(recurrenceType: String) -> CycleOption? {
+        return CycleOption(rawValue: recurrenceType)
+    }
+}
+
+struct FixedCycleParser {
+    // 서버 raw values -> 화면에 보여줄 display strings (정렬 완료)
+    static func parseToDisplayStrings(type: FixedCycleOption, values: [String]) -> [String] {
+        switch type {
+        case .day:
+            let days = values
+                .compactMap { DayOptions(rawValue: $0) }
+                .sorted { $0.order < $1.order }
+            return days.map { $0.display }
+
+        case .date:
+            let parsed = values.compactMap { raw -> DateOptions? in
+                if raw == "END" { return .endOfMonth }
+                if let n = Int(raw) { return .day(n) }
+                return nil
+            }.sorted { lhs, rhs in
+                switch (lhs, rhs) {
+                case (.endOfMonth, .endOfMonth): return false
+                case (.endOfMonth, .day): return false
+                case (.day, .endOfMonth): return true
+                case let (.day(a), .day(b)): return a < b
+                }
+            }
+            return parsed.map { $0.display }
+
+        case .month:
+            let months = values
+                .compactMap { MonthOptions(rawValue: $0) }
+                .sorted { (Int($0.rawValue) ?? 0) < (Int($1.rawValue) ?? 0) }
+            return months.map { $0.display }
+        }
+    }
+}
+
+struct CycleStringBuilder {
+    
+    static func makeDisplayText(
+        recurrenceType: String?,
+        selectedCycle: [String]?
+    ) -> String {
+        
+        guard let recurrenceType,
+              let option = CycleOption(rawValue: recurrenceType)
+        else { return "" }
+        
+        switch option {
+        // MARK: SIMPLE TYPES
+        case .simple(let type):
+            return type.display
+
+        // MARK: FIXED TYPES
+        case .fixed(let type):
+            guard let selectedCycle, !selectedCycle.isEmpty else { return emptyText(type: type) }
+            let formattedList = FixedCycleParser.parseToDisplayStrings(type: type, values: selectedCycle)
+            let formatted = formattedList.joined(separator: ", ")
+            switch type {
+            case .day: return "매주 \(formatted)"
+            case .date: return "매월 \(formatted)"
+            case .month: return "매년 \(formatted)"
+            }
+        }
+    }
+    
+    private static func emptyText(type: FixedCycleOption) -> String {
+        switch type {
+        case .day: return "고정 요일 없음"
+        case .date: return "고정 일자 없음"
+        case .month: return "고정 월 없음"
+        }
+    }
+}
 
 enum CycleOption: Equatable {
     case simple(SimpleCycleOption)

@@ -15,11 +15,25 @@ struct StockMainView: View {
     @State private var itemToDelete: StockItem? = nil
     @State private var itemToUpdate: StockItem? = nil
     @State private var showDeleteAlert = false
+    @State private var showTutorialOverlay = false
     
     var body: some View {
-        VStack {
-            headerView
-            stockListView
+        ZStack {
+            VStack {
+                headerView
+                stockListView
+            }
+            
+            if showTutorialOverlay {
+                HighlightOverlayView(message: "예시로 하나의 소모품을 등록해두었어요.\n정기적으로 사용하는 물품을 등록하면 소진 시기에 맞춰 장보기 할 일이 자동으로 생성돼요.", onDismiss: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        TutorialManager.completeStockTutorial()
+                        showTutorialOverlay = false
+                    }
+                })
+                .transition(.opacity)
+            }
+            
         }
         //create
         .sheet(isPresented: $isPresentingCreate) {
@@ -71,6 +85,9 @@ struct StockMainView: View {
         }
         .onAppear {
             viewModel.fetchStocks()
+            if !TutorialManager.isStockTutorialCompleted {
+                showTutorialOverlay = true
+            }
         }
         .withErrorToast()
     }
@@ -132,8 +149,6 @@ struct StockMainView: View {
         .environment(\.defaultMinListRowHeight, 0)
         .environment(\.defaultMinListHeaderHeight, 0)
     }
-    
-    
     
 }
 

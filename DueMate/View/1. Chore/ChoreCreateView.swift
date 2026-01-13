@@ -17,7 +17,6 @@ struct ChoreCreateView: View {
     
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChoreCreateViewModel()
-    @State var selectedCycleType: CycleOption = .simple(.weekly)
     
     
     
@@ -71,7 +70,10 @@ struct ChoreCreateView: View {
             }
         }
         .onChange(of: viewModel.cycleOption) {
-            viewModel.clearSelectedOptions()
+            // 업데이트 모드가 아닐 때만 clear (사용자가 직접 변경한 경우)
+            if !viewModel.isUpdatingMode {
+                viewModel.clearSelectedOptions()
+            }
         }
         .onChange(of: viewModel.isChoreCreated) {
             if viewModel.isChoreCreated {
@@ -121,10 +123,13 @@ struct ChoreCreateView: View {
                 Toggle(isOn: $viewModel.isFixedCycle, label: { Text("고정 일정")})
                     .toggleStyle(SquareToggleStyle())
                     .onChange(of: viewModel.isFixedCycle) {
-                        if viewModel.isFixedCycle {
-                            viewModel.cycleOption = CycleOption.fixed(.day)
-                        } else {
-                            viewModel.cycleOption = CycleOption.simple(.weekly)
+                        // 업데이트 모드가 아닐 때만 cycleOption 변경 (사용자가 직접 토글한 경우)
+                        if !viewModel.isUpdatingMode {
+                            if viewModel.isFixedCycle {
+                                viewModel.cycleOption = CycleOption.fixed(.day)
+                            } else {
+                                viewModel.cycleOption = CycleOption.simple(.weekly)
+                            }
                         }
                     }
             }

@@ -30,13 +30,8 @@ class StockMainViewModel: ObservableObject {
                 print("🎉 Stock fetch 성공!")
             } catch {
                 await MainActor.run {
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 Stock fetch 실패!  \(error.localizedDescription)")
             }
         }
     }
@@ -61,16 +56,17 @@ class StockMainViewModel: ObservableObject {
     func updateQuantity(for id:Int, newQuantity: Int) {
         if let index = items.firstIndex(where: { $0.id == id }) {
             items[index].currentQuantity = newQuantity
+            items[index].remainingDays = (newQuantity * items[index].unitDays) / items[index].unitQuantity
             groupBySection()
         }
         
         Task {
             do {
                 let body = UpdateStockRequest(name: nil, unitQuantity: nil, unitDays: nil, updatedQuantity: newQuantity)
-                let item: StockItemTemp = try await network.request(StockRouter.update(id: id,body: body))
+                let item: StockItem = try await network.request(StockRouter.update(id: id,body: body))
                 await MainActor.run {
                     if let index = self.items.firstIndex(where: {$0.id == item.id}) {
-                        self.items[index].currentQuantity = item.updatedQuantity
+                        self.items[index].currentQuantity = item.currentQuantity
                         self.groupBySection()
                     }
                 }
@@ -78,13 +74,8 @@ class StockMainViewModel: ObservableObject {
             }
             catch {
                 await MainActor.run {
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 update 실패! \(error.localizedDescription)")
             }
         }
     }
@@ -111,13 +102,8 @@ class StockMainViewModel: ObservableObject {
             catch {
                 await MainActor.run {
                     self.fetchStocks()
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 update 실패! \(error.localizedDescription)")
             }
         }
     }
@@ -146,13 +132,10 @@ class StockMainViewModel: ObservableObject {
                 }
             }
             catch {
-                print("🚨 Stock 생성 실패: \(error)")
-                self.items.removeAll { $0.id == item.id }
-                self.groupBySection()
-                if let nwError = error as? NetworkError {
-                    await ErrorHandler.shared.handle(nwError)
-                } else {
-                    print("💥 Stock ErrorHandling Failed:  \(error.localizedDescription)")
+                await MainActor.run {
+                    self.items.removeAll { $0.id == item.id }
+                    self.groupBySection()
+                    ErrorHandler.shared.handle(error)
                 }
             }
         }
@@ -180,13 +163,8 @@ class StockMainViewModel: ObservableObject {
                         self.items.append(item)
                         self.groupBySection()
                     }
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 삭제 실패! \(error.localizedDescription)")
             }
         }
     }

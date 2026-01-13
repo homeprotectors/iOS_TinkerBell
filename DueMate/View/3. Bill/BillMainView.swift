@@ -15,17 +15,33 @@ struct BillMainView: View {
     @State private var itemToDelete: BillItem? = nil
     @State private var itemToUpdate: BillItem? = nil
     @State private var showDeleteAlert: Bool = false
+    @State private var showTutorialOverlay = false
     
     var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                headerView
+                monthPickerView
+                summaryView
+                billListView
+            }
+            
+            if showTutorialOverlay {
+                HighlightOverlayView(message: "매달 발생하는 고정 지출을 등록해 간편하게 관리해보세요!\n공과금처럼 매달 변동되는 비용도 한 곳에서 확인할 수 있어요.", onDismiss: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        TutorialManager.completeBillTutorial()
+                        showTutorialOverlay = false
+                    }
+                })
+                .transition(.opacity)
+            }
         
-        VStack(spacing: 0) {
-            headerView
-            monthPickerView
-            summaryView
-            billListView
         }
         .onAppear {
             viewModel.fetchBills()
+            if !TutorialManager.isBillTutorialCompleted {
+                showTutorialOverlay = true
+            }
         }
         //create
         .sheet(isPresented: $isPresentingCreate) {
@@ -56,7 +72,7 @@ struct BillMainView: View {
         message: {
             Text("지난달까지의 기록은 그대로 남아 있어요.\n이번 달부터만 목록에서 제외됩니다.\n 삭제할까요?")
         }
-        
+        .withErrorToast()
         
     }
     
@@ -175,7 +191,6 @@ struct BillMainView: View {
         
         return result
     }
-    
     
 }
 

@@ -40,13 +40,8 @@ class ChoreMainViewModel: ObservableObject {
                 print("🎉 Chore fetch 성공!")
             } catch {
                 await MainActor.run {
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 Chore fetch 실패!  \(error.localizedDescription)")
             }
         }
     }
@@ -65,13 +60,8 @@ class ChoreMainViewModel: ObservableObject {
                 print("🎉 Complete 성공!")
             } catch {
                 await MainActor.run {
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 Complete 실패! \(error.localizedDescription)")
             }
         }
     }
@@ -97,15 +87,9 @@ class ChoreMainViewModel: ObservableObject {
                 await MainActor.run {
                     if let item = itemToRemove {
                         self.items.append(item)
-                        
                     }
-                    if let networkError = error as? NetworkError {
-                        ErrorHandler.shared.handle(networkError)
-                    } else {
-                        ErrorHandler.shared.handle(NetworkError.unknown(error))
-                    }
+                    ErrorHandler.shared.handle(error)
                 }
-                print("💥 delete 실패! \(error.localizedDescription)\nid: \(id)")
             }
         }
         
