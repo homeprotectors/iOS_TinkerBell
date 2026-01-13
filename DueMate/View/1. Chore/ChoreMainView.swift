@@ -9,102 +9,117 @@ import SwiftUI
 
 struct ChoreMainView: View {
     @StateObject private var viewModel = ChoreMainViewModel()
-    @State private var showDialog = false
     @State private var selectedItem: ChoreItem? = nil
+    @State private var isPresentingCreateSheet: Bool = false
+    @State private var itemToDelete: ChoreItem? = nil
+    @State private var itemToUpdate: ChoreItem? = nil
+    @State private var showDeleteAlert = false
     
     var body: some View {
         
-        NavigationStack{
-            ZStack{
-                // background color
-//                ListColor.background
-//                    .ignoresSafeArea()
-                
-                // main content
-                VStack{
-                    headerView
-                    choreListView
+        VStack(spacing: 0){
+            headerView
+            categoryFilterView
+            choreListView
+        }
+        //create
+        .sheet(isPresented: $isPresentingCreateSheet) {
+            ChoreCreateView(onCreate: { viewModel.fetchChores() })
+        }
+        //update
+        .sheet(item: $itemToUpdate) { item in
+            ChoreCreateView(onUpdate: {
+                viewModel.fetchChores()
+            },updateItem: item)
+        }
+        //delete
+        .alert("삭제확인", isPresented: $showDeleteAlert) {
+            Button("삭제", role: .destructive) {
+                withAnimation{
+                    viewModel.deleteChore(id: itemToDelete!.id)
                 }
             }
+            Button("취소", role: .cancel) { }
+        }
+        message: {
+            Text("\(itemToDelete?.title ?? "")을(를) 정말 삭제하시겠습니까?")
         }
         .onAppear {
             viewModel.fetchChores()
         }
         .onChange(of: viewModel.shouldRefresh) {
             if viewModel.shouldRefresh {
-                print("main refresh")
+                print("shouldRefresh == true")
                 viewModel.fetchChores()
                 viewModel.shouldRefresh = false
             }
         }
-        .overlay {
-            dialogView
-        }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showDialog)
+        
         .withErrorToast()   //error handler
     }
     
     private var headerView: some View {
         HStack{
-            Text("TODO")
-                .font(.system(size: 50, weight: .heavy))
+            Text("Chores")
+                .font(.headerTitle)
+                .foregroundColor(.accentColor)
             Spacer()
-            NavigationLink {
-                ChoreCreateView(onComplete:{
-                    viewModel.fetchChores()
-                })
+            Button {
+                isPresentingCreateSheet = true
             }label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundStyle(.black)
+                Image(.plus)
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
-            .padding()
+            
         }
-        .padding()
-        .padding(.top, 30)
+        .background(Color.clear)
+        .padding(.horizontal, 22)
+        .padding(.top, 22)
+    }
+    
+    private var categoryFilterView: some View {
+        VStack(spacing: 0) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack{
+                    ForEach(Constants.categoryOptions) { option in
+                        CategoryFilterButton(option: option, isSelected: viewModel.selectedCategory == option.value, onTap: {
+                            if viewModel.selectedCategory == option.value {
+                                viewModel.selectedCategory = nil
+                            }else {
+                                viewModel.selectedCategory = option.value
+                            }
+                        })
+                    }
+                }
+                .padding(.horizontal,12)
+                .padding(.vertical,15)
+            }
+            Divider()
+        }
+        
     }
     
     private var choreListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 10) {
-                ForEach(viewModel.items) { item in
-                    NavigationLink {
-                        ChoreDetailView(item: item)
-                            .environmentObject(viewModel)
-                    }label: {
-                        ChoreItemView(item: item, onCheckToggled: {
-                            selectedItem = item
-                            showDialog = true
-                        } )
+        List {
+            ForEach(viewModel.filteredItems) { item in
+                ChoreItemCard(item: item)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        SwipeActionButtons(
+                            onEdit: { itemToUpdate = item },
+                            onDelete: {
+                                itemToDelete = item
+                                showDeleteAlert = true
+                               }
+                        )
                     }
-                    .buttonStyle(.plain)
-                }
             }
         }
-        .padding()
-    }
-    
-    private var dialogView: some View {
-        Group {
-            if showDialog, let item = selectedItem {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-                    .onTapGesture {
-                        showDialog = false
-                    }
-                
-                ConfirmationDialog(
-                    isPresented: $showDialog,
-                    type: .mainViewCompletion,
-                    onConfirm: {
-                        viewModel.completeChore(item)
-                    }
-                )
-                .transition(.scale.combined(with: .opacity))
-                
-            }
-        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 0)
     }
 }
 

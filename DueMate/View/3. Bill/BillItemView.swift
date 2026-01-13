@@ -9,44 +9,47 @@ import SwiftUI
 
 struct BillItemView: View {
     let item: BillItem
-    let onCheckToggled: () -> Void
-    var daysRemaining: Int {
-        let date = Calendar.current.component(.day, from: Date())
-        return item.dueDate - date
-    }
-    var status: BillStatus {
-        if item.isPaid { return BillStatus.paid}
-        else if daysRemaining <= 0 { return BillStatus.overdue}
-        else { return BillStatus.normal }
-    }
-    
-    var style: BillItemStyle {
-        BillItemStyle.style(for: status)
-    }
-    
+    let onTapped: () -> Void
     
     var body: some View {
-        VStack{
+        VStack(spacing:0) {
             HStack{
-                VStack(alignment:.leading){
-                    HStack{
-                        Text(item.title)
-                    }
-                    
+                HStack{
+                    Text(item.name)
+                        .font(.listTitle)
                 }
                 Spacer()
+                if item.isVariable && !item.isPaid {
+                    Button(action: {
+                        onTapped()
+                    }) {
+                        Text("납부액 입력")
+                            .font(.buttonText)
+                            .foregroundColor(Color.accentColor)
+                    }
+                }
+                else {
+                    VStack(alignment:.trailing, spacing: 8){
+                        Text("매월 \(item.dueDate)")
+                        Text(item.amount, format: .currency(code: "KRW"))
+                    }
+                    .font(.listText)
+                }
+                
                 
             }
-            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 16)
             
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.lightGray)
         }
-        .padding(8)
-        .frame(maxWidth: .infinity)
-        .cornerRadius(35)
+        .frame(height: 68)
         
     }
 }
 
 #Preview {
-    BillItemView(item: BillItem(id: 1, title: "넷플릭스", isFixed: true, isPaid: false, amount: 24000, dueDate: 25, reminderDays: nil), onCheckToggled: {})
+    BillItemView(item: BillItem(id: 1, name:"넷플릭스",  isVariable: false, isPaid: false, amount: 24000, dueDate: 15), onTapped: {})
 }

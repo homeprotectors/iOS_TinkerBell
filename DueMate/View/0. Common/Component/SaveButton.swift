@@ -10,22 +10,24 @@ import SwiftUI
 struct SaveButton: View {
     let isEnabled: Bool
     let action: () -> Void
+    let isSave: Bool = false
     
     var body: some View {
         HStack {
-            Spacer()
             Button(action: action) {
-                Text("저장")
-                    .font(.system(size: 14, weight: .medium))
+                Text(isSave ? "Save" : "Add")
+                    .font(.buttonText)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .foregroundColor(.white)
+                    .foregroundColor(isEnabled ? Color.accentColor : .gray)
             }
             .frame(width: 70, height: 36)
-            .background(isEnabled ? Color.accentColor : .gray)
-            .cornerRadius(5)
+            .padding(16)
             .disabled(!isEnabled)
         }
         
     }
 }
 
+#Preview {
+    SaveButton(isEnabled: true, action: {})
+}

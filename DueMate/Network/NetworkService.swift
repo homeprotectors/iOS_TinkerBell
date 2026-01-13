@@ -34,7 +34,11 @@ final class DefaultNetworkService: NetworkService {
     
     func request<T: Decodable>(_ router: BaseRouter) async throws -> T {
         do {
-            print("🌐 NetworkService: 요청 시작")
+            let rawResponse = try await AF.request(router)
+                        .serializingString()
+                        .value
+            print("🥩 raw: \n\(rawResponse)")
+            
             let response = try await AF.request(router)
                 .serializingDecodable(Response<T>.self)
                 .value

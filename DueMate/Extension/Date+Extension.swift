@@ -19,11 +19,18 @@ extension DateFormatter {
         return formatter
     }()
     
-
+    static let yyyyMM: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.timeZone = .current
+        return formatter
+    }()
     
     static let monthTitle: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM"
+        formatter.dateFormat = "MMM yyyy"
         return formatter
     }()
 }
@@ -42,8 +49,19 @@ extension Date {
         return calendar.dateComponents([.day], from: today, to: target).day ?? 0
     }
     
+    func toYearMonth() -> String {
+        return DateFormatter.yyyyMM.string(from: self)
+    }
+    
     func toMonthTitle() -> String {
         return DateFormatter.monthTitle.string(from: self)
+    }
+    
+    func toHomeToday() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd일 E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from:self)
     }
     
     func normalizedDate() -> Date {

@@ -17,6 +17,8 @@ class StockCreateViewModel: ObservableObject {
     @Published var selectedReminder: ReminderOptions = .none
     @Published var isStockCreated = false
     
+    private var originalItem: StockItem?
+    
     var unitDaysString: String {
         get { unitDays == 0 ? "" : "\(unitDays)" }
         set { unitDays = Int(newValue) ?? 0 }
@@ -32,8 +34,6 @@ class StockCreateViewModel: ObservableObject {
         set { currentQuantity = Int(newValue) ?? 0  }
     }
     
-    let unitOptions = ["개", "ml", "L", "kg", "g", "장", "롤", "팩", "병", "캔"]
-    
     var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
         unitDays > 0 &&
@@ -45,46 +45,11 @@ class StockCreateViewModel: ObservableObject {
         return (currentQuantity * unitDays) / unitQuantity
     }
     
-    
-    func createStock() {
-        let body = CreateStockRequest(
-            name: title,
-            updatedQuantity: currentQuantity,
-            unit: unit,
-            unitDays: unitDays,
-            unitQuantity: unitQuantity,
-            reminderDays: selectedReminder.getDays()
-        )
-        
-        // 실제 전송되는 JSON 데이터 로그
-        print("📤 Stock 요청 전송: \(body)")
-        do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            if let jsonData = try? encoder.encode(body),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                print(jsonString)
-            }
-        } catch {
-            print("❌ Stock JSON 인코딩 실패: \(error)")
-        }
-        
-        Task {
-            do {
-                try await DefaultNetworkService.shared.requestWithoutResponse(StockRouter.create(body: body))
-                await MainActor.run {
-                    isStockCreated = true
-                    print("🎉 Stock 생성 완료! \(title)")
-                }
-            }
-            catch {
-                print("🚨 Stock 생성 실패: \(error)")
-                if let nwError = error as? NetworkError {
-                    await ErrorHandler.shared.handle(nwError)
-                } else {
-                    print("💥 Stock ErrorHandling Failed:  \(error.localizedDescription)")
-                }
-            }
-        }
+    func setupForUpdate(_ item: StockItem) {
+        originalItem = item
+        title = item.name
+        unitDays = item.unitDays
+        unitQuantity = item.unitQuantity
+        currentQuantity = item.currentQuantity
     }
 }

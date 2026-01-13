@@ -10,76 +10,131 @@ import SwiftUI
 struct StockMainView: View {
     @StateObject private var viewModel = StockMainViewModel()
     @State private var selectedItem: StockItem? = nil
+    @State private var selectedQuantity: Int = 0
     @State private var isPresentingCreate = false
+    @State private var itemToDelete: StockItem? = nil
+    @State private var itemToUpdate: StockItem? = nil
+    @State private var showDeleteAlert = false
     
     var body: some View {
-        NavigationStack {
-            ZStack{
-                VStack{
-                    headerView
-                    stockListView
+        VStack {
+            headerView
+            stockListView
+        }
+        //create
+        .sheet(isPresented: $isPresentingCreate) {
+            StockCreateView(onCreate: { newItem in
+                withAnimation {
+                    viewModel.createStock(item: newItem)
+                }
+                isPresentingCreate = false
+            })
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
+        }
+        //update
+        .sheet(item: $itemToUpdate) { item in
+            StockCreateView(onCreate: { newItem in
+                withAnimation {
+                    viewModel.updateInfo(id: item.id, item: newItem)
+                }
+                itemToUpdate = nil
+            }, updateItem: item)
+            .presentationDetents([.medium, .large])
+        }
+        //update quantity
+        .sheet(item: $selectedItem) { item in
+            StockQuantityPickerView(
+                quantity: $selectedQuantity,
+                item: item,
+                onSave: { newQuantity in
+                    withAnimation {
+                        viewModel.updateQuantity(
+                            for:item.id,
+                            newQuantity: newQuantity)
+                    }
+                    selectedItem = nil
+                }
+            )
+            .presentationDetents([.height(350)])
+        }
+        .alert("삭제확인", isPresented: $showDeleteAlert) {
+            Button("삭제", role: .destructive) {
+                withAnimation{
+                    viewModel.deleteStock(id: itemToDelete!.id)
                 }
             }
-            .background(Color.clear)
-            .onAppear {
-                viewModel.fetchStocks()
-            }
-            .onChange(of: viewModel.shouldRefresh) {
-                if viewModel.shouldRefresh {
-                    print("main refresh")
-                    viewModel.fetchStocks()
-                    viewModel.shouldRefresh = false
-                }
-            }
+            Button("취소", role: .cancel) { }
+        }
+        message: {
+            Text("\(itemToDelete?.name ?? "")을(를) 정말 삭제하시겠습니까?")
+        }
+        .onAppear {
+            viewModel.fetchStocks()
         }
         .withErrorToast()
     }
     
+    
     private var headerView: some View {
         HStack{
-            Text("TOBUY")
-                .font(.system(size: 50, weight: .heavy))
+            Text("Stocks")
+                .font(.headerTitle)
+                .foregroundColor(.accentColor)
             Spacer()
             Button {
                 isPresentingCreate = true
             }label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundStyle(.black)
+                Image(.plus)
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
-            .padding()
+            
         }
         .background(Color.clear)
-        .padding()
-        .padding(.top, 30)
-        .sheet(isPresented: $isPresentingCreate) {
-            StockCreateView(onComplete: {
-                viewModel.fetchStocks()
-                isPresentingCreate = false
-            })
-            .presentationDetents([.medium, .large])
-        }
+        .padding(.horizontal, 22)
+        .padding(.top, 22)
         
     }
     
     private var stockListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 10) {
-                ForEach(viewModel.items) { item in
-                    NavigationLink {
-                        StockDetailView(item: item)
-                            .environmentObject(viewModel)
-                    }label: {
-                        StockItemView(item: item)
-                        
+        List {
+            ForEach(StockSection.allCases, id: \.self) { section in
+                if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
+                    Section {
+                        ForEach(sectionItems) { item in
+                            StockItemView(item: item, onTapGesture: { tapped in
+                                selectedItem = tapped
+                                selectedQuantity = max(tapped.currentQuantity, 1)
+                            })
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                SwipeActionButtons(
+//                                    item: item,
+                                    onEdit: { itemToUpdate = item },
+                                    onDelete: {
+                                        itemToDelete = item
+                                        showDeleteAlert = true }
+                                )
+                            }
+                            
+                        }
+                    } header: {
+                        SectionHeaderView(title: section.title)
                     }
-                    .buttonStyle(.plain)
-                    
                 }
             }
         }
-        .padding()
+        .listStyle(.plain)
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 0)
+        .environment(\.defaultMinListHeaderHeight, 0)
     }
+    
+    
+    
 }
 
 #Preview {

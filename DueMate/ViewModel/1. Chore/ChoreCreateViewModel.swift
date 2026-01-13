@@ -12,32 +12,75 @@ import Alamofire
 
 
 class ChoreCreateViewModel: ObservableObject {
-    @Published var title: String = ""
-    @Published var cycle: String = ""
-    @Published var startDate: Date = Date()
-    @Published var selectedReminder: ReminderOptions = .none
-    @Published var showPicker = false
     @Published var isChoreCreated = false
- 
+    @Published var title: String = ""
+    @Published var category: String = "living"
+    @Published var isFixedCycle: Bool = false
+    @Published var cycleOption: CycleOption = .simple(.weekly)
     
+    
+    @Published var selectedDays: Set<String> = []
+    @Published var selectedDates: Set<String> = []
+    @Published var selectedMonths: Set<String> = []
+    
+    private var originalItem: ChoreItem?
     
     // Form Validation
     var isFormValid: Bool {
         let isTitleValid = !title.trimmingCharacters(in: .whitespaces).isEmpty
-        let isCycleValid = Int(cycle).map { $0 >= 1 && $0 <= 365 } ?? false
-        return isTitleValid && isCycleValid
+        guard isTitleValid else { return false }
+        
+        if !isFixedCycle {
+            return true
+        }
+        
+        return !selectedDays.isEmpty || !selectedDates.isEmpty || !selectedMonths.isEmpty
+        
+    }
+    
+    func clearSelectedOptions() {
+        selectedDays = []
+        selectedDates = []
+        selectedMonths = []
+    }
+    
+    func setupForUpdate(_ item: ChoreItem){
+        title = item.title
+        category = item.roomCategory
+        cycleOption = item.recurrenceTypeEnum
+        switch cycleOption {
+        case .simple(_):
+            isFixedCycle = false
+        case .fixed(let option):
+            isFixedCycle = true
+            switch option {
+            case .date:
+                selectedDates = Set(item.selectedCycle ?? [])
+            case .day:
+                selectedDays = Set(item.selectedCycle ?? [])
+            case .month:
+                selectedMonths = Set(item.selectedCycle ?? [])
+            }
+        }
     }
     
     // - Network
     func createChore() {
         print("==> Creating Chore")
-        let cycleInt = Int(cycle) ?? 1
-        
+        print("cycleOption: \(cycleOption)")
+        var selectedCycle: Set<String>? = nil
+        if cycleOption == .fixed(.date) {
+            selectedCycle = selectedDates
+        }else if cycleOption == .fixed(.day) {
+            selectedCycle = selectedDays
+        }else if cycleOption == .fixed(.month) {
+            selectedCycle = selectedMonths
+        }
         let body = CreateChoreRequest(
             title: title,
-            cycleDays: cycleInt,
-            startDate: DateFormatter.yyyyMMdd.string(from: startDate),
-            reminderDays: selectedReminder.getDays()
+            recurrenceType: cycleOption.serverData,
+            selectedCycle: selectedCycle.map { Array($0) } ?? nil,
+            roomCategory: category.uppercased()
         )
         
         print(body)
@@ -58,6 +101,10 @@ class ChoreCreateViewModel: ObservableObject {
             }
             
         }
+    }
+    
+    func updateChore() {
+        
     }
     
 }

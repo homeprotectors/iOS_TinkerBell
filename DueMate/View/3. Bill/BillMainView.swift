@@ -9,17 +9,52 @@ import SwiftUI
 
 struct BillMainView: View {
     @StateObject private var viewModel = BillMainViewModel()
+    @State private var isPresentingCreate = false
+    @State private var selectedVariableBill: BillItem? = nil
+    @State private var variableAmount: Double? = nil
+    @State private var itemToDelete: BillItem? = nil
+    @State private var itemToUpdate: BillItem? = nil
+    @State private var showDeleteAlert: Bool = false
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                VStack {
-                    headerView
-                    summaryView
-                    billListView
+        
+        VStack(spacing: 0) {
+            headerView
+            monthPickerView
+            summaryView
+            billListView
+        }
+        .onAppear {
+            viewModel.fetchBills()
+        }
+        //create
+        .sheet(isPresented: $isPresentingCreate) {
+            BillCreateView()
+                .presentationDetents([.large])
+        }
+        //update
+        .sheet(item: $itemToUpdate) { item in
+            BillCreateView(updateItem: item)
+                .presentationDetents([.large])
+        }
+        
+        //variable form
+        .sheet(item: $selectedVariableBill) { bill in
+            VariableBillView(item: bill, month: viewModel.monthInt, onSave: { amount in
+                viewModel.updateVariableBill(id: bill.id, amount: amount)
+            })                .presentationDetents([.height(200)])
+        }
+        .presentationDragIndicator(.hidden)
+        .alert("\(itemToDelete?.name ?? "")", isPresented: $showDeleteAlert) {
+            Button("삭제", role: .destructive) {
+                withAnimation{
+                    viewModel.deleteBill(id: itemToDelete!.id)
                 }
             }
-            .padding()
+            Button("취소", role: .cancel) { }
+        }
+        message: {
+            Text("지난달까지의 기록은 그대로 남아 있어요.\n이번 달부터만 목록에서 제외됩니다.\n 삭제할까요?")
         }
         
         
@@ -27,54 +62,121 @@ struct BillMainView: View {
     
     private var headerView: some View {
         HStack{
-            Text("BILL")
-                .font(.system(size: 50, weight: .heavy))
+            Text("Bills")
+                .font(.headerTitle)
+                .foregroundColor(.accentColor)
             Spacer()
-            NavigationLink {
-                BillCreateView(onComplete:{
-                    viewModel.fetchBills()
-                })
+            Button {
+                isPresentingCreate = true
             }label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundStyle(.black)
+                Image(.plus)
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
-            .padding()
+            
         }
+        .background(Color.clear)
+        .padding(22)
         
-        
+    }
+    
+    private var monthPickerView: some View {
+        HStack {
+            Button(action: {viewModel.changeMonth(by: -1)}) {
+                Image("arrow_left")
+                    .padding(10)
+            }
+            Spacer()
+            Text(viewModel.currentMonth.toMonthTitle())
+                .font(.listTitle)
+            Spacer()
+            Button(action: {viewModel.changeMonth(by: 1)}) {
+                Image("arrow_right")
+                    .padding(10)
+            }
+            .opacity(viewModel.isCurrentMonth ? 0.3 : 1)
+            .disabled(viewModel.isCurrentMonth)
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
     }
     
     private var summaryView: some View {
         HStack {
-            Text(Date().toMonthTitle())
-                .font(.system(size: 30, weight: .heavy))
+            Text("총 고정지출 : \(viewModel.total, format: .currency(code: "KRW"))")
+                .font(.listTitle)
+            
             Spacer()
-            Text("120,000원")
-                .font(.system(size: 20, weight: .medium))
+            differenceText
+                .font(.listSubitem)
         }
-        .padding()
-        .background(Color.normal)
-        .cornerRadius(20)
-        
+        .padding(20)
+        .background(Color.backgroundGray)
+
     }
     
     private var billListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 10) {
-                ForEach(viewModel.items) { item in
-                    NavigationLink {
-                        //
-                    }label: {
-                        BillItemView(item: item, onCheckToggled: {})
+        List {
+            ForEach(viewModel.items) { section in
+                Section {
+                    ForEach(section.list) { item in
+                        BillItemView(item: item, onTapped: {
+                            selectedVariableBill = item
+                        })
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                SwipeActionButtons(
+                                    
+                                    onEdit: { itemToUpdate = item },
+                                    onDelete: {
+                                        itemToDelete = item
+                                        showDeleteAlert = true }
+                                )
+                            }
+                            
                     }
-                    .buttonStyle(.plain)
-                    
+                } header: {
+                    Text(section.header)
+                        .font(.listText)
                 }
+                
             }
+                
+            
         }
-        .padding()
+        .listStyle(.plain)
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 0)
+        .environment(\.defaultMinListHeaderHeight, 0)
     }
+    
+    private var differenceText: Text {
+        
+        let diff = abs(viewModel.difference)
+        var signSymbol = ""
+        var textColor = Color.black
+        
+        if viewModel.difference > 0 {
+            signSymbol = "▲"
+            textColor = Color.dotRed
+        } else if viewModel.difference < 0 {
+            signSymbol = "▼"
+            textColor = Color.dotBlue
+        } else {
+            return Text("지난달과 동일해요!")
+        }
+        
+        
+        
+        let result = Text("지난달에 비해 ").foregroundColor(Color.primaryText) +
+        Text("\(diff.formatted( .currency(code: "KRW"))) \(signSymbol)").foregroundColor(textColor)
+        
+        return result
+    }
+    
+    
 }
 
 #Preview {

@@ -15,6 +15,14 @@ extension String {
         return DateFormatter.yyyyMMdd.date(from: self)
     }
     
+    func toMonthDate() -> String {
+        guard let date = self.toDate() else { return self }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M월 d일"
+        return formatter.string(from: date)
+    }
+    
     func daysFromToday() -> Int? {
         guard let date = self.toDate() else { return nil }
         return date.daysFromToday()

@@ -9,54 +9,57 @@ import SwiftUI
 
 struct StockItemView: View {
     let item: StockItem
-    
-    var daysRemaining: Int {
-        guard let remaining = item.nextDue.daysFromToday() else {
-            return 0
+    let onTapGesture: (StockItem) -> Void
+    var QuantityLevel: String {
+        switch item.remainingDays {
+        case ...3:
+            return "stock_lowest"
+        case 4...7:
+            return "stock_low"
+        case 8...14:
+            return "stock_med"
+        case 15...21:
+            return "stock_high"
+        default:
+            return "stock_full"
         }
-        return remaining
-    }
-    
-    var status: ListStatus {
-        if daysRemaining <= 0 { return .overdue }
-        else if daysRemaining <= 3 { return .warning}
-        else { return .normal }
-    }
-    var style: StockItemStyle {
-        StockItemStyle.style(for: status)
     }
     
     
     var body: some View {
-        VStack{
-            HStack{
-                VStack(alignment:.leading){
-                    HStack{
-                        Text(item.title)
-                            .font(style.titleFont)
-                    }
-                    Text("\(item.unitDays)일에 \(item.unitQuantity)\(item.unit)")
-                }
+        VStack(spacing:0){
+            HStack(spacing: 20){
+                Text(item.name)
+                    .font(.listTitle)
+                    .foregroundColor(Color.primaryText)
                 Spacer()
-                
-                
-                Text("\(item.currentQuantity)")
-                    .font(.system(size: 40, weight: .bold))
-                Text("\(item.unit)")
-                    .font(.system(size: 25, weight: .medium))
+                HStack {
+                    Text("\(item.currentQuantity) 개")
+                        .font(.listSubitem)
+                        .foregroundColor(Color.primaryText)
+                    Image("arrow_double")
+                        .padding(.trailing,10)
+                    Image(QuantityLevel)
+                }
+                .onTapGesture {
+                    onTapGesture(item)
+                }
                 
             }
-            .padding()
+            .padding(.horizontal,22)
+            .padding(.vertical,18)
             
+            Rectangle()
+                .frame(height: 1)        
+                .foregroundColor(.lightGray)
         }
-        .padding(8)
-        .background(style.background)
         .frame(maxWidth: .infinity)
-        .cornerRadius(35)
-        .foregroundColor(style.textColor)
+        .frame(height: 68)
+        
+        
     }
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, title: "휴지", unitDays: 3, unitQuantity: 1, unit: "롤", currentQuantity: 10,nextDue: "2025-06-29", reminderDays: 1))
+    StockItemView(item: StockItem(id: 1, name: "휴지",  unitDays: 3, unitQuantity: 1, currentQuantity: 5, remainingDays: 1), onTapGesture: {_ in print("눌림")})
 }

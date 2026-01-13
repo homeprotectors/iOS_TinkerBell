@@ -12,6 +12,7 @@ enum DialogType {
     case mainViewCompletion
     case historyCompletion
     case historyCancelation
+    case deletionConfirmation(title:String)
     
     var message: String {
         switch self {
@@ -21,12 +22,14 @@ enum DialogType {
             return "이 날짜에 완료 처리할까요?"
         case .historyCancelation:
             return "이 날짜의 기록을 지울까요?"
+        case .deletionConfirmation(let title):
+            return "\(title)을 정말 삭제할까요?"
         }
     }
     
     var confirmText: String {
         switch self {
-        case .historyCancelation:
+        case .historyCancelation, .deletionConfirmation:
             return "삭제"
         default:
             return "확인"

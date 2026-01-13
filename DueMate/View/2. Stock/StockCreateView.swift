@@ -8,29 +8,21 @@
 import SwiftUI
 
 struct StockCreateView: View {
-    var onComplete: (() -> Void)? = nil
+    var onCreate: ((StockItem) -> Void)? = nil
+    var onUpdate: ((StockItem) -> Void)? = nil
+    var updateItem: StockItem? = nil
+    var isEditMode: Bool { updateItem != nil }
+        
     @Namespace private var animation
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = StockCreateViewModel()
-    
-    @State private var showUnitPicker = false
-    @State private var showReminderPicker = false
     @State private var showExpectedText = false
-    
-    private let numberFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .none
-        formatter.minimum = 1
-        formatter.maximum = 999999
-        return formatter
-    }()
+    @State private var showUnsavedChangesAlert = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("물품 추가하기")
-                .font(.system(size: 18, weight: .bold))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.bottom, 28)
+            
+            headerView
             
             // Title
             UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
@@ -58,48 +50,72 @@ struct StockCreateView: View {
             
             
             // Current Amount
-            VStack(alignment: .leading, spacing: 6) {
-                UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
-                    .formLabel("현재 수량")
-                // estimated days
-                Group {
-                    if showExpectedText {
-                        Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .transition(.move(edge: .top).combined(with: .opacity))
-                        
+            if !isEditMode {
+                VStack(alignment: .leading, spacing: 6) {
+                    UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
+                        .formLabel("현재 몇 개가 남아있나요?")
+                    // estimated days
+                    Group {
+                        if showExpectedText {
+                            Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
+                                .font(.listText)
+                                .foregroundColor(.secondary)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
                     }
-                }.animation(.easeInOut(duration: 0.3), value: viewModel.currentQuantityString)
+                }
+                .padding(.horizontal, 16)
+                
+                Divider()
+                    .padding(.vertical, 12)
             }
-            .padding(.horizontal, 16)
-            
-            Divider()
-                .padding(.vertical, 12)
-            
-            
             Spacer()
-            // Save button
-            SaveButton(isEnabled: viewModel.isFormValid, action:{
-                viewModel.createStock()
-            })
-            .padding(12)
         }
-        .padding(.top, 20)
+        .padding(.top, 30)
+        .onAppear {
+            if let updateItem = updateItem {
+                viewModel.setupForUpdate(updateItem)
+            }
+        }
+        .onChange(of: updateItem) {
+            viewModel.setupForUpdate(updateItem!)
+        }
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                showExpectedText = (viewModel.currentQuantity ?? 0) > 0
+                showExpectedText = (viewModel.currentQuantity) > 0
             }
         }
         .onChange(of: viewModel.isStockCreated) {
             if viewModel.isStockCreated {
-                onComplete?()
+                let newStock = StockItem(
+                    id: -Int.random(in: 1000...9999),
+                    name: viewModel.title,
+                    unitDays: viewModel.unitDays,
+                    unitQuantity: viewModel.unitQuantity,
+                    currentQuantity: viewModel.currentQuantity,
+                    remainingDays: viewModel.expectedDaysLeft)
+                onCreate?(newStock)
                 dismiss()
             }
         }
+        
     }
     
-    
+    private var headerView: some View {
+        HStack {
+            Text(isEditMode ? "물품 수정하기" : "물품 추가하기")
+                .font(.system(size: 18, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .overlay(
+            SaveButton(isEnabled: viewModel.isFormValid, action:{
+                viewModel.isStockCreated = true
+            })
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        )
+        .padding(.bottom, 24)
+        
+    }
     
 }
 
