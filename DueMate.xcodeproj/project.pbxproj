@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		81B3499B2DD27E77009A888B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 81B3499A2DD27E77009A888B /* Alamofire */; };
 		81F39CA52EF389560019904C /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 81F39CA42EF389560019904C /* Lottie */; };
+		82A1F0012F10000100000001 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82A1F0042F10000100000001 /* FirebaseCore */; };
+		82A1F0022F10000100000001 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 82A1F0052F10000100000001 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				81B3499B2DD27E77009A888B /* Alamofire in Frameworks */,
+				82A1F0012F10000100000001 /* FirebaseCore in Frameworks */,
+				82A1F0022F10000100000001 /* FirebaseMessaging in Frameworks */,
 				81F39CA52EF389560019904C /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,6 +135,12 @@
 				81B347A42DB70EAD009A888B /* DueMate */,
 			);
 			name = DueMate;
+			packageProductDependencies = (
+				81B3499A2DD27E77009A888B /* Alamofire */,
+				82A1F0042F10000100000001 /* FirebaseCore */,
+				82A1F0052F10000100000001 /* FirebaseMessaging */,
+				81F39CA42EF389560019904C /* Lottie */,
+			);
 			productName = DueMate;
 			productReference = 81B347A22DB70EAD009A888B /* DueMate.app */;
 			productType = "com.apple.product-type.application";
@@ -211,6 +221,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				81B349992DD27E77009A888B /* XCRemoteSwiftPackageReference "Alamofire" */,
+				82A1F0032F10000100000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				81F39CA32EF389560019904C /* XCRemoteSwiftPackageReference "lottie-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -413,13 +424,15 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = DueMate/DueMate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"DueMate/Preview Content\"";
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DueMate/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DueIt;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -430,7 +443,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -446,13 +459,15 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = DueMate/DueMate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"DueMate/Preview Content\"";
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DueMate/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DueIt;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -463,7 +478,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -480,7 +495,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMateTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -499,7 +514,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMateTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -517,6 +532,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMateUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -534,6 +550,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 87NJWJY5W4;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = HomeProtectors.DueMateUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -602,6 +619,14 @@
 				minimumVersion = 4.5.2;
 			};
 		};
+		82A1F0032F10000100000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -614,6 +639,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81F39CA32EF389560019904C /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		82A1F0042F10000100000001 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82A1F0032F10000100000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		82A1F0052F10000100000001 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82A1F0032F10000100000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

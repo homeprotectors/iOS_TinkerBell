@@ -13,6 +13,8 @@ protocol BaseRouter: URLRequestConvertible {
     var path: String { get }
     var method: HTTPMethod { get }
     var body: Encodable? { get }
+    var queryItems: [URLQueryItem] { get }
+    var requiresAuthorization: Bool { get }
 }
 
 
@@ -28,11 +30,35 @@ extension BaseRouter {
         configuration.baseURL
     }
     
+    var requiresAuthorization: Bool {
+        true
+    }
+
+    var queryItems: [URLQueryItem] {
+        []
+    }
+    
     
     func asURLRequest() throws -> URLRequest {
         let config = configuration
-        
-        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+
+        let baseURL = baseURL.appendingPathComponent(path)
+        let resolvedURL: URL
+
+        if queryItems.isEmpty {
+            resolvedURL = baseURL
+        } else {
+            guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+                throw AFError.invalidURL(url: baseURL)
+            }
+            components.queryItems = queryItems
+            guard let url = components.url else {
+                throw AFError.invalidURL(url: baseURL)
+            }
+            resolvedURL = url
+        }
+
+        var request = URLRequest(url: resolvedURL)
         request.method = method
         
         // 기본 헤더 설정
@@ -40,13 +66,12 @@ extension BaseRouter {
             request.setValue(value, forHTTPHeaderField: key)
         }
         
-        // TODO: 서버에서 인증 구현 후 주석 해제
-        // 인증 헤더 추가 (토큰이 있으면)
-        // if let authHeaders = config.authHeaderProvider() {
-        //     authHeaders.forEach { key, value in
-        //         request.setValue(value, forHTTPHeaderField: key)
-        //     }
-        // }
+        // 인증 헤더 추가
+        if requiresAuthorization {
+            config.authorizationHeaderProvider().forEach { key, value in
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+        }
         
         // Body 설정
         if let body = body {
@@ -58,4 +83,3 @@ extension BaseRouter {
     
     
 }
-

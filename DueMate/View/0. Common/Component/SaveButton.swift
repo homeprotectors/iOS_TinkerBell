@@ -10,12 +10,12 @@ import SwiftUI
 struct SaveButton: View {
     let isEnabled: Bool
     let action: () -> Void
-    let isSave: Bool = false
+    var isEditMode: Bool = false
     
     var body: some View {
         HStack {
             Button(action: action) {
-                Text(isSave ? "Save" : "Add")
+                Text(isEditMode ? "Edit" : "Add")
                     .font(.buttonText)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .foregroundColor(isEnabled ? Color.accentColor : .gray)

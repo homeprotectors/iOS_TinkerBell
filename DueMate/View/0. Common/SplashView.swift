@@ -23,5 +23,5 @@ struct SplashView: View {
 }
 
 #Preview {
-    SplashView(onFinish: {print("끝!")})
+    SplashView(onFinish: {})
 }

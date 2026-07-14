@@ -12,7 +12,7 @@ struct UnderlineTextField: View {
     var placeholder: String = "Place holder"
     var keyboardType: UIKeyboardType = .default
     var onTextChange: ((String) -> Void)? = nil
-    var foregroundColor: Color = .gray
+    var foregroundColor: Color = Color.primaryText
     var fontSize: CGFloat = 16
     var fontWeight: Font.Weight = .medium
     var suffix: String? = nil
@@ -22,7 +22,8 @@ struct UnderlineTextField: View {
             HStack(spacing: 0){
                 TextField(placeholder, text: $text)
                     .keyboardType(keyboardType)
-                    .font(.system(size: fontSize, weight: fontWeight))
+                    .font(.listTitleMedium)
+                    
                     .foregroundColor(foregroundColor)
                     .background(Color.clear)
                     .onChange(of: text) {
@@ -30,7 +31,7 @@ struct UnderlineTextField: View {
                     }
                 if let suffix = suffix {
                     Text(suffix)
-                        .font(.system(size: 16))
+                        .font(.listTitleMedium)
                 }
             }
                 

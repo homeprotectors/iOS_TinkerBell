@@ -32,6 +32,7 @@ struct ChoreItemCard: View {
             
         }
         .padding(12)
+        .padding(.vertical,2)
         .background(Color.white)
         .cornerRadius(12)
     }

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class StockCreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var unitDays: Int = 0
@@ -15,9 +16,6 @@ class StockCreateViewModel: ObservableObject {
     @Published var unit: String = "개"
     @Published var currentQuantity: Int = 0
     @Published var selectedReminder: ReminderOptions = .none
-    @Published var isStockCreated = false
-    
-    private var originalItem: StockItem?
     
     var unitDaysString: String {
         get { unitDays == 0 ? "" : "\(unitDays)" }
@@ -46,7 +44,6 @@ class StockCreateViewModel: ObservableObject {
     }
     
     func setupForUpdate(_ item: StockItem) {
-        originalItem = item
         title = item.name
         unitDays = item.unitDays
         unitQuantity = item.unitQuantity

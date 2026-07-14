@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 
+@MainActor
 class TutorialViewModel: ObservableObject {
     @Published var selectedItem: HomeItem?
     @Published var selectedItemFrame: CGRect = .zero
@@ -47,4 +48,3 @@ class TutorialViewModel: ObservableObject {
         }
     }
 }
-

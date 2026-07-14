@@ -7,13 +7,11 @@
 
 import Foundation
 import SwiftUI
-import Alamofire
 
 
-class ChoreMainViewModel: ObservableObject {
+@MainActor
+class ChoreMainViewModel: ObservableObject, ErrorReporting {
     @Published var shouldRefresh: Bool = false
-    @Published var showToast: Bool  = false
-    @Published var error: NetworkError?
     @Published var items: [ChoreItem] = []
     @Published var selectedCategory: String? = nil
     @Published var itemToUpdate: ChoreItem? = nil
@@ -28,71 +26,38 @@ class ChoreMainViewModel: ObservableObject {
             }
         }
     
-    func fetchChores() {
-        Task {
-            do {
-                let itemsResponse: [ChoreItemResponse] = try await network.request(ChoreRouter.getItems)
-                let items = itemsResponse.map { ChoreItem(from: $0) }
-                await MainActor.run {
-                    self.items = items
-                    self.sortByDueDate()
-                }
-                print("🎉 Chore fetch 성공!")
-            } catch {
-                await MainActor.run {
-                    ErrorHandler.shared.handle(error)
-                }
-            }
+    func fetchChores() async {
+        do {
+            let itemsResponse: [ChoreItemResponse] = try await network.request(ChoreRouter.getItems)
+            items = itemsResponse.map { ChoreItem(from: $0) }
+            sortByDueDate()
+        } catch {
+            await reportError(error)
         }
     }
     
-    func completeChore(_ chore: ChoreItem) {
-        Task {
-            do {
-                let body = EditChoreHistoryRequest(
-                    choreId: chore.id,
-                    doneDate: DateFormatter.yyyyMMdd.string(from: Date())
-                )
-                try await network.requestWithoutResponse(ChoreRouter.complete(body: body))
-                await MainActor.run {
-                    fetchChores()
-                }
-                print("🎉 Complete 성공!")
-            } catch {
-                await MainActor.run {
-                    ErrorHandler.shared.handle(error)
-                }
-            }
-        }
-    }
     
     func sortByDueDate() {
         items.sort { $0.nextDue < $1.nextDue }
     }
     
     func deleteChore(id: Int) {
-        //UI update
-        let itemToRemove = items.first { $0.id == id }
+        // Optimistic UI update (snapshot for rollback)
+        let previousItems = items
         items.removeAll { $0.id == id }
         
         Task {
             do {
                 try await network.requestWithoutResponse(ChoreRouter.delete(id: id))
-                await MainActor.run {
-                    self.items.removeAll{ $0.id == id }
-                }
-                print("🎉 \(id) 삭제 성공")
             }
             catch {
                 await MainActor.run {
-                    if let item = itemToRemove {
-                        self.items.append(item)
-                    }
-                    ErrorHandler.shared.handle(error)
+                    self.items = previousItems
+                    self.sortByDueDate()
                 }
+                await reportError(error)
             }
         }
         
     }
 }
-

@@ -59,6 +59,7 @@ struct TutorialView: View {
     @State private var currentStep: TutorialStep = .welcome
     @State private var showText = false
     @State private var isHighlighted = false
+    @State private var tutorialItemFrame: CGRect = .zero
     
     var body: some View {
         ZStack {
@@ -75,6 +76,11 @@ struct TutorialView: View {
         }
         .onAppear { showTutorialText() }
         .onChange(of: currentStep) { handleStepChange() }
+        .onPreferenceChange(HomeItemFramePreferenceKey.self) { frames in
+            if let frame = frames[viewModel.firstItem.id], frame.width > 0, frame.height > 0 {
+                tutorialItemFrame = frame
+            }
+        }
     }
 }
 
@@ -96,7 +102,7 @@ private extension TutorialView {
     
     var header: some View {
         HStack {
-            Image("logo")
+            Image("Logo")
                 .resizable()
                 .frame(width: 24, height: 24)
                 .padding(.vertical, 20)
@@ -112,7 +118,7 @@ private extension TutorialView {
             if showText, let message = currentStep.message {
                 VStack {
                     Text(message)
-                        .font(.system(size: 18, weight: .medium))
+                        .font(.sheetTitle)
                         .multilineTextAlignment(.center)
                     
                     if currentStep == .finalMessage {
@@ -149,9 +155,10 @@ private extension TutorialView {
     var tutorialListView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if currentStep.rawValue < TutorialStep.completionMessage.rawValue {
-                HomeItemView(item: viewModel.firstItem, onLongPress: { frame in
+                HomeItemView(item: viewModel.firstItem, onLongPress: {
                     if currentStep == .showArrow {
-                        viewModel.selectItem(viewModel.firstItem, frame: frame)
+                        guard tutorialItemFrame != .zero else { return }
+                        viewModel.selectItem(viewModel.firstItem, frame: tutorialItemFrame)
                         moveStep()
                     }
                 })
@@ -259,4 +266,3 @@ struct TutorialFocusView: View {
 #Preview {
     TutorialView()
 }
-

@@ -13,20 +13,20 @@ struct FocusView: View {
     let onDragChanged: (CGSize) -> Void
     let onDragEnded: (CGSize) -> Void
     let onDismiss: () -> Void
-    @State private var isExpanded: Bool = false
+    private let dragDampingFactor: CGFloat = 0.65
     
     var body: some View {
         ZStack {
             Group {
                 if item.shoppingContainer {
-                    HomeExpandableItemView(item: item, shoppingList: item.shoppingItems ?? [], onLongPress: { _ in  }, isExpanded: $isExpanded)
+                    HomeExpandableItemView(item: item, shoppingList: item.shoppingItems ?? [])
                     
                 } else {
                     HomeItemView(item: item)
                 }
             }
             .padding()
-            .offset(y: dragOffset.height)
+            .offset(y: dragOffset.height * dragDampingFactor)
             .gesture (
                 DragGesture()
                     .onChanged { value in

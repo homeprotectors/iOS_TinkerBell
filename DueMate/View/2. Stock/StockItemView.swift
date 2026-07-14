@@ -54,12 +54,13 @@ struct StockItemView: View {
                 .foregroundColor(.lightGray)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 68)
+        .background(Color.white)
+       
         
         
     }
 }
 
 #Preview {
-    StockItemView(item: StockItem(id: 1, name: "휴지",  unitDays: 3, unitQuantity: 1, currentQuantity: 5, remainingDays: 1), onTapGesture: {_ in print("눌림")})
+    StockItemView(item: StockItem(id: 1, name: "휴지",  unitDays: 3, unitQuantity: 1, currentQuantity: 5, remainingDays: 1), onTapGesture: { _ in })
 }

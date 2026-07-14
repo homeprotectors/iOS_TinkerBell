@@ -38,7 +38,7 @@ struct ErrorToastModifier: ViewModifier {
                                 .onAppear {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                         withAnimation {
-                                            errorHandler.showToast = false
+                                            errorHandler.dismissToast()
                                         }
                                     }
                                 }

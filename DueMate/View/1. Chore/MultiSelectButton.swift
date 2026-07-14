@@ -20,9 +20,12 @@ struct MultiSelectButton<T: DetailCycleOption>: View {
             VStack {
                 Text(option.display)
                     .font(.buttonText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .allowsTightening(true)
                     .foregroundColor(Color.primaryText)
                     .padding(.vertical, 12)
-                    .padding(.horizontal, 12)       
+                    .padding(.horizontal, 12)
             }
             
         }

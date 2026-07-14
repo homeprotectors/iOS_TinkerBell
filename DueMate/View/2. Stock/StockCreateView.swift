@@ -8,29 +8,34 @@
 import SwiftUI
 
 struct StockCreateView: View {
-    var onCreate: ((StockItem) -> Void)? = nil
-    var onUpdate: ((StockItem) -> Void)? = nil
+    private enum FocusField {
+        case title
+    }
+    
+    var onSave: ((StockDraft) async -> Bool)? = nil
     var updateItem: StockItem? = nil
     var isEditMode: Bool { updateItem != nil }
-        
-    @Namespace private var animation
+
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = StockCreateViewModel()
     @State private var showExpectedText = false
-    @State private var showUnsavedChangesAlert = false
+    @State private var isSubmitting = false
+    @FocusState private var focusedField: FocusField?
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(spacing: 0) {
             
             headerView
             
             // Title
-            UnderlineTextField(text: $viewModel.title, placeholder: "ex. 휴지")
-                .formLabel("이름")
-                .padding(.horizontal, 16)
-                
+            TextField("물품", text: $viewModel.title)
+                .textFieldStyle(.plain)
+                .font(.listTitleMedium)
+                .padding(16)
+                .focused($focusedField, equals: .title)
+
             Divider()
-                .padding(.vertical, 12)
+                
             
                 
             
@@ -38,83 +43,110 @@ struct StockCreateView: View {
             HStack {
                 UnderlineTextField(text: $viewModel.unitDaysString, placeholder: "주기 (1 - 365)", keyboardType: .numberPad)
                 Text("일에")
+                    .font(.listTitleMedium)
                     .padding(.trailing,20)
                 UnderlineTextField(text: $viewModel.unitQuantityString, placeholder: "수량", keyboardType: .numberPad, suffix: "개")
                 
             }
             .formLabel("얼마나 자주 쓰나요?")
-            .padding(.horizontal, 16)
+            .padding(16)
             
             Divider()
-                .padding(.vertical, 12)
+                
             
             
             // Current Amount
             if !isEditMode {
                 VStack(alignment: .leading, spacing: 6) {
-                    UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량", suffix: viewModel.unit)
+                    UnderlineTextField(text: $viewModel.currentQuantityString, placeholder: "수량",keyboardType: .numberPad, suffix: viewModel.unit)
                         .formLabel("현재 몇 개가 남아있나요?")
                     // estimated days
                     Group {
                         if showExpectedText {
                             Text("현재 약 \(viewModel.expectedDaysLeft)일치가 남았어요!")
                                 .font(.listText)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.accentColor)
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(16)
                 
                 Divider()
-                    .padding(.vertical, 12)
+                    
             }
             Spacer()
         }
-        .padding(.top, 30)
         .onAppear {
             if let updateItem = updateItem {
                 viewModel.setupForUpdate(updateItem)
+                focusedField = nil
+            } else {
+                DispatchQueue.main.async {
+                    focusedField = .title
+                }
             }
         }
         .onChange(of: updateItem) {
-            viewModel.setupForUpdate(updateItem!)
+            guard let updateItem else { return }
+            viewModel.setupForUpdate(updateItem)
+            focusedField = nil
         }
         .onChange(of: viewModel.currentQuantity) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 showExpectedText = (viewModel.currentQuantity) > 0
             }
         }
-        .onChange(of: viewModel.isStockCreated) {
-            if viewModel.isStockCreated {
-                let newStock = StockItem(
-                    id: -Int.random(in: 1000...9999),
-                    name: viewModel.title,
-                    unitDays: viewModel.unitDays,
-                    unitQuantity: viewModel.unitQuantity,
-                    currentQuantity: viewModel.currentQuantity,
-                    remainingDays: viewModel.expectedDaysLeft)
-                onCreate?(newStock)
-                dismiss()
-            }
-        }
-        
     }
     
     private var headerView: some View {
         HStack {
-            Text(isEditMode ? "물품 수정하기" : "물품 추가하기")
-                .font(.system(size: 18, weight: .bold))
-                .frame(maxWidth: .infinity, alignment: .center)
+            Spacer()
+            Text((updateItem != nil) ? "물품 수정" :"새 물품 추가")
+                .font(.sheetTitle)
+            Spacer()
         }
         .overlay(
-            SaveButton(isEnabled: viewModel.isFormValid, action:{
-                viewModel.isStockCreated = true
-            })
+            SaveButton(isEnabled: viewModel.isFormValid && !isSubmitting, action:{
+                save()
+            },isEditMode: isEditMode)
             .frame(maxWidth: .infinity, alignment: .trailing)
         )
+        .padding(.top, 30)
         .padding(.bottom, 24)
         
+    }
+    
+    private func dismissWithKeyboardCleanup() {
+        focusedField = nil
+        DispatchQueue.main.async {
+            dismiss()
+        }
+    }
+
+    private func save() {
+        guard !isSubmitting else { return }
+        focusedField = nil
+        isSubmitting = true
+        
+        let draft = StockDraft(
+            name: viewModel.title,
+            unitDays: viewModel.unitDays,
+            unitQuantity: viewModel.unitQuantity,
+            currentQuantity: viewModel.currentQuantity
+        )
+        
+        Task {
+            let didSave = await onSave?(draft) ?? false
+            
+            await MainActor.run {
+                if didSave {
+                    dismissWithKeyboardCleanup()
+                } else {
+                    isSubmitting = false
+                }
+            }
+        }
     }
     
 }

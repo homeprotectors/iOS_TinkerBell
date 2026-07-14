@@ -10,47 +10,26 @@ import SwiftUI
 struct HomeExpandableItemView: View {
     let item: HomeItem
     let shoppingList: [ShoppingItem]
-    var onLongPress: (CGRect) -> Void
-    @Binding var isExpanded: Bool 
-    @State var currentFrame: CGRect = .zero
+    var onDetailItemTap: ((ShoppingItem) -> Void)? = nil
+    @State private var isExpanded = false
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             baseLayout
-            if isExpanded {
-                expandable
-                    .transition(.opacity)
-            }
             
-        }
-        .background(
-            GeometryReader { geometry in
-                Color.clear
-                    .onAppear {
-                        let frame = geometry.frame(in: .global)
-                        if frame.width > 0 && frame.height > 0 {
-                            print(currentFrame)
-                            currentFrame = frame
-                        }
-                    }
-                    .onChange(of: geometry.frame(in: .global)) {
-                        let frame = geometry.frame(in: .global)
-                        if frame.width > 0 && frame.height > 0 {
-                            currentFrame = frame
-                        }
-                    }
+            if isExpanded {
+                detailContainer
+                    .transition(
+                        .opacity.combined(with: .scale(scale: 0.97, anchor: .top))
+                    )
             }
-        )
-        
-        .padding(12)
+        }
         .background(Color.white)
-        .cornerRadius(12)
-        
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     
     private var baseLayout: some View {
         HStack(spacing: 12) {
-            
             HStack(spacing: 12) {
                 Image("ic_grocery")
                     .padding(11)
@@ -66,56 +45,63 @@ struct HomeExpandableItemView: View {
                     .font(.listText)
             }
             .contentShape(Rectangle())
-            .simultaneousGesture(
-                LongPressGesture(minimumDuration: 0.5)
-                    .onEnded { _ in
-                        onLongPress(currentFrame)
-                    }
-            )
+            .onTapGesture {
+                toggleExpanded()
+            }
+            
             
             Button(action: {
-                withAnimation {
-                    isExpanded.toggle()
-                }
-                
+                toggleExpanded()
             }) {
                 Image(isExpanded ? "arrow_up" : "arrow_down")
             }
             .buttonStyle(.plain)
             .contentShape(Rectangle())
+        }
+        .padding(12)
+    }
+    
+    private var detailContainer: some View {
+        VStack(spacing: 0) {
+            detailRows
+                .padding(.horizontal, 12)
+        }
+        
+    }
+    
+    private var detailRows: some View {
+        VStack(spacing: 0) {
+
+            ForEach(shoppingList) { shoppingItem in
+                if shoppingItem.id != shoppingList.first?.id {
+                    Divider()
+                }
+                
+                HStack {
+                    Text(shoppingItem.name)
+                        .font(.listSubitem)
+                    
+                    Spacer()
+                    
+                    Text("\(shoppingItem.currentQuantity)개")
+                        .font(.listText)
+                        
+                    
+                    Image("stock_lowest")
+                        .padding(.leading, 5)
+                }
+                .padding(12)
+                .onTapGesture {
+                    onDetailItemTap?(shoppingItem)
+                }
+            }
             
         }
     }
     
-    private var expandable: some View {
-        VStack {
-            ForEach(shoppingList) { item in
-                Divider()
-                HStack {
-                    Text(item.name)
-                        .font(.listSubitem)
-                    
-                    Spacer()
-                    Text("현재 수량 \(item.currentQuantity)")
-                        .font(.listText)
-                    Image("stock_lowest")
-                    
-                }
-                .padding(8)
-            }
+    private func toggleExpanded() {
+        withAnimation(.easeInOut(duration: 0.22)) {
+            isExpanded.toggle()
         }
-        .opacity(isExpanded ? 1 : 0)
-        .clipped()
-
     }
 }
-
-//#Preview {
-//    HomeExpandableItemView(item: HomeItem(id: 1, title: "장보기", recurrenceType: nil, selectedCycle: nil, roomCategory: nil, nextDue: nil, shoppingContainer: true, shoppingItems: [
-//        ShoppingItem(id: 1, name: "식빵", currentQuantity: 2, remainingDays: 1),
-//        ShoppingItem(id: 2, name: "계란", currentQuantity: 2, remainingDays: 1),
-//    ]), shoppingList: [
-//        ShoppingItem(id: 1, name: "식빵", currentQuantity: 2, remainingDays: 1),
-//        ShoppingItem(id: 2, name: "계란", currentQuantity: 2, remainingDays: 1),
-//    ], onLongPress: {_ in }, isExpanded: )
-//}
