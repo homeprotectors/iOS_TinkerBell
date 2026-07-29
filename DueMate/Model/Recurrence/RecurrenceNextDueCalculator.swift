@@ -51,7 +51,7 @@ enum RecurrenceNextDueCalculator {
         guard !days.isEmpty else { return nil }
         
         let selectedWeekdays = Set(days.map(weekdayValue(for:)))
-        for offset in 0...14 {
+        for offset in 1...14 {
             guard let candidate = calendar.date(byAdding: .day, value: offset, to: referenceDay) else {
                 continue
             }
@@ -82,7 +82,7 @@ enum RecurrenceNextDueCalculator {
                     continue
                 }
                 
-                if candidate >= referenceDay {
+                if candidate > referenceDay {
                     return candidate
                 }
             }
@@ -112,7 +112,7 @@ enum RecurrenceNextDueCalculator {
                 let components = DateComponents(year: year, month: month, day: clampedDay)
                 
                 guard let candidate = calendar.date(from: components),
-                      candidate >= referenceDay else {
+                      candidate > referenceDay else {
                     continue
                 }
                 
