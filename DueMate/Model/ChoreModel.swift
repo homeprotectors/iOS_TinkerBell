@@ -19,12 +19,13 @@ struct CreateChoreRequest: Codable {
 
 struct UpdateChoreRequest: Codable {
     let title: String
-    let cycleDays: Int
-    let reminderDays: Int?
+    let recurrenceType: String
+    let selectedCycle: [String]?
+    let roomCategory: String
 }
 
 //Complete Chore Body
-struct EditChoreHistoryRequest: Codable {
+struct CompleteChoreRequest: Codable {
     let choreId: Int
     let doneDate: String    // "yyyy-MM-dd"
 }
@@ -33,7 +34,7 @@ struct EditChoreHistoryRequest: Codable {
 // MARK: HOME
 
 struct HomeSection: Codable, Identifiable {
-    let id = UUID()
+    var id: String { title }
     let title: String
     let list: [HomeItem]
 }
@@ -65,6 +66,17 @@ struct HomeItem: Codable, Identifiable {
     let nextDue: String?
     let shoppingContainer: Bool
     let shoppingItems: [ShoppingItem]?
+    
+    var recurrenceRule: RecurrenceRule? {
+        guard let recurrenceType else { return nil }
+        return RecurrenceMapper.fromDTO(
+            RecurrenceDTO(recurrenceType: recurrenceType, selectedCycle: selectedCycle)
+        )
+    }
+    
+    var recurrenceDescription: String {
+        RecurrenceFormatter.displayText(recurrenceType: recurrenceType, selectedCycle: selectedCycle)
+    }
 }
 
 struct ShoppingItem: Codable, Identifiable {
@@ -103,31 +115,3 @@ struct ChoreItemResponse: Codable, Identifiable {
     let roomCategory: String
     let nextDue: String
 }
-
-// Responses for updating Chore History : not using at the moment
-struct CompleteChoreHistoryResponse: Codable {
-    let id: Int
-    let newNextDue: String
-    let newReminderDate: String
-    let doneBy: Int
-}
-
-struct UndoChoreHistoryResponse: Codable {
-    let choreId: Int
-    let nextDue: String
-    let reminderDate: String
-    let lastDone: String
-}
-
-struct GetChoreHistoryResponse: Codable {
-    let choreId: Int
-    let nextDue: String
-    let history: [ChoreHistory]
-}
-
-struct ChoreHistory: Codable, Equatable {
-    let id: Int
-    let doneDate: String
-    let doneBy: Int
-}
-

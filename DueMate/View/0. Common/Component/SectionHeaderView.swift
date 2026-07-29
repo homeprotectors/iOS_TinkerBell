@@ -14,10 +14,11 @@ struct SectionHeaderView: View {
         HStack {
             Text(title)
                 .font(.listText)
+                .foregroundStyle(.primaryText)
             Spacer()
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 5)
+        .padding(.horizontal, 22)
+        .padding(.bottom,5)
         .listRowInsets(EdgeInsets())
         .background(Color.white)
     }

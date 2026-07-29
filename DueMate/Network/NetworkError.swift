@@ -15,6 +15,7 @@ protocol CustomError: LocalizedError {
 enum NetworkError: CustomError {
     
     case network(String, original: Error? = nil)
+    case unauthorized(String, original: Error? = nil)
     case server(String, original: Error? = nil)
     case data(String, original: Error? = nil)
     case timeout(original: Error? = nil)
@@ -30,6 +31,9 @@ enum NetworkError: CustomError {
             } else {
                 return "네트워크 연결이 불안정합니다.\n잠시 후 다시 시도해주세요."
             }
+        
+        case .unauthorized:
+            return "세션이 만료되었습니다.\n다시 시도해주세요."
             
         case .server(let message, _):
             // 서버 메시지는 로그에만 출력하고, 사용자에게는 통일된 메시지 표시
@@ -51,6 +55,7 @@ enum NetworkError: CustomError {
     var originalError: Error? {
         switch self {
         case .network(_, let err): return err
+        case .unauthorized(_, let err): return err
         case .server(_, let err): return err
         case .data(_, let err): return err
         case .timeout(let err): return err

@@ -10,42 +10,32 @@ import SwiftUI
 
 
 struct ChoreCreateView: View {
-    var onCreate: (() -> Void)? = nil
-    var onUpdate: (() -> Void)? = nil
+    private enum FocusField {
+        case title
+    }
+    
+    var onSave: ((ChoreDraft) async -> Bool)? = nil
     var updateItem: ChoreItem? = nil
-    
-    
-    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChoreCreateViewModel()
-    
+    @State private var isSubmitting = false
+    @Environment(\.dismiss) private var dismiss
+    @State var selectedCycleType: CycleOption = .simple(.weekly)
+    @FocusState private var focusedField: FocusField?
     
     
     var body: some View {
         
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Text((updateItem != nil) ? "집안일 수정하기" :"집안일 추가하기")
-                    .font(.sheetTitle)
-                Spacer()
-            }
-            .overlay(
-                SaveButton(isEnabled: viewModel.isFormValid, action:{
-                    if updateItem == nil {
-                        viewModel.createChore()
-                    }else {
-                        viewModel.updateChore()
-                    }
-                    
-                })
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            )
-            .padding(.top, 30)
             
+            headerView
             
             // Title
-            UnderlineTextField(text: $viewModel.title, placeholder: "집안일")
+            TextField("집안일", text: $viewModel.title)
+                .textFieldStyle(.plain)
                 .padding(16)
+                .font(.listTitleMedium)
+                .focused($focusedField, equals: .title)
+            
             
             Divider()
             
@@ -55,42 +45,55 @@ struct ChoreCreateView: View {
             
             cyclePickerView
             
-            //Save button
+        
             Spacer()
             
         }
         .onAppear {
             if let updateItem = updateItem {
                 viewModel.setupForUpdate(updateItem)
+                focusedField = nil
+            } else {
+                DispatchQueue.main.async {
+                    focusedField = .title
+                }
             }
         }
         .onChange(of: updateItem) {
             if let updateItem = updateItem {
                 viewModel.setupForUpdate(updateItem)
-            }
-        }
-        .onChange(of: viewModel.cycleOption) {
-            // 업데이트 모드가 아닐 때만 clear (사용자가 직접 변경한 경우)
-            if !viewModel.isUpdatingMode {
-                viewModel.clearSelectedOptions()
-            }
-        }
-        .onChange(of: viewModel.isChoreCreated) {
-            if viewModel.isChoreCreated {
-                onCreate?()
-                dismiss()
+                focusedField = nil
             }
         }
         
         .withErrorToast()
     }
     
+    private var headerView: some View {
+        HStack {
+            Spacer()
+            Text((updateItem != nil) ? "집안일 수정" :"새 집안일 추가")
+                .font(.sheetTitle)
+            Spacer()
+        }
+        .overlay(
+            SaveButton(isEnabled: viewModel.isFormValid && !isSubmitting, action:{
+                focusedField = nil
+                save()
+            },isEditMode: (updateItem != nil))
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        )
+        .padding(.top, 30)
+        .padding(.bottom,10)
+    }
+    
     private var categoryPickerView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing:24) {
+                HStack(spacing:20) {
                     ForEach(Constants.categoryOptions) { option in
                         CategoryRadioButton(option: option, isSelected: viewModel.category == option.value, onTap: {
+                            dismissTitleFocus()
                             viewModel.category = option.value
                         })
                         .id(option.value)
@@ -120,18 +123,17 @@ struct ChoreCreateView: View {
                     .font(.formlabel)
                 Spacer()
                 
-                Toggle(isOn: $viewModel.isFixedCycle, label: { Text("고정 일정")})
-                    .toggleStyle(SquareToggleStyle())
-                    .onChange(of: viewModel.isFixedCycle) {
-                        // 업데이트 모드가 아닐 때만 cycleOption 변경 (사용자가 직접 토글한 경우)
-                        if !viewModel.isUpdatingMode {
-                            if viewModel.isFixedCycle {
-                                viewModel.cycleOption = CycleOption.fixed(.day)
-                            } else {
-                                viewModel.cycleOption = CycleOption.simple(.weekly)
-                            }
+                Toggle(
+                    isOn: Binding(
+                        get: { viewModel.isFixedCycle },
+                        set: {
+                            dismissTitleFocus()
+                            viewModel.setIsFixedCycle($0)
                         }
-                    }
+                    ),
+                    label: { Text("고정 일정") }
+                )
+                .toggleStyle(SquareToggleStyle())
             }
             // main option
             cycleTypeSection
@@ -152,13 +154,15 @@ struct ChoreCreateView: View {
             if viewModel.isFixedCycle {
                 ForEach(FixedCycleOption.allCases, id:\.self) { option in
                     CycleOptionRadioButtons(title: option.display, isSelected: viewModel.cycleOption == .fixed(option), onTap: {
-                        viewModel.cycleOption = .fixed(option)
+                        dismissTitleFocus()
+                        viewModel.setCycleOption(.fixed(option))
                     })
                 }
             } else {
                 ForEach(SimpleCycleOption.allCases, id:\.self) { option in
                     CycleOptionRadioButtons(title: option.display, isSelected: viewModel.cycleOption == .simple(option), onTap: {
-                        viewModel.cycleOption = .simple(option)
+                        dismissTitleFocus()
+                        viewModel.setCycleOption(.simple(option))
                     })
                 }
             }
@@ -176,14 +180,10 @@ struct ChoreCreateView: View {
                         MultiSelectButton(
                             option: day,
                             isSelected: Binding(
-                                get: { viewModel.selectedDays.contains(day.serverData)},
+                                get: { viewModel.isDaySelected(day) },
                                 set: { _ in
-                                    if viewModel.selectedDays.contains(day.serverData) {
-                                        viewModel.selectedDays.remove(day.serverData)
-                                    } else {
-                                        viewModel.selectedDays.insert(day.serverData)
-                                    }
-                                    print(viewModel.selectedDays)
+                                    dismissTitleFocus()
+                                    viewModel.toggleDay(day)
                                 }
                             )
                         )
@@ -198,12 +198,10 @@ struct ChoreCreateView: View {
                         MultiSelectButton(
                             option: date,
                             isSelected: Binding(
-                                get: { viewModel.selectedDates.contains(date.serverData)},
+                                get: { viewModel.isDateSelected(date) },
                                 set: { _ in
-                                    if viewModel.selectedDates.contains(date.serverData) {
-                                        viewModel.selectedDates.remove(date.serverData)
-                                    } else { viewModel.selectedDates.insert(date.serverData)}
-                                    print(viewModel.selectedDates)
+                                    dismissTitleFocus()
+                                    viewModel.toggleDate(date)
                                 })
                         )
                     }
@@ -211,14 +209,10 @@ struct ChoreCreateView: View {
                 MultiSelectButton(
                     option: DateOptions.endOfMonth,
                     isSelected: Binding(
-                        get: { viewModel.selectedDates.contains("END") },
+                        get: { viewModel.isDateSelected(.endOfMonth) },
                         set: { _ in
-                            if viewModel.selectedDates.contains("END") {
-                                viewModel.selectedDates.remove("END")
-                            } else {
-                                viewModel.selectedDates.insert("END")
-                            }
-                            print(viewModel.selectedDates)
+                            dismissTitleFocus()
+                            viewModel.toggleDate(.endOfMonth)
                         }
                     )
                 )
@@ -229,14 +223,10 @@ struct ChoreCreateView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6)) {
                     ForEach(MonthOptions.allCases, id:\.self) { month in
                         MultiSelectButton(option: month, isSelected: Binding(
-                            get: { viewModel.selectedMonths.contains(month.serverData) },
+                            get: { viewModel.isMonthSelected(month) },
                             set: { _ in
-                                if viewModel.selectedMonths.contains(month.serverData) {
-                                    viewModel.selectedMonths.remove(month.serverData)
-                                } else {
-                                    viewModel.selectedMonths.insert(month.serverData)
-                                }
-                                print(viewModel.selectedMonths)
+                                dismissTitleFocus()
+                                viewModel.toggleMonth(month)
                             })
                         )
                     }
@@ -246,6 +236,37 @@ struct ChoreCreateView: View {
             }
         }
         
+    }
+    
+    private func dismissWithKeyboardCleanup() {
+        focusedField = nil
+        DispatchQueue.main.async {
+            dismiss()
+        }
+    }
+    
+    private func save() {
+        guard !isSubmitting else { return }
+        guard let draft = viewModel.currentDraft else { return }
+        
+        focusedField = nil
+        isSubmitting = true
+        
+        Task {
+            let didSave = await onSave?(draft) ?? false
+            
+            await MainActor.run {
+                if didSave {
+                    dismissWithKeyboardCleanup()
+                } else {
+                    isSubmitting = false
+                }
+            }
+        }
+    }
+
+    private func dismissTitleFocus() {
+        focusedField = nil
     }
 }
 

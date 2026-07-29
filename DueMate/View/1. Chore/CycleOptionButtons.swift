@@ -18,8 +18,8 @@ struct CycleOptionRadioButtons: View {
                 .font(.buttonText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical,10)
-                .foregroundColor(Color.primaryText)
-                .background( isSelected ? Color.backgroundBlue : .white)
+                .foregroundColor( isSelected ? .white : Color.primaryText)
+                .background( isSelected ? Color.accentColor : .white)
                 .cornerRadius(4)
         }
         .overlay(

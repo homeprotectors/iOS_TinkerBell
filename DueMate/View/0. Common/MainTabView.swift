@@ -8,45 +8,50 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var selectedTab: Int = 0
-   
+    @EnvironmentObject private var navigationState: AppNavigationState
+    @StateObject private var homeStore = HomeStore.shared
+    @StateObject private var choreStore = ChoreStore.shared
+    @StateObject private var stockStore = StockStore.shared
+    
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $navigationState.selectedTab) {
             NavigationStack {
-                HomeView()
+                HomeView(selectedTab: $navigationState.selectedTab)
             }
             .tabItem {
-                Image(selectedTab == 0 ? "ic_home" : "ic_home_off")
+                Label("Home", image: navigationState.selectedTab == .home ? "ic_home" : "ic_home_off")
+                    .labelStyle(.iconOnly)
             }
-            .tag(0)
+            .tag(AppTab.home)
             
             NavigationStack {
                 ChoreMainView()
             }
             .tabItem {
-                Image(selectedTab == 1 ? "ic_chore" : "ic_chore_off")
+                Label("Chores", image: navigationState.selectedTab == .chores ? "ic_chore" : "ic_chore_off")
+                    .labelStyle(.iconOnly)
             }
-            .tag(1)
+            .tag(AppTab.chores)
             
             NavigationStack {
                 StockMainView()
             }
             .tabItem {
-                Image(selectedTab == 2 ? "ic_stock" : "ic_stock_off")
+                Label("Stocks", image: navigationState.selectedTab == .stocks ? "ic_stock" : "ic_stock_off")
+                    .labelStyle(.iconOnly)
             }
-            .tag(2)
-            
-            NavigationStack {
-                BillMainView()
-            }
-            .tabItem {
-                Image(selectedTab == 3 ? "ic_bill" : "ic_bill_off")
-            }
-            .tag(3)
+            .tag(AppTab.stocks)
         }
+        .environmentObject(homeStore)
+        .environmentObject(choreStore)
+        .environmentObject(stockStore)
     }
 }
 
 #Preview {
     MainTabView()
+        .environmentObject(AppNavigationState())
+        .environmentObject(HomeStore.shared)
+        .environmentObject(ChoreStore.shared)
+        .environmentObject(StockStore.shared)
 }

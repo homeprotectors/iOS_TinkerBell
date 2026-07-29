@@ -7,9 +7,16 @@
 
 import SwiftUI
 
-struct HighlightOverlayView: View {
+enum BubblePosition {
+    case top
+    case bottom
+    case center
+}
 
+struct HighlightOverlayView: View {
+    var highlightFrame: CGRect? = nil
     let message: String
+    var bubblePosition: BubblePosition = .center
     let onDismiss: () -> Void
 
     
@@ -22,10 +29,19 @@ struct HighlightOverlayView: View {
             ZStack {
                 overlayColor
                     .ignoresSafeArea()
+                
+                // 하이라이트 영역이 있으면 해당 영역을 제외한 오버레이
+                if let frame = highlightFrame {
+                    overlayWithHighlight(frame: frame, geometry: geometry)
+                } else {
+                    overlayColor
+                        .ignoresSafeArea()
+                }
+                
                 messageBubble
                     .position(
                         x: geometry.size.width / 2,
-                        y: geometry.size.height * 0.4
+                        y: bubbleYPosition(in: geometry)
                     )
             }
             .contentShape(Rectangle())
@@ -33,6 +49,36 @@ struct HighlightOverlayView: View {
                 onDismiss()
             }
         }
+    }
+    
+    private func bubbleYPosition(in geometry: GeometryProxy) -> CGFloat {
+        switch bubblePosition {
+        case .top:
+            return geometry.size.height * 0.25
+        case .bottom:
+            if let frame = highlightFrame {
+                return frame.maxY + 100
+            }
+            return geometry.size.height * 0.75
+        case .center:
+            return geometry.size.height * 0.4
+        }
+    }
+    
+    @ViewBuilder
+    private func overlayWithHighlight(frame: CGRect, geometry: GeometryProxy) -> some View {
+        ZStack {
+            overlayColor
+                .ignoresSafeArea()
+            
+            // 하이라이트 영역을 투명하게 만들기
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: frame.width + 20, height: frame.height + 20)
+                .position(x: frame.midX, y: frame.midY)
+                .blendMode(.destinationOut)
+        }
+        .compositingGroup()
     }
     
     private var messageBubble: some View {

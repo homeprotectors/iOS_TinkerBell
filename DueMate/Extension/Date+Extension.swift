@@ -14,7 +14,7 @@ extension DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0) //fixed timezone
+        // Date-only values in this app should follow the user's local day boundary.
         formatter.timeZone = .current
         return formatter
     }()
@@ -23,7 +23,6 @@ extension DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM"
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.timeZone = .current
         return formatter
     }()
@@ -31,6 +30,24 @@ extension DateFormatter {
     static let monthTitle: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM yyyy"
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
+        return formatter
+    }()
+    
+    static let homeToday: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd일 E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
+        return formatter
+    }()
+    
+    static let monthDayKorean: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일"
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = .current
         return formatter
     }()
 }
@@ -58,10 +75,7 @@ extension Date {
     }
     
     func toHomeToday() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd일 E"
-        formatter.locale = Locale(identifier: "ko_KR")
-        return formatter.string(from:self)
+        return DateFormatter.homeToday.string(from: self)
     }
     
     func normalizedDate() -> Date {
@@ -69,4 +83,3 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
 }
-

@@ -33,6 +33,18 @@ struct UpdateQuantityRequest: Codable {
     let updatedQuantity: Int
 }
 
+struct StockDraft: Equatable {
+    let name: String
+    let unitDays: Int
+    let unitQuantity: Int
+    let currentQuantity: Int
+    
+    var remainingDays: Int {
+        guard unitQuantity > 0 else { return 0 }
+        return (currentQuantity * unitDays) / unitQuantity
+    }
+}
+
 struct StockItem: Codable, Identifiable, Equatable {
     let id: Int
     let name: String

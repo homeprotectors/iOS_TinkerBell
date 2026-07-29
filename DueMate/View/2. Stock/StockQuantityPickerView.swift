@@ -16,8 +16,9 @@ struct StockQuantityPickerView: View {
     
     
     var body: some View {
-        VStack {
-            Text("\(item.name) 몇 개가 남아 있나요?")
+        VStack(spacing: 0){
+            headerView
+            
             Picker("", selection: $quantity) {
                 ForEach(0...300, id:\.self) { num in
                     Text("\(num) 개")
@@ -25,24 +26,21 @@ struct StockQuantityPickerView: View {
                 }
             }
             .pickerStyle(.wheel)
-            .frame(height: 200)
+            .frame(width: 200, height: 200)
             .onChange(of: quantity) {
                 calculateExpectedDays()
             }
             Group {
-                Text("현재 약 \(expectedDaysLeft)일치가 남았어요!")
+                Text("현재 약 \(expectedDaysLeft)일치가 남았어요!\n일주일치 이하로 떨어지면 자동으로 장보기 리스트에 나타납니다.")
                     .font(.listText)
-                    .foregroundColor(.secondary)
-                
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(Color.primaryText)
                 
             }
-            SaveButton(isEnabled: true) {
-                onSave(quantity)
-                dismiss()
-            }
+            .padding(.vertical, 10)
             
+            Spacer()
         }
-        .padding(16)
         .onAppear {
             calculateExpectedDays()
         }
@@ -50,7 +48,28 @@ struct StockQuantityPickerView: View {
         
     }
     
+    private var headerView: some View {
+        HStack{
+            Spacer()
+            Text("현재 \(item.name) 갯수")
+                .font(.sheetTitle)
+            Spacer()
+        }
+        .overlay(
+            SaveButton(isEnabled: true, action:{
+                onSave(quantity)
+                dismiss()
+            }, isEditMode: true)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        )
+        .padding(.top, 30)
+        .padding(.bottom,10)
+    }
     private func calculateExpectedDays() {
+        guard item.unitQuantity > 0 else {
+            expectedDaysLeft = 0
+            return
+        }
         expectedDaysLeft = (quantity * item.unitDays) / item.unitQuantity
     }
 }

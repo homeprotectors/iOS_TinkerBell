@@ -11,10 +11,9 @@ import SwiftUI
 struct HomeItemView: View {
     let item: HomeItem
     let icon: String
-    var onLongPress: (CGRect) -> Void
-    @State var currentFrame: CGRect = .zero
+    var onLongPress: () -> Void
     
-    init(item: HomeItem,  onLongPress: @escaping (CGRect) -> Void = { _ in }) {
+    init(item: HomeItem,  onLongPress: @escaping () -> Void = {}) {
         self.item = item
         self.onLongPress = onLongPress
         self.icon = "ic_\(item.roomCategory?.lowercased() ?? "etc")"
@@ -28,18 +27,10 @@ struct HomeItemView: View {
                 .background(
                     GeometryReader { geometry in
                         Color.clear
-                            .onAppear {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
-                            .onChange(of: geometry.frame(in: .global)) {
-                                let frame = geometry.frame(in: .global)
-                                if frame.width > 0 && frame.height > 0 {
-                                    currentFrame = frame
-                                }
-                            }
+                            .preference(
+                                key: HomeItemFramePreferenceKey.self,
+                                value: [item.id: geometry.frame(in: .global)]
+                            )
                     }
                 )
         }
@@ -47,7 +38,7 @@ struct HomeItemView: View {
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5)
                 .onEnded { _ in
-                    onLongPress(currentFrame)
+                    onLongPress()
                 }
         )
         
@@ -65,7 +56,7 @@ struct HomeItemView: View {
             
             Spacer()
             
-            Text(CycleStringBuilder.makeDisplayText(recurrenceType: item.recurrenceType, selectedCycle: item.selectedCycle))
+            Text(item.recurrenceDescription)
                 .font(.listText)
             
             

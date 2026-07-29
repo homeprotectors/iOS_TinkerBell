@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct StockMainView: View {
-    @StateObject private var viewModel = StockMainViewModel()
+    @EnvironmentObject private var stockStore: StockStore
     @State private var selectedItem: StockItem? = nil
     @State private var selectedQuantity: Int = 0
     @State private var isPresentingCreate = false
     @State private var itemToDelete: StockItem? = nil
     @State private var itemToUpdate: StockItem? = nil
     @State private var showDeleteAlert = false
-    @State private var showTutorialOverlay = false
+    @State private var showTutorialOverlay = !TutorialManager.isStockTutorialCompleted
     
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 headerView
                 stockListView
             }
@@ -37,24 +37,31 @@ struct StockMainView: View {
         }
         //create
         .sheet(isPresented: $isPresentingCreate) {
-            StockCreateView(onCreate: { newItem in
-                withAnimation {
-                    viewModel.createStock(item: newItem)
+            StockCreateView(onSave: { draft in
+                let didCreate = await stockStore.create(from: draft)
+                if didCreate {
+                    isPresentingCreate = false
                 }
-                isPresentingCreate = false
+                return didCreate
             })
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
             .presentationDragIndicator(.hidden)
         }
         //update
         .sheet(item: $itemToUpdate) { item in
-            StockCreateView(onCreate: { newItem in
-                withAnimation {
-                    viewModel.updateInfo(id: item.id, item: newItem)
+            StockCreateView(onSave: { draft in
+                let didUpdate = await stockStore.updateInfo(
+                    id: item.id,
+                    draft: draft,
+                    currentQuantity: item.currentQuantity
+                )
+                if didUpdate {
+                    itemToUpdate = nil
                 }
-                itemToUpdate = nil
+                return didUpdate
             }, updateItem: item)
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
         }
         //update quantity
         .sheet(item: $selectedItem) { item in
@@ -62,20 +69,21 @@ struct StockMainView: View {
                 quantity: $selectedQuantity,
                 item: item,
                 onSave: { newQuantity in
-                    withAnimation {
-                        viewModel.updateQuantity(
-                            for:item.id,
-                            newQuantity: newQuantity)
+                    Task {
+                        await stockStore.updateQuantity(
+                            for: item.id,
+                            newQuantity: newQuantity
+                        )
                     }
-                    selectedItem = nil
                 }
             )
             .presentationDetents([.height(350)])
         }
         .alert("삭제확인", isPresented: $showDeleteAlert) {
             Button("삭제", role: .destructive) {
-                withAnimation{
-                    viewModel.deleteStock(id: itemToDelete!.id)
+                guard let itemToDelete else { return }
+                Task {
+                    await stockStore.delete(id: itemToDelete.id)
                 }
             }
             Button("취소", role: .cancel) { }
@@ -83,11 +91,8 @@ struct StockMainView: View {
         message: {
             Text("\(itemToDelete?.name ?? "")을(를) 정말 삭제하시겠습니까?")
         }
-        .onAppear {
-            viewModel.fetchStocks()
-            if !TutorialManager.isStockTutorialCompleted {
-                showTutorialOverlay = true
-            }
+        .task {
+            await stockStore.loadIfNeeded()
         }
         .withErrorToast()
     }
@@ -106,44 +111,65 @@ struct StockMainView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
             }
-            
+
         }
-        .background(Color.clear)
         .padding(.horizontal, 22)
         .padding(.top, 22)
         
     }
     
     private var stockListView: some View {
-        List {
-            ForEach(StockSection.allCases, id: \.self) { section in
-                if let sectionItems = viewModel.sections[section], !sectionItems.isEmpty {
-                    Section {
-                        ForEach(sectionItems) { item in
-                            StockItemView(item: item, onTapGesture: { tapped in
-                                selectedItem = tapped
-                                selectedQuantity = max(tapped.currentQuantity, 1)
-                            })
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                SwipeActionButtons(
-//                                    item: item,
-                                    onEdit: { itemToUpdate = item },
-                                    onDelete: {
-                                        itemToDelete = item
-                                        showDeleteAlert = true }
-                                )
+        ZStack {
+            Color.white
+                .ignoresSafeArea()
+            
+            if stockStore.items.isEmpty && !stockStore.isLoading {
+                EmptyShadeLogoView()
+            }
+            
+            if stockStore.isLoading && stockStore.items.isEmpty {
+                ProgressView()
+            }
+
+            List {
+                ForEach(StockSection.allCases, id: \.self) { section in
+                    if let sectionItems = stockStore.sections[section], !sectionItems.isEmpty {
+                        Section {
+                            ForEach(sectionItems) { item in
+                                StockItemView(item: item, onTapGesture: { tapped in
+                                    selectedItem = tapped
+                                    selectedQuantity = max(tapped.currentQuantity, 1)
+                                })
+                                .listRowInsets(EdgeInsets())
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.white)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    SwipeActionButtons(
+                                        onEdit: { itemToUpdate = item },
+                                        onDelete: {
+                                            itemToDelete = item
+                                            showDeleteAlert = true }
+                                    )
+                                }
+                                
+                                
                             }
                             
+                        } header: {
+                            SectionHeaderView(title: section.title)
+                               
                         }
-                    } header: {
-                        SectionHeaderView(title: section.title)
                     }
                 }
             }
+            .scrollIndicators(.hidden)
+            .refreshable {
+                await stockStore.refresh()
+            }
+            .background(Color.white)
         }
         .listStyle(.plain)
+        .listSectionSpacing(35)
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
         .environment(\.defaultMinListRowHeight, 0)
@@ -154,4 +180,5 @@ struct StockMainView: View {
 
 #Preview {
     StockMainView()
+        .environmentObject(StockStore.shared)
 }

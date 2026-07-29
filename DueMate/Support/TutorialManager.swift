@@ -16,8 +16,7 @@ final class TutorialManager {
     
     /// 튜토리얼 완료 여부를 확인합니다.
     static var isTutorialCompleted: Bool {
-        //UserDefaults.standard.bool(forKey: tutorialCompletedKey)
-        false
+        UserDefaults.standard.bool(forKey: tutorialCompletedKey)
     }
     
     /// 튜토리얼을 완료 처리합니다.
@@ -65,4 +64,3 @@ final class TutorialManager {
         UserDefaults.standard.set(true, forKey: BillTutorialCompletedKey)
     }
 }
-

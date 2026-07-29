@@ -9,15 +9,32 @@ import Foundation
 import SwiftUI
 
 extension Font {
-    static let headerTitle = Font.system(size:22, weight: .heavy)
-    static let sheetTitle = Font.system(size: 18, weight: .bold)
-    static let listTitle = Font.system(size: 16, weight: .bold)
-    static let listSubitem = Font.system(size: 14, weight: .semibold)
-    static let buttonText = Font.system(size: 14, weight: .bold)
-    static let buttonLight = Font.system(size: 14, weight: .light)
-    static let listText = Font.system(size: 12, weight: .light)
-    static let formlabel = Font.system(size: 12, weight: .medium)
-    static let smallButtonText = Font.system(size: 12, weight: .bold)
+    private static func app(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        let fontName: String
+        
+        switch weight {
+        case .light:
+            fontName = "NanumSquareRoundOTFL"
+        case .bold:
+            fontName = "NanumSquareRoundOTFB"
+        case .heavy:
+            fontName = "NanumSquareRoundOTFEB"
+        default:
+            fontName = "NanumSquareRoundOTFR"
+        }
+        
+        return .custom(fontName, size: size)
+    }
     
     
+    static var headerTitle: Font { app(size: 28, weight: .heavy) }
+    static var sheetTitle: Font { app(size: 18, weight: .bold) }
+    static var listTitle: Font { app(size: 16, weight: .bold) }
+    static var listTitleMedium: Font { app(size: 16, weight: .medium) }
+    static var listSubitem: Font { app(size: 14, weight: .bold) }
+    static var buttonText: Font { app(size: 14, weight: .bold) }
+    static var buttonLight: Font { app(size: 14, weight: .light) }
+    static var listText: Font { app(size: 12, weight: .light) }
+    static var formlabel: Font { app(size: 12, weight: .medium) }
+    static var smallButtonText: Font { app(size: 12, weight: .bold) }
 }
