@@ -14,6 +14,12 @@ struct DueMateApp: App {
     @State private var isSplashAnimationFinished = false
     @State private var bootstrapTask: Task<Void, Never>?
     @StateObject private var navigationState = AppNavigationState.shared
+
+    private var isRunningTests: Bool {
+        let environment = ProcessInfo.processInfo.environment
+        return environment["XCTestConfigurationFilePath"] != nil
+            || environment["DUEIT_UNIT_TESTING"] == "1"
+    }
     
     init() {
 //        UserIdentifierManager.shared.resetIdentifiers() // DEBUG: 저장된 user/install 식별자 리셋, 디버깅 끝나면 주석 처리
@@ -46,6 +52,7 @@ struct DueMateApp: App {
             }
             .environmentObject(navigationState)
             .task {
+                guard !isRunningTests else { return }
                 startBootstrapIfNeeded()
             }
             .onReceive(NotificationCenter.default.publisher(for: .didRequestAppRelaunch)) { _ in

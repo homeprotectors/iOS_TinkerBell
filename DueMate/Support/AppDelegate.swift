@@ -12,6 +12,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["XCTestConfigurationFilePath"] == nil,
+              environment["DUEIT_UNIT_TESTING"] != "1" else {
+            return true
+        }
+
         PushNotificationManager.shared.configureFirebaseIfPossible()
         return true
     }

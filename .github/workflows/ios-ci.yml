@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -48,6 +48,8 @@ jobs:
           echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
 
       - name: Run unit tests
+        env:
+          DUEIT_UNIT_TESTING: "1"
         run: |
           xcodebuild test \
             -project DueMate.xcodeproj \
@@ -62,7 +64,7 @@ jobs:
 
       - name: Upload test result bundle
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: DueMate-test-results
           path: ${{ runner.temp }}/DueMateTests.xcresult
