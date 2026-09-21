@@ -1,0 +1,71 @@
+name: iOS CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild \
+            -resolvePackageDependencies \
+            -project DueMate.xcodeproj \
+            -scheme DueMate
+
+      - name: Select an available iPhone simulator
+        id: simulator
+        shell: bash
+        run: |
+          simulator_id="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ { print $2; exit }')"
+
+          if [[ -z "$simulator_id" ]]; then
+            echo "No available iPhone simulator was found."
+            exit 1
+          fi
+
+          echo "Using simulator: $simulator_id"
+          echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        env:
+          DUEIT_UNIT_TESTING: "1"
+        run: |
+          xcodebuild test \
+            -project DueMate.xcodeproj \
+            -scheme DueMate \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.id }}" \
+            -derivedDataPath "${{ runner.temp }}/DerivedData" \
+            -resultBundlePath "${{ runner.temp }}/DueMateTests.xcresult" \
+            -only-testing:DueMateTests \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload test result bundle
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: DueMate-test-results
+          path: ${{ runner.temp }}/DueMateTests.xcresult
+          if-no-files-found: ignore
